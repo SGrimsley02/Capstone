@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SLUMBR – Onboarding Skeleton</title>
+  <style>
+    :root { --bg:#0b1020; --card:#121a33; --text:#e8ecff; --muted:#aab3d6; --accent:#7c5cff; --border:#23305a; }
+    * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { margin: 0; background: radial-gradient(1200px 600px at 20% 10%, #18224a, var(--bg)); color: var(--text); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 40px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px; }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), #37d3ff); }
+    h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
+    .pill { font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; }
+
+    .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1.25fr 0.75fr; } }
+
+    .card { background: color-mix(in oklab, var(--card) 92%, black); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .card h2 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0 0 12px; color: var(--muted); line-height: 1.4; font-size: 13.5px; }
+
+    .tabs { display:flex; gap:10px; margin: 10px 0 14px; }
+    .tab { padding: 8px 10px; border-radius: 999px; border:1px solid var(--border); background:#0e1530; color:var(--muted); font-size:12.5px; cursor:pointer; }
+    .tab.active { color: var(--text); border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); }
+
+    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #0e1530;
+      color: var(--text);
+      outline: none;
+    }
+    input:focus, select:focus { border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); box-shadow: 0 0 0 3px rgba(124,92,255,.18); }
+
+    .row { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
+
+    .btns { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; }
+    button {
+      cursor:pointer;
+      border: 1px solid var(--border);
+      background: #0e1530;
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    button.primary { background: var(--accent); border-color: color-mix(in oklab, var(--accent) 70%, white); }
+    button.ghost { background: transparent; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .status {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 10px 12px; border-radius: 14px;
+      background: #0e1530; border: 1px dashed var(--border);
+      margin-top: 10px;
+    }
+    .ok { color: #9af2c7; font-weight: 800; }
+    .warn { color: #ffd37a; font-weight: 800; }
+    .mini { font-size: 12px; color: var(--muted); }
+    .divider { height:1px; background: var(--border); margin: 14px 0; opacity: .8; }
+    .hide { display:none !important; }
+    .toast { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+    .kbd { border:1px solid var(--border); padding:2px 6px; border-radius:8px; font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>SLUMBR • Onboarding Skeleton</h1>
+          <div class="mini">Local auth + Google + Spotify (UI-only demo)</div>
+        </div>
+      </div>
+      <div class="pill" id="pillState">Signed out</div>
+    </header>
+
+    <div class="grid">
+      <!-- MAIN -->
+      <section class="card">
+        <!-- AUTH VIEW -->
+        <div id="viewAuth">
+          <h2>Sign in</h2>
+          <p>Create an account for SLUMBR, then connect your services. (Skeleton only: stored in localStorage.)</p>
+
+          <div class="tabs" role="tablist">
+            <button class="tab active" id="tabLogin" type="button">Log in</button>
+            <button class="tab" id="tabSignup" type="button">Sign up</button>
+          </div>
+
+          <form id="formLogin">
+            <div class="row">
+              <div>
+                <label for="loginUser">Username</label>
+                <input id="loginUser" name="loginUser" autocomplete="username" required />
+              </div>
+              <div>
+                <label for="loginPass">Password</label>
+                <input id="loginPass" name="loginPass" type="password" autocomplete="current-password" required />
+              </div>
+            </div>
+            <div class="btns">
+              <button class="primary" type="submit">Log in</button>
+              <button class="ghost" type="button" id="btnDemoLogin">Demo login</button>
+            </div>
+            <div class="toast" id="authMsg"></div>
+          </form>
+
+          <form id="formSignup" class="hide">
+            <div class="row">
+              <div>
+                <label for="signupUser">Username</label>
+                <input id="signupUser" name="signupUser" autocomplete="username" required />
+              </div>
+              <div>
+                <label for="signupPass">Password</label>
+                <input id="signupPass" name="signupPass" type="password" autocomplete="new-password" required />
+              </div>
+            </div>
+            <div class="mini">Note: real implementation will hash passwords server-side (bcrypt/argon2).</div>
+            <div class="btns">
+              <button class="primary" type="submit">Create account</button>
+              <button class="ghost" type="button" id="btnDemoSignup">Demo signup</button>
+            </div>
+            <div class="toast" id="signupMsg"></div>
+          </form>
+        </div>
+
+        <!-- SETUP VIEW -->
+        <div id="viewSetup" class="hide">
+          <h2>Connect your services</h2>
+          <p>Connect Google Calendar and Spotify, then set your wake/music preferences.</p>
+
+          <div class="status">
+            <div>
+              <div class="mini">Google Account</div>
+              <div id="googleStatus" class="warn">Not connected</div>
+            </div>
+            <button id="btnGoogle" class="primary" type="button">Connect Google</button>
+          </div>
+
+          <div class="status">
+            <div>
+              <div class="mini">Spotify Account</div>
+              <div id="spotifyStatus" class="warn">Not connected</div>
+            </div>
+            <button id="btnSpotify" class="primary" type="button">Connect Spotify</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="btns">
+            <button id="btnToPrefs" type="button" disabled>Continue to preferences</button>
+            <button id="btnLogout" type="button" class="ghost">Log out</button>
+            <button id="btnResetAll" type="button" class="ghost">Reset demo data</button>
+          </div>
+
+          <div class="toast">
+            Later: <span class="kbd">Connect Google</span> → <span class="kbd">/auth/google</span>,
+            <span class="kbd">Connect Spotify</span> → <span class="kbd">/auth/spotify</span>.
+          </div>
+        </div>
+
+        <!-- PREFS VIEW -->
+        <div id="viewPrefs" class="hide">
+          <h2>Wake & music preferences</h2>
+          <p>Keep MVP settings minimal. These persist for the logged-in user (localStorage demo).</p>
+
+          <form id="prefsForm">
+            <div class="row">
+              <div>
+                <label for="wakeStart">Earliest wake time</label>
+                <input type="time" id="wakeStart" name="wakeStart" value="07:00" required />
+              </div>
+              <div>
+                <label for="wakeEnd">Latest wake time</label>
+                <input type="time" id="wakeEnd" name="wakeEnd" value="07:30" required />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label for="vibe">Morning vibe</label>
+                <select id="vibe" name="vibe" required>
+                  <option value="calm">Calm</option>
+                  <option value="motivating">Motivating</option>
+                  <option value="upbeat">Upbeat</option>
+                  <option value="focus">Focus</option>
+                  <option value="surprise">Surprise me</option>
+                </select>
+              </div>
+              <div>
+                <label for="explicit">Explicit content</label>
+                <select id="explicit" name="explicit" required>
+                  <option value="filter">Filter explicit</option>
+                  <option value="allow">Allow explicit</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;">
+              <label>
+                <input type="checkbox" id="ramp" name="ramp" />
+                Start quiet then ramp volume up
+              </label>
+              <div class="mini">Optional.</div>
+            </div>
+
+            <div class="btns">
+              <button type="submit" class="primary">Save preferences</button>
+              <button type="button" id="btnBackToSetup" class="ghost">Back</button>
+            </div>
+
+            <div class="toast" id="prefsMsg"></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card">
+        <h2>Current state</h2>
+        <p>This is for demos/testing.</p>
+
+        <div class="status">
+          <div>
+            <div class="mini">Signed in as</div>
+            <div id="dbgUser" class="warn">—</div>
+          </div>
+          <div class="mini" id="dbgAuth">Signed out</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Google</div>
+            <div id="dbgGoogle" class="warn">Not connected</div>
+          </div>
+          <div class="mini" id="dbgGoogleAcct">—</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Spotify</div>
+            <div id="dbgSpotify" class="warn">Not connected</div>
+          </div>
+          <div class="mini" id="dbgSpotifyAcct">—</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Preferences</div>
+            <div id="dbgPrefs" class="warn">Not set</div>
+          </div>
+          <div class="mini" id="dbgPrefsSummary">—</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="mini">
+          Skeleton notes:
+          <ul>
+            <li>This is UI-only (localStorage).</li>
+            <li>Real OAuth will be backend routes + redirect URIs.</li>
+            <li>Real passwords must be hashed + never stored client-side.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  // --- Demo storage ---
+  // users: { [username]: { passwordPlain (demo only), googleConnected, spotifyConnected, googleEmail, spotifyName, preferences } }
+  const LS_USERS = "slumbr_users_v1";
+  const LS_SESSION = "slumbr_session_v1";
+
+  const el = (id) => document.getElementById(id);
+
+  const viewAuth = el("viewAuth");
+  const viewSetup = el("viewSetup");
+  const viewPrefs = el("viewPrefs");
+
+  const pillState = el("pillState");
+
+  const tabLogin = el("tabLogin");
+  const tabSignup = el("tabSignup");
+  const formLogin = el("formLogin");
+  const formSignup = el("formSignup");
+
+  const authMsg = el("authMsg");
+  const signupMsg = el("signupMsg");
+
+  const btnDemoLogin = el("btnDemoLogin");
+  const btnDemoSignup = el("btnDemoSignup");
+
+  const googleStatus = el("googleStatus");
+  const spotifyStatus = el("spotifyStatus");
+  const btnGoogle = el("btnGoogle");
+  const btnSpotify = el("btnSpotify");
+  const btnToPrefs = el("btnToPrefs");
+  const btnLogout = el("btnLogout");
+  const btnResetAll = el("btnResetAll");
+
+  const prefsForm = el("prefsForm");
+  const prefsMsg = el("prefsMsg");
+  const btnBackToSetup = el("btnBackToSetup");
+
+  const dbgUser = el("dbgUser");
+  const dbgAuth = el("dbgAuth");
+  const dbgGoogle = el("dbgGoogle");
+  const dbgGoogleAcct = el("dbgGoogleAcct");
+  const dbgSpotify = el("dbgSpotify");
+  const dbgSpotifyAcct = el("dbgSpotifyAcct");
+  const dbgPrefs = el("dbgPrefs");
+  const dbgPrefsSummary = el("dbgPrefsSummary");
+
+  function loadUsers() {
+    try { return JSON.parse(localStorage.getItem(LS_USERS)) || {}; } catch { return {}; }
+  }
+  function saveUsers(users) {
+    localStorage.setItem(LS_USERS, JSON.stringify(users));
+  }
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(LS_SESSION)) || {}; } catch { return {}; }
+  }
+  function saveSession(sess) {
+    localStorage.setItem(LS_SESSION, JSON.stringify(sess));
+  }
+
+  function setView(which) {
+    viewAuth.classList.toggle("hide", which !== "auth");
+    viewSetup.classList.toggle("hide", which !== "setup");
+    viewPrefs.classList.toggle("hide", which !== "prefs");
+  }
+
+  function setTab(which) {
+    const login = which === "login";
+    tabLogin.classList.toggle("active", login);
+    tabSignup.classList.toggle("active", !login);
+    formLogin.classList.toggle("hide", !login);
+    formSignup.classList.toggle("hide", login);
+    authMsg.textContent = "";
+    signupMsg.textContent = "";
+  }
+
+  function currentUserRecord() {
+    const sess = loadSession();
+    if (!sess.username) return null;
+    const users = loadUsers();
+    return users[sess.username] ? { username: sess.username, ...users[sess.username] } : null;
+  }
+
+  function ensureDemoUser() {
+    const users = loadUsers();
+    if (!users["ella"]) {
+      users["ella"] = {
+        passwordPlain: "password123", // demo only
+        googleConnected: false,
+        spotifyConnected: false,
+        googleEmail: null,
+        spotifyName: null,
+        preferences: null
+      };
+      saveUsers(users);
+    }
+  }
+
+  function render() {
+    const sess = loadSession();
+    const user = currentUserRecord();
+
+    const signedIn = !!(sess.username && user);
+    pillState.textContent = signedIn ? `Signed in: ${sess.username}` : "Signed out";
+
+    if (!signedIn) {
+      setView("auth");
+      dbgUser.textContent = "—";
+      dbgUser.className = "warn";
+      dbgAuth.textContent = "Signed out";
+      dbgGoogle.textContent = "Not connected";
+      dbgSpotify.textContent = "Not connected";
+      dbgPrefs.textContent = "Not set";
+      dbgGoogleAcct.textContent = "—";
+      dbgSpotifyAcct.textContent = "—";
+      dbgPrefsSummary.textContent = "—";
+      return;
+    }
+
+    // setup status
+    const gOK = !!user.googleConnected;
+    const sOK = !!user.spotifyConnected;
+
+    googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
+    googleStatus.className = gOK ? "ok" : "warn";
+    spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
+    spotifyStatus.className = sOK ? "ok" : "warn";
+
+    btnToPrefs.disabled = !(gOK && sOK); // require both for MVP (you can relax later)
+
+    // sidebar
+    dbgUser.textContent = sess.username;
+    dbgUser.className = "ok";
+    dbgAuth.textContent = "Signed in";
+
+    dbgGoogle.textContent = gOK ? "Connected ✅" : "Not connected";
+    dbgGoogle.className = gOK ? "ok" : "warn";
+    dbgGoogleAcct.textContent = gOK ? (user.googleEmail || "google_user@gmail.com") : "—";
+
+    dbgSpotify.textContent = sOK ? "Connected ✅" : "Not connected";
+    dbgSpotify.className = sOK ? "ok" : "warn";
+    dbgSpotifyAcct.textContent = sOK ? (user.spotifyName || "@spotify_user") : "—";
+
+    const pOK = !!user.preferences;
+    dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
+    dbgPrefs.className = pOK ? "ok" : "warn";
+    dbgPrefsSummary.textContent = pOK
+      ? `${user.preferences.wakeStart}–${user.preferences.wakeEnd} • ${user.preferences.vibe}`
+      : "—";
+
+    // keep view consistent
+    // if currently on auth but signed in, go to setup
+    if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
+    setView("setup");
+  }
+
+  // Tabs
+  tabLogin.addEventListener("click", () => setTab("login"));
+  tabSignup.addEventListener("click", () => setTab("signup"));
+
+  // Signup
+  formSignup.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const u = formSignup.signupUser.value.trim();
+    const p = formSignup.signupPass.value;
+
+    if (!u || !p) return;
+
+    const users = loadUsers();
+    if (users[u]) {
+      signupMsg.textContent = "That username is taken.";
+      return;
+    }
+    users[u] = { passwordPlain: p, googleConnected:false, spotifyConnected:false, googleEmail:null, spotifyName:null, preferences:null };
+    saveUsers(users);
+    saveSession({ username: u });
+
+    signupMsg.textContent = "Account created ✓";
+    setView("setup");
+    render();
+  });
+
+  // Login
+  formLogin.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const u = formLogin.loginUser.value.trim();
+    const p = formLogin.loginPass.value;
+
+    const users = loadUsers();
+    if (!users[u] || users[u].passwordPlain !== p) {
+      authMsg.textContent = "Invalid username or password.";
+      return;
+    }
+    saveSession({ username: u });
+    authMsg.textContent = "Logged in ✓";
+    setView("setup");
+    render();
+  });
+
+  // Demo buttons
+  btnDemoSignup.addEventListener("click", () => {
+    ensureDemoUser();
+    const users = loadUsers();
+    const uname = "demo";
+    if (!users[uname]) {
+      users[uname] = { passwordPlain:"demo", googleConnected:false, spotifyConnected:false, googleEmail:null, spotifyName:null, preferences:null };
+      saveUsers(users);
+    }
+    saveSession({ username: uname });
+    setView("setup");
+    render();
+  });
+
+  btnDemoLogin.addEventListener("click", () => {
+    ensureDemoUser();
+    saveSession({ username: "ella" });
+    setView("setup");
+    render();
+  });
+
+  // Connect buttons (stubbed)
+  btnGoogle.addEventListener("click", () => {
+    const sess = loadSession();
+    const users = loadUsers();
+    const u = users[sess.username];
+    u.googleConnected = true;
+    u.googleEmail = "demo.user@gmail.com";
+    saveUsers(users);
+    render();
+  });
+
+  btnSpotify.addEventListener("click", () => {
+    const sess = loadSession();
+    const users = loadUsers();
+    const u = users[sess.username];
+    u.spotifyConnected = true;
+    u.spotifyName = "@spotify_demo_user";
+    saveUsers(users);
+    render();
+  });
+
+  // Continue to prefs
+  btnToPrefs.addEventListener("click", () => {
+    const user = currentUserRecord();
+    setView("prefs");
+    prefsMsg.textContent = "";
+
+    // Prefill if saved
+    if (user && user.preferences) {
+      prefsForm.wakeStart.value = user.preferences.wakeStart;
+      prefsForm.wakeEnd.value = user.preferences.wakeEnd;
+      prefsForm.vibe.value = user.preferences.vibe;
+      prefsForm.explicit.value = user.preferences.explicit;
+      prefsForm.ramp.checked = !!user.preferences.ramp;
+    }
+  });
+
+  // Save prefs
+  prefsForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const sess = loadSession();
+    const users = loadUsers();
+    const u = users[sess.username];
+
+    u.preferences = {
+      wakeStart: prefsForm.wakeStart.value,
+      wakeEnd: prefsForm.wakeEnd.value,
+      vibe: prefsForm.vibe.value,
+      explicit: prefsForm.explicit.value,
+      ramp: prefsForm.ramp.checked
+    };
+    saveUsers(users);
+    prefsMsg.textContent = "Saved ✓ (localStorage demo)";
+    render();
+  });
+
+  btnBackToSetup.addEventListener("click", () => {
+    setView("setup");
+    prefsMsg.textContent = "";
+    render();
+  });
+
+  // Logout + reset
+  btnLogout.addEventListener("click", () => {
+    localStorage.removeItem(LS_SESSION);
+    setView("auth");
+    render();
+  });
+
+  btnResetAll.addEventListener("click", () => {
+    localStorage.removeItem(LS_USERS);
+    localStorage.removeItem(LS_SESSION);
+    setView("auth");
+    setTab("login");
+    render();
+  });
+
+  // Init
+  setTab("login");
+  render();
+</script>
+</body>
+</html>
