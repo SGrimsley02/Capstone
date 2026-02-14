@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SLUMBR – Onboarding Skeleton</title>
+  <title>SLUMBR – Website Skeleton</title>
   <style>
     :root { --bg:#0b1020; --card:#121a33; --text:#e8ecff; --muted:#aab3d6; --accent:#7c5cff; --border:#23305a; }
     * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
@@ -126,7 +126,6 @@
                 <input id="signupPass" name="signupPass" type="password" autocomplete="new-password" required />
               </div>
             </div>
-            <div class="mini">Note: real implementation will hash passwords server-side (bcrypt/argon2).</div>
             <div class="btns">
               <button class="primary" type="submit">Create account</button>
               <button class="ghost" type="button" id="btnDemoSignup">Demo signup</button>
@@ -173,7 +172,7 @@
         <!-- PREFS VIEW -->
         <div id="viewPrefs" class="hide">
           <h2>Wake & music preferences</h2>
-          <p>Keep MVP settings minimal. These persist for the logged-in user (localStorage demo).</p>
+          <p>TEMPORARY PREFERENCES TO SWITCH LATER, These persist for the logged-in user (localStorage demo)</p>
 
           <form id="prefsForm">
             <div class="row">
@@ -189,13 +188,13 @@
 
             <div class="row" style="margin-top:10px;">
               <div>
-                <label for="vibe">Morning vibe</label>
-                <select id="vibe" name="vibe" required>
-                  <option value="calm">Calm</option>
-                  <option value="motivating">Motivating</option>
-                  <option value="upbeat">Upbeat</option>
-                  <option value="focus">Focus</option>
-                  <option value="surprise">Surprise me</option>
+                <label for="temp">Temporary Pref</label>
+                <select id="temp" name="temp" required>
+                  <option value="temp1">Temporary1</option>
+                  <option value="temp2">Temporary2</option>
+                  <option value="temp3">Temporary3</option>
+                  <option value="temp4">Temporary4</option>
+                  <option value="temp5">Temporary5</option>
                 </select>
               </div>
               <div>
@@ -208,9 +207,9 @@
             </div>
 
             <div style="margin-top:10px;">
-              <label>
+              <label class="checkbox-label">
                 <input type="checkbox" id="ramp" name="ramp" />
-                Start quiet then ramp volume up
+                <span>Start quiet then ramp volume up</span>
               </label>
               <div class="mini">Optional.</div>
             </div>
@@ -421,7 +420,7 @@
     dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
     dbgPrefs.className = pOK ? "ok" : "warn";
     dbgPrefsSummary.textContent = pOK
-      ? `${user.preferences.wakeStart}–${user.preferences.wakeEnd} • ${user.preferences.vibe}`
+      ? `${user.preferences.wakeStart}–${user.preferences.wakeEnd} • ${user.preferences.temp}`
       : "—";
 
     // keep view consistent
@@ -525,7 +524,7 @@
     if (user && user.preferences) {
       prefsForm.wakeStart.value = user.preferences.wakeStart;
       prefsForm.wakeEnd.value = user.preferences.wakeEnd;
-      prefsForm.vibe.value = user.preferences.vibe;
+      prefsForm.temp.value = user.preferences.temp;
       prefsForm.explicit.value = user.preferences.explicit;
       prefsForm.ramp.checked = !!user.preferences.ramp;
     }
@@ -541,7 +540,7 @@
     u.preferences = {
       wakeStart: prefsForm.wakeStart.value,
       wakeEnd: prefsForm.wakeEnd.value,
-      vibe: prefsForm.vibe.value,
+      temp: prefsForm.temp.value,
       explicit: prefsForm.explicit.value,
       ramp: prefsForm.ramp.checked
     };
