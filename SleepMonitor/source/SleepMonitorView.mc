@@ -1,3 +1,13 @@
+/*
+Name: source/SleepMonitorView.mc
+Description: Primary UI view for the SleepMonitor Connect IQ watch app.
+             Displays the main layout and renders the current HTTP status
+             message returned from network requests.
+Authors: Kiara Rose
+Created: February 7, 2026
+Last Modified: February 7, 2026
+*/
+
 import Toybox.Graphics;
 import Toybox.WatchUi;
 

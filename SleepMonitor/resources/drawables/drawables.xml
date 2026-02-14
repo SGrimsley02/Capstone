@@ -1,3 +1,12 @@
+<!--
+Name: resources/drawables/drawables.xml
+Description: Defines drawable resources (icons, images, or graphical assets)
+             used within the SleepMonitor watch app layouts and UI components.
+Authors: Kiara Rose
+Created: February 7, 2026
+Last Modified: February 7, 2026
+-->
+
 <drawables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <bitmap id="LauncherIcon" filename="launcher_icon.svg" dithering="none" />
 </drawables>
