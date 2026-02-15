@@ -11,6 +11,9 @@ Last Modified: February 14, 2026
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.WatchUi;
+import Toybox.Application.Storage;
+import Toybox.Communications;
+
 
 class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
@@ -21,7 +24,17 @@ class SleepMonitorApp extends Application.AppBase {
 
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
+    //DELETE THIS LATER (ONLY FOR TESTING)
+        //Storage.deleteValue("hasOnboarded");
+        System.println("Storage cleared for test.");
+    // One-time onboarding: prompt user to open a web page on their phone.
+    var didOnboard = SleepMonitorOnboarding.runIfFirstTime("https://www.google.com");
+
+    if (didOnboard) {
+        setHttpStatus("Open phone link to continue");
+        WatchUi.requestUpdate();
     }
+}
 
     // onStop() is called when your application is exiting
     function onStop(state as Dictionary?) as Void {
