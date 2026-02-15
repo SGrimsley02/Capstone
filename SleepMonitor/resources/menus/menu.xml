@@ -1,4 +1,15 @@
+<!--
+Name: resources/menus/menu.xml
+Description: Defines the menu structure for the SleepMonitor watch app.
+             Each menu item maps to a Symbol (e.g., :item_1, :item_2, :item_3)
+             that is handled in SleepMonitorMenuDelegate.mc.
+Authors: Kiara Rose, Audrey Pan
+Created: February 7, 2026
+Last Modified: February 14, 2026
+-->
+
 <menu id="MainMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <menu-item id="item_1" label="@Strings.menu_label_1" />
     <menu-item id="item_2" label="@Strings.menu_label_2" />
+    <menu-item id="item_3" label="@Strings.menu_label_3" />
 </menu>
