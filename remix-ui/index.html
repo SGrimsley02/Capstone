@@ -275,9 +275,7 @@
   </div>
 
 <script>
-  // --- Demo storage ---
-  // users: { [username]: { passwordPlain (demo only), googleConnected, spotifyConnected, googleEmail, spotifyName, preferences } }
-  const LS_USERS = "remix_users_v1";
+  // --- Backend API integration ---
   const LS_SESSION = "remix_session_v1";
 
   const el = (id) => document.getElementById(id);
@@ -320,12 +318,6 @@
   const dbgPrefs = el("dbgPrefs");
   const dbgPrefsSummary = el("dbgPrefsSummary");
 
-  function loadUsers() {
-    try { return JSON.parse(localStorage.getItem(LS_USERS)) || {}; } catch { return {}; }
-  }
-  function saveUsers(users) {
-    localStorage.setItem(LS_USERS, JSON.stringify(users));
-  }
   function loadSession() {
     try { return JSON.parse(localStorage.getItem(LS_SESSION)) || {}; } catch { return {}; }
   }
@@ -349,34 +341,22 @@
     signupMsg.textContent = "";
   }
 
-  function currentUserRecord() {
+  async function getCurrentUser() {
     const sess = loadSession();
     if (!sess.username) return null;
-    const users = loadUsers();
-    return users[sess.username] ? { username: sess.username, ...users[sess.username] } : null;
-  }
-
-  function ensureDemoUser() {
-    const users = loadUsers();
-    if (!users["ella"]) {
-      users["ella"] = {
-        passwordPlain: "password123", // demo only
-        googleConnected: false,
-        spotifyConnected: false,
-        googleEmail: null,
-        spotifyName: null,
-        preferences: null
-      };
-      saveUsers(users);
+    try {
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/user?username=${sess.username}`);
+      if (res.ok) return res.json();
+    } catch (e) {
+      console.error("Error fetching user data:", e);
     }
   }
 
-  function render() {
-    const sess = loadSession();
-    const user = currentUserRecord();
+  async function render() {
+    currentUser = await getCurrentUser(); 
+    const signedIn = !!loadSession().username;
 
-    const signedIn = !!(sess.username && user);
-    pillState.textContent = signedIn ? `Signed in: ${sess.username}` : "Signed out";
+    pillState.textContent = signedIn ? `Signed in: ${loadSession().username}` : "Signed out";
 
     if (!signedIn) {
       setView("auth");
@@ -392,39 +372,37 @@
       return;
     }
 
-    // setup status
-    const gOK = !!user.googleConnected;
-    const sOK = !!user.spotifyConnected;
+    // setup status (placeholder for OAuth integration)
+    const gOK = currentUser.googleEmail != null;
+    const sOK = currentUser.spotifyName != null;
 
     googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
     googleStatus.className = gOK ? "ok" : "warn";
     spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
     spotifyStatus.className = sOK ? "ok" : "warn";
 
-    btnToPrefs.disabled = !(gOK && sOK); // require both for MVP (you can relax later)
+    btnToPrefs.disabled = !(gOK && sOK);
 
     // sidebar
-    dbgUser.textContent = sess.username;
+    dbgUser.textContent = currentUser.username;
     dbgUser.className = "ok";
     dbgAuth.textContent = "Signed in";
 
     dbgGoogle.textContent = gOK ? "Connected ✅" : "Not connected";
     dbgGoogle.className = gOK ? "ok" : "warn";
-    dbgGoogleAcct.textContent = gOK ? (user.googleEmail || "google_user@gmail.com") : "—";
+    dbgGoogleAcct.textContent = gOK ? (currentUser.googleEmail || "google_user@gmail.com") : "—";
 
     dbgSpotify.textContent = sOK ? "Connected ✅" : "Not connected";
     dbgSpotify.className = sOK ? "ok" : "warn";
-    dbgSpotifyAcct.textContent = sOK ? (user.spotifyName || "@spotify_user") : "—";
+    dbgSpotifyAcct.textContent = sOK ? (currentUser.spotifyName || "@spotify_user") : "—";
 
-    const pOK = !!user.preferences;
+    const pOK = !!currentUser.preferences.wakeEnd;
     dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
     dbgPrefs.className = pOK ? "ok" : "warn";
     dbgPrefsSummary.textContent = pOK
-      ? `${user.preferences.wakeStart}–${user.preferences.wakeEnd} • ${user.preferences.temp}`
+      ? `${currentUser.preferences.wakeStart}–${currentUser.preferences.wakeEnd} • ${currentUser.preferences.temp}`
       : "—";
 
-    // keep view consistent
-    // if currently on auth but signed in, go to setup
     if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
     setView("setup");
   }
@@ -434,119 +412,214 @@
   tabSignup.addEventListener("click", () => setTab("signup"));
 
   // Signup
-  formSignup.addEventListener("submit", (e) => {
+  formSignup.addEventListener("submit", async (e) => {
     e.preventDefault();
     const u = formSignup.signupUser.value.trim();
     const p = formSignup.signupPass.value;
 
     if (!u || !p) return;
 
-    const users = loadUsers();
-    if (users[u]) {
-      signupMsg.textContent = "That username is taken.";
-      return;
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        signupMsg.textContent = "Account created ✓";
+        setTab("login");
+        formSignup.reset();
+      } else {
+        signupMsg.textContent = data.message || "Registration failed";
+      }
+    } catch (e) {
+      signupMsg.textContent = "Error: " + e.message;
     }
-    users[u] = { passwordPlain: p, googleConnected:false, spotifyConnected:false, googleEmail:null, spotifyName:null, preferences:null };
-    saveUsers(users);
-    saveSession({ username: u });
-
-    signupMsg.textContent = "Account created ✓";
-    setView("setup");
-    render();
   });
 
   // Login
-  formLogin.addEventListener("submit", (e) => {
+  formLogin.addEventListener("submit", async (e) => {
     e.preventDefault();
     const u = formLogin.loginUser.value.trim();
     const p = formLogin.loginPass.value;
 
-    const users = loadUsers();
-    if (!users[u] || users[u].passwordPlain !== p) {
-      authMsg.textContent = "Invalid username or password.";
-      return;
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        authMsg.textContent = "Logged in ✓";
+        formLogin.reset();
+        saveSession({ username: u });
+        await render();
+        setView("setup");
+      } else {
+        authMsg.textContent = data.message || "Login failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
     }
-    saveSession({ username: u });
-    authMsg.textContent = "Logged in ✓";
-    setView("setup");
-    render();
   });
 
-  // Demo buttons
-  btnDemoSignup.addEventListener("click", () => {
-    ensureDemoUser();
-    const users = loadUsers();
-    const uname = "demo";
-    if (!users[uname]) {
-      users[uname] = { passwordPlain:"demo", googleConnected:false, spotifyConnected:false, googleEmail:null, spotifyName:null, preferences:null };
-      saveUsers(users);
+  // Demo buttons (create demo users in DynamoDB)
+  btnDemoLogin.addEventListener("click", async () => {
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: "demo", password: "demo123" })
+      });
+      
+      if (!res.ok) {
+        // Create demo user if doesn't exist
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+        
+        // Now login
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+      }
+      saveSession({ username: "demo" });
+      await render();
+      setView("setup");
+    } catch (e) {
+      console.error("Demo login error:", e);
     }
-    saveSession({ username: uname });
-    setView("setup");
-    render();
   });
 
-  btnDemoLogin.addEventListener("click", () => {
-    ensureDemoUser();
-    saveSession({ username: "ella" });
-    setView("setup");
-    render();
+  btnDemoSignup.addEventListener("click", async () => {
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: "demo", password: "demo123" })
+      });
+      
+      if (res.ok) {
+        // Login with demo account
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+      }
+      
+      saveSession({ username: "demo" });
+      await render();
+      setView("setup");
+    } catch (e) {
+      console.error("Demo signup error:", e);
+    }
   });
 
-  // Connect buttons (stubbed)
-  btnGoogle.addEventListener("click", () => {
-    const sess = loadSession();
-    const users = loadUsers();
-    const u = users[sess.username];
-    u.googleConnected = true;
-    u.googleEmail = "demo.user@gmail.com";
-    saveUsers(users);
-    render();
+  // Connect buttons (stubbed - integrate with OAuth later)
+  btnGoogle.addEventListener("click", async () => {
+    // TODO: Integrate with Google OAuth - redirect to /auth/google
+    try {
+      const googleEmail = "demo@gmail.com"; // Placeholder - replace with actual Google email after OAuth flow
+      const userID = currentUser.username
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/google?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ googleEmail })
+      });
+
+      if (res.ok) {
+        authMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        authMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
+    }
+    console.log("Google connection - implement OAuth redirect");
   });
 
-  btnSpotify.addEventListener("click", () => {
-    const sess = loadSession();
-    const users = loadUsers();
-    const u = users[sess.username];
-    u.spotifyConnected = true;
-    u.spotifyName = "@spotify_demo_user";
-    saveUsers(users);
-    render();
+  btnSpotify.addEventListener("click", async () => {
+    // TODO: Integrate with Spotify OAuth - redirect to /auth/spotify
+    try {
+      const spotifyName = "@spotify_user"; // Placeholder - replace with actual Spotify username after OAuth flow
+      const userID = currentUser.username
+
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spotifyName })
+      });
+
+      if (res.ok) {
+        authMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        authMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
+    }
+    console.log("Spotify connection - implement OAuth redirect");
   });
 
   // Continue to prefs
   btnToPrefs.addEventListener("click", () => {
-    const user = currentUserRecord();
     setView("prefs");
     prefsMsg.textContent = "";
 
-    // Prefill if saved
-    if (user && user.preferences) {
-      prefsForm.wakeStart.value = user.preferences.wakeStart;
-      prefsForm.wakeEnd.value = user.preferences.wakeEnd;
-      prefsForm.temp.value = user.preferences.temp;
-      prefsForm.explicit.value = user.preferences.explicit;
-      prefsForm.ramp.checked = !!user.preferences.ramp;
+    if (currentUser && currentUser.preferences) {
+      prefsForm.wakeStart.value = currentUser.preferences.wakeStart;
+      prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd;
+      prefsForm.temp.value = currentUser.preferences.temp;
+      prefsForm.explicit.value = currentUser.preferences.explicit;
+      prefsForm.ramp.checked = !!currentUser.preferences.ramp;
     }
   });
 
   // Save prefs
-  prefsForm.addEventListener("submit", (e) => {
+  prefsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const sess = loadSession();
-    const users = loadUsers();
-    const u = users[sess.username];
 
-    u.preferences = {
-      wakeStart: prefsForm.wakeStart.value,
-      wakeEnd: prefsForm.wakeEnd.value,
-      temp: prefsForm.temp.value,
-      explicit: prefsForm.explicit.value,
-      ramp: prefsForm.ramp.checked
-    };
-    saveUsers(users);
-    prefsMsg.textContent = "Saved ✓ (localStorage demo)";
-    render();
+    try {
+      const prefs = {
+        wakeStart: prefsForm.wakeStart.value,
+        wakeEnd: prefsForm.wakeEnd.value,
+        temp: prefsForm.temp.value,
+        explicit: prefsForm.explicit.value,
+        ramp: prefsForm.ramp.checked
+      };
+      const userID = currentUser.username
+
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/preferences?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prefs)
+      });
+
+      if (res.ok) {
+        prefsMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        prefsMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      prefsMsg.textContent = "Error: " + e.message;
+    }
   });
 
   btnBackToSetup.addEventListener("click", () => {
@@ -563,11 +636,9 @@
   });
 
   btnResetAll.addEventListener("click", () => {
-    localStorage.removeItem(LS_USERS);
     localStorage.removeItem(LS_SESSION);
     setView("auth");
     setTab("login");
-    render();
   });
 
   // Init
