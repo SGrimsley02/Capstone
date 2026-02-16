@@ -1,0 +1,660 @@
+<!--
+  Name: index.html
+  Description: Main HTML entry point for the Remix website.
+               This file serves as the root document that initializes and 
+               renders the user interface for the Remix website.
+  
+  Authors: Ella Nguyen, Lauren D'Souza
+  
+  Created: February 12, 2026
+  Updated: February 15, 2026
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>REMix – Website Skeleton</title>
+  <style>
+    :root { --bg:#0b1020; --card:#121a33; --text:#e8ecff; --muted:#aab3d6; --accent:#7c5cff; --border:#23305a; }
+    * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { margin: 0; background: radial-gradient(1200px 600px at 20% 10%, #18224a, var(--bg)); color: var(--text); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 40px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px; }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), #37d3ff); }
+    h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
+    .pill { font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; }
+
+    .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1.25fr 0.75fr; } }
+
+    .card { background: color-mix(in oklab, var(--card) 92%, black); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .card h2 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0 0 12px; color: var(--muted); line-height: 1.4; font-size: 13.5px; }
+
+    .tabs { display:flex; gap:10px; margin: 10px 0 14px; }
+    .tab { padding: 8px 10px; border-radius: 999px; border:1px solid var(--border); background:#0e1530; color:var(--muted); font-size:12.5px; cursor:pointer; }
+    .tab.active { color: var(--text); border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); }
+
+    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #0e1530;
+      color: var(--text);
+      outline: none;
+    }
+    input:focus, select:focus { border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); box-shadow: 0 0 0 3px rgba(124,92,255,.18); }
+
+    .row { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
+
+    .btns { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; }
+    button {
+      cursor:pointer;
+      border: 1px solid var(--border);
+      background: #0e1530;
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    button.primary { background: var(--accent); border-color: color-mix(in oklab, var(--accent) 70%, white); }
+    button.ghost { background: transparent; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .status {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 10px 12px; border-radius: 14px;
+      background: #0e1530; border: 1px dashed var(--border);
+      margin-top: 10px;
+    }
+    .ok { color: #9af2c7; font-weight: 800; }
+    .warn { color: #ffd37a; font-weight: 800; }
+    .mini { font-size: 12px; color: var(--muted); }
+    .divider { height:1px; background: var(--border); margin: 14px 0; opacity: .8; }
+    .hide { display:none !important; }
+    .toast { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+    .kbd { border:1px solid var(--border); padding:2px 6px; border-radius:8px; font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>REMix • Onboarding Skeleton</h1>
+          <div class="mini">Local auth + Google + Spotify (UI-only demo)</div>
+        </div>
+      </div>
+      <div class="pill" id="pillState">Signed out</div>
+    </header>
+
+    <div class="grid">
+      <!-- MAIN -->
+      <section class="card">
+        <!-- AUTH VIEW -->
+        <div id="viewAuth">
+          <h2>Sign in</h2>
+          <p>Create an account for REMix, then connect your services. (Skeleton only: stored in localStorage.)</p>
+
+          <div class="tabs" role="tablist">
+            <button class="tab active" id="tabLogin" type="button">Log in</button>
+            <button class="tab" id="tabSignup" type="button">Sign up</button>
+          </div>
+
+          <form id="formLogin">
+            <div class="row">
+              <div>
+                <label for="loginUser">Username</label>
+                <input id="loginUser" name="loginUser" autocomplete="username" required />
+              </div>
+              <div>
+                <label for="loginPass">Password</label>
+                <input id="loginPass" name="loginPass" type="password" autocomplete="current-password" required />
+              </div>
+            </div>
+            <div class="btns">
+              <button class="primary" type="submit">Log in</button>
+              <button class="ghost" type="button" id="btnDemoLogin">Demo login</button>
+            </div>
+            <div class="toast" id="authMsg"></div>
+          </form>
+
+          <form id="formSignup" class="hide">
+            <div class="row">
+              <div>
+                <label for="signupUser">Username</label>
+                <input id="signupUser" name="signupUser" autocomplete="username" required />
+              </div>
+              <div>
+                <label for="signupPass">Password</label>
+                <input id="signupPass" name="signupPass" type="password" autocomplete="new-password" required />
+              </div>
+            </div>
+            <div class="btns">
+              <button class="primary" type="submit">Create account</button>
+              <button class="ghost" type="button" id="btnDemoSignup">Demo signup</button>
+            </div>
+            <div class="toast" id="signupMsg"></div>
+          </form>
+        </div>
+
+        <!-- SETUP VIEW -->
+        <div id="viewSetup" class="hide">
+          <h2>Connect your services</h2>
+          <p>Connect Google Calendar and Spotify, then set your wake/music preferences.</p>
+
+          <div class="status">
+            <div>
+              <div class="mini">Google Account</div>
+              <div id="googleStatus" class="warn">Not connected</div>
+            </div>
+            <button id="btnGoogle" class="primary" type="button">Connect Google</button>
+          </div>
+
+          <div class="status">
+            <div>
+              <div class="mini">Spotify Account</div>
+              <div id="spotifyStatus" class="warn">Not connected</div>
+            </div>
+            <button id="btnSpotify" class="primary" type="button">Connect Spotify</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="btns">
+            <button id="btnToPrefs" type="button" disabled>Continue to preferences</button>
+            <button id="btnLogout" type="button" class="ghost">Log out</button>
+            <button id="btnResetAll" type="button" class="ghost">Reset demo data</button>
+          </div>
+
+          <div class="toast">
+            Later: <span class="kbd">Connect Google</span> → <span class="kbd">/auth/google</span>,
+            <span class="kbd">Connect Spotify</span> → <span class="kbd">/auth/spotify</span>.
+          </div>
+        </div>
+
+        <!-- PREFS VIEW -->
+        <div id="viewPrefs" class="hide">
+          <h2>Wake & music preferences</h2>
+          <p>TEMPORARY PREFERENCES TO SWITCH LATER, These persist for the logged-in user (localStorage demo)</p>
+
+          <form id="prefsForm">
+            <div class="row">
+              <div>
+                <label for="wakeStart">Earliest wake time</label>
+                <input type="time" id="wakeStart" name="wakeStart" value="07:00" required />
+              </div>
+              <div>
+                <label for="wakeEnd">Latest wake time</label>
+                <input type="time" id="wakeEnd" name="wakeEnd" value="07:30" required />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label for="temp">Temporary Pref</label>
+                <select id="temp" name="temp" required>
+                  <option value="temp1">Temporary1</option>
+                  <option value="temp2">Temporary2</option>
+                  <option value="temp3">Temporary3</option>
+                  <option value="temp4">Temporary4</option>
+                  <option value="temp5">Temporary5</option>
+                </select>
+              </div>
+              <div>
+                <label for="explicit">Explicit content</label>
+                <select id="explicit" name="explicit" required>
+                  <option value="filter">Filter explicit</option>
+                  <option value="allow">Allow explicit</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="ramp" name="ramp" />
+                <span>Start quiet then ramp volume up</span>
+              </label>
+              <div class="mini">Optional.</div>
+            </div>
+
+            <div class="btns">
+              <button type="submit" class="primary">Save preferences</button>
+              <button type="button" id="btnBackToSetup" class="ghost">Back</button>
+            </div>
+
+            <div class="toast" id="prefsMsg"></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card">
+        <h2>Current state</h2>
+        <p>This is for demos/testing.</p>
+
+        <div class="status">
+          <div>
+            <div class="mini">Signed in as</div>
+            <div id="dbgUser" class="warn">—</div>
+          </div>
+          <div class="mini" id="dbgAuth">Signed out</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Google</div>
+            <div id="dbgGoogle" class="warn">Not connected</div>
+          </div>
+          <div class="mini" id="dbgGoogleAcct">—</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Spotify</div>
+            <div id="dbgSpotify" class="warn">Not connected</div>
+          </div>
+          <div class="mini" id="dbgSpotifyAcct">—</div>
+        </div>
+
+        <div class="status" style="margin-top:10px;">
+          <div>
+            <div class="mini">Preferences</div>
+            <div id="dbgPrefs" class="warn">Not set</div>
+          </div>
+          <div class="mini" id="dbgPrefsSummary">—</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="mini">
+          Skeleton notes:
+          <ul>
+            <li>This is UI-only (localStorage).</li>
+            <li>Real OAuth will be backend routes + redirect URIs.</li>
+            <li>Real passwords must be hashed + never stored client-side.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  // --- Backend API integration ---
+  const LS_SESSION = "remix_session_v1";
+
+  const el = (id) => document.getElementById(id);
+
+  const viewAuth = el("viewAuth");
+  const viewSetup = el("viewSetup");
+  const viewPrefs = el("viewPrefs");
+
+  const pillState = el("pillState");
+
+  const tabLogin = el("tabLogin");
+  const tabSignup = el("tabSignup");
+  const formLogin = el("formLogin");
+  const formSignup = el("formSignup");
+
+  const authMsg = el("authMsg");
+  const signupMsg = el("signupMsg");
+
+  const btnDemoLogin = el("btnDemoLogin");
+  const btnDemoSignup = el("btnDemoSignup");
+
+  const googleStatus = el("googleStatus");
+  const spotifyStatus = el("spotifyStatus");
+  const btnGoogle = el("btnGoogle");
+  const btnSpotify = el("btnSpotify");
+  const btnToPrefs = el("btnToPrefs");
+  const btnLogout = el("btnLogout");
+  const btnResetAll = el("btnResetAll");
+
+  const prefsForm = el("prefsForm");
+  const prefsMsg = el("prefsMsg");
+  const btnBackToSetup = el("btnBackToSetup");
+
+  const dbgUser = el("dbgUser");
+  const dbgAuth = el("dbgAuth");
+  const dbgGoogle = el("dbgGoogle");
+  const dbgGoogleAcct = el("dbgGoogleAcct");
+  const dbgSpotify = el("dbgSpotify");
+  const dbgSpotifyAcct = el("dbgSpotifyAcct");
+  const dbgPrefs = el("dbgPrefs");
+  const dbgPrefsSummary = el("dbgPrefsSummary");
+
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(LS_SESSION)) || {}; } catch { return {}; }
+  }
+  function saveSession(sess) {
+    localStorage.setItem(LS_SESSION, JSON.stringify(sess));
+  }
+
+  function setView(which) {
+    viewAuth.classList.toggle("hide", which !== "auth");
+    viewSetup.classList.toggle("hide", which !== "setup");
+    viewPrefs.classList.toggle("hide", which !== "prefs");
+  }
+
+  function setTab(which) {
+    const login = which === "login";
+    tabLogin.classList.toggle("active", login);
+    tabSignup.classList.toggle("active", !login);
+    formLogin.classList.toggle("hide", !login);
+    formSignup.classList.toggle("hide", login);
+    authMsg.textContent = "";
+    signupMsg.textContent = "";
+  }
+
+  async function getCurrentUser() {
+    const sess = loadSession();
+    if (!sess.username) return null;
+    try {
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/user?username=${sess.username}`);
+      if (res.ok) return res.json();
+    } catch (e) {
+      console.error("Error fetching user data:", e);
+    }
+  }
+
+  async function render() {
+    currentUser = await getCurrentUser(); 
+    const signedIn = !!loadSession().username;
+
+    pillState.textContent = signedIn ? `Signed in: ${loadSession().username}` : "Signed out";
+
+    if (!signedIn) {
+      setView("auth");
+      dbgUser.textContent = "—";
+      dbgUser.className = "warn";
+      dbgAuth.textContent = "Signed out";
+      dbgGoogle.textContent = "Not connected";
+      dbgSpotify.textContent = "Not connected";
+      dbgPrefs.textContent = "Not set";
+      dbgGoogleAcct.textContent = "—";
+      dbgSpotifyAcct.textContent = "—";
+      dbgPrefsSummary.textContent = "—";
+      return;
+    }
+
+    // setup status (placeholder for OAuth integration)
+    const gOK = currentUser.googleEmail != null;
+    const sOK = currentUser.spotifyName != null;
+
+    googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
+    googleStatus.className = gOK ? "ok" : "warn";
+    spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
+    spotifyStatus.className = sOK ? "ok" : "warn";
+
+    btnToPrefs.disabled = !(gOK && sOK);
+
+    // sidebar
+    dbgUser.textContent = currentUser.username;
+    dbgUser.className = "ok";
+    dbgAuth.textContent = "Signed in";
+
+    dbgGoogle.textContent = gOK ? "Connected ✅" : "Not connected";
+    dbgGoogle.className = gOK ? "ok" : "warn";
+    dbgGoogleAcct.textContent = gOK ? (currentUser.googleEmail || "google_user@gmail.com") : "—";
+
+    dbgSpotify.textContent = sOK ? "Connected ✅" : "Not connected";
+    dbgSpotify.className = sOK ? "ok" : "warn";
+    dbgSpotifyAcct.textContent = sOK ? (currentUser.spotifyName || "@spotify_user") : "—";
+
+    const pOK = !!currentUser.preferences.wakeEnd;
+    dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
+    dbgPrefs.className = pOK ? "ok" : "warn";
+    dbgPrefsSummary.textContent = pOK
+      ? `${currentUser.preferences.wakeStart}–${currentUser.preferences.wakeEnd} • ${currentUser.preferences.temp}`
+      : "—";
+
+    if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
+    setView("setup");
+  }
+
+  // Tabs
+  tabLogin.addEventListener("click", () => setTab("login"));
+  tabSignup.addEventListener("click", () => setTab("signup"));
+
+  // Signup
+  formSignup.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const u = formSignup.signupUser.value.trim();
+    const p = formSignup.signupPass.value;
+
+    if (!u || !p) return;
+
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        signupMsg.textContent = "Account created ✓";
+        setTab("login");
+        formSignup.reset();
+      } else {
+        signupMsg.textContent = data.message || "Registration failed";
+      }
+    } catch (e) {
+      signupMsg.textContent = "Error: " + e.message;
+    }
+  });
+
+  // Login
+  formLogin.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const u = formLogin.loginUser.value.trim();
+    const p = formLogin.loginPass.value;
+
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        authMsg.textContent = "Logged in ✓";
+        formLogin.reset();
+        saveSession({ username: u });
+        await render();
+        setView("setup");
+      } else {
+        authMsg.textContent = data.message || "Login failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
+    }
+  });
+
+  // Demo buttons (create demo users in DynamoDB)
+  btnDemoLogin.addEventListener("click", async () => {
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: "demo", password: "demo123" })
+      });
+      
+      if (!res.ok) {
+        // Create demo user if doesn't exist
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+        
+        // Now login
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+      }
+      saveSession({ username: "demo" });
+      await render();
+      setView("setup");
+    } catch (e) {
+      console.error("Demo login error:", e);
+    }
+  });
+
+  btnDemoSignup.addEventListener("click", async () => {
+    try {
+      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: "demo", password: "demo123" })
+      });
+      
+      if (res.ok) {
+        // Login with demo account
+        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "demo", password: "demo123" })
+        });
+      }
+      
+      saveSession({ username: "demo" });
+      await render();
+      setView("setup");
+    } catch (e) {
+      console.error("Demo signup error:", e);
+    }
+  });
+
+  // Connect buttons (stubbed - integrate with OAuth later)
+  btnGoogle.addEventListener("click", async () => {
+    // TODO: Integrate with Google OAuth - redirect to /auth/google
+    try {
+      const googleEmail = "demo@gmail.com"; // Placeholder - replace with actual Google email after OAuth flow
+      const userID = currentUser.username
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/google?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ googleEmail })
+      });
+
+      if (res.ok) {
+        authMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        authMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
+    }
+    console.log("Google connection - implement OAuth redirect");
+  });
+
+  btnSpotify.addEventListener("click", async () => {
+    // TODO: Integrate with Spotify OAuth - redirect to /auth/spotify
+    try {
+      const spotifyName = "@spotify_user"; // Placeholder - replace with actual Spotify username after OAuth flow
+      const userID = currentUser.username
+
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ spotifyName })
+      });
+
+      if (res.ok) {
+        authMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        authMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      authMsg.textContent = "Error: " + e.message;
+    }
+    console.log("Spotify connection - implement OAuth redirect");
+  });
+
+  // Continue to prefs
+  btnToPrefs.addEventListener("click", () => {
+    setView("prefs");
+    prefsMsg.textContent = "";
+
+    if (currentUser && currentUser.preferences) {
+      prefsForm.wakeStart.value = currentUser.preferences.wakeStart;
+      prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd;
+      prefsForm.temp.value = currentUser.preferences.temp;
+      prefsForm.explicit.value = currentUser.preferences.explicit;
+      prefsForm.ramp.checked = !!currentUser.preferences.ramp;
+    }
+  });
+
+  // Save prefs
+  prefsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+      const prefs = {
+        wakeStart: prefsForm.wakeStart.value,
+        wakeEnd: prefsForm.wakeEnd.value,
+        temp: prefsForm.temp.value,
+        explicit: prefsForm.explicit.value,
+        ramp: prefsForm.ramp.checked
+      };
+      const userID = currentUser.username
+
+      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/preferences?username=${userID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prefs)
+      });
+
+      if (res.ok) {
+        prefsMsg.textContent = "Saved ✓";
+        await render();
+      } else {
+        const data = await res.json();
+        prefsMsg.textContent = data.message || "Save failed";
+      }
+    } catch (e) {
+      prefsMsg.textContent = "Error: " + e.message;
+    }
+  });
+
+  btnBackToSetup.addEventListener("click", () => {
+    setView("setup");
+    prefsMsg.textContent = "";
+    render();
+  });
+
+  // Logout + reset
+  btnLogout.addEventListener("click", () => {
+    localStorage.removeItem(LS_SESSION);
+    setView("auth");
+    render();
+  });
+
+  btnResetAll.addEventListener("click", () => {
+    localStorage.removeItem(LS_SESSION);
+    setView("auth");
+    setTab("login");
+  });
+
+  // Init
+  setTab("login");
+  render();
+</script>
+</body>
+</html>
