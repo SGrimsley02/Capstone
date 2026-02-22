@@ -16,4 +16,5 @@ Last Modified: February 14, 2026
     <string id="menu_label_1">Test local HTTP</string>
     <string id="menu_label_2">Test public HTTPS</string>
     <string id="menu_label_3">Test HTTPS POST</string>
+    <string id="menu_label_4">Test Alarm</string>    
 </strings>

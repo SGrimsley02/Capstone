@@ -39,6 +39,9 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         } else if (item == :item_3) {
             System.println("Running HTTPS POST test.");
             _httpClient.sendPostTestRequest();
+        } else if (item == :item_4){
+            System.println("Running alarm vibration/tone test.");
+            getApp().getWakeAlarmManager().triggerNowTest();
         }
     }
 }

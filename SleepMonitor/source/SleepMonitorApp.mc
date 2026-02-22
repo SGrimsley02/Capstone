@@ -17,23 +17,26 @@ import Toybox.Communications;
 
 class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
+    private var _wakeAlarmManager;
+
 
     function initialize() {
         AppBase.initialize();
+        _wakeAlarmManager = new WakeAlarmManager();
     }
 
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
     //DELETE THIS LATER (ONLY FOR TESTING)
         //Storage.deleteValue("hasOnboarded");
-        System.println("Storage cleared for test.");
+        //System.println("Storage cleared for test.");
     // One-time onboarding: prompt user to open a web page on their phone.
-    var didOnboard = SleepMonitorOnboarding.runIfFirstTime("https://www.google.com");
+        var didOnboard = SleepMonitorOnboarding.runIfFirstTime("https://www.google.com");
 
-    if (didOnboard) {
-        setHttpStatus("Open phone link to continue");
-        WatchUi.requestUpdate();
-    }
+        if (didOnboard) {
+            setHttpStatus("Open phone link to continue");
+            WatchUi.requestUpdate();
+        }
 }
 
     // onStop() is called when your application is exiting
@@ -54,6 +57,9 @@ class SleepMonitorApp extends Application.AppBase {
     function setHttpStatus(message as String) as Void {
         _httpStatus = message;
     }
+    function getWakeAlarmManager() {
+        return _wakeAlarmManager;
+    }  
 }
 
 // Convenience helper to access the App instance from other modules.
