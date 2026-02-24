@@ -288,6 +288,10 @@
 <script>
   // --- Backend API integration ---
   const LS_SESSION = "remix_session_v1";
+  let currentUser = null;
+
+  const API_BASE = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev";
+  const FRONTEND_BASE = `${window.location.origin}/remix-ui/`;
 
   const el = (id) => document.getElementById(id);
 
@@ -364,8 +368,8 @@
   }
 
   async function render() {
-    currentUser = await getCurrentUser(); 
-    const signedIn = !!loadSession().username;
+    const sess = loadSession();
+    const signedIn = !!sess.username;
 
     pillState.textContent = signedIn ? `Signed in: ${loadSession().username}` : "Signed out";
 
@@ -383,9 +387,17 @@
       return;
     }
 
+    currentUser = await getCurrentUser();
+    if (!currentUser) {
+    // We still have a session, but user fetch failed; keep setup view and show message
+    setView("setup");
+    authMsg.textContent = "Signed in, but couldn’t load profile from API. Refresh in a second.";
+    return;
+  }
+
     // setup status (placeholder for OAuth integration)
     const gOK = currentUser.googleEmail != null;
-    const sOK = currentUser.spotifyName != null;
+    const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
 
     googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
     googleStatus.className = gOK ? "ok" : "warn";
@@ -523,7 +535,7 @@
       if (res.ok) {
         // Login with demo account
         await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
-          method: 'PUT',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: "demo", password: "demo123" })
         });
@@ -562,30 +574,11 @@
     console.log("Google connection - implement OAuth redirect");
   });
 
-  btnSpotify.addEventListener("click", async () => {
-    // TODO: Integrate with Spotify OAuth - redirect to /auth/spotify
-    try {
-      const spotifyName = "@spotify_user"; // Placeholder - replace with actual Spotify username after OAuth flow
-      const userID = currentUser.username
-
-      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify?username=${userID}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ spotifyName })
-      });
-
-      if (res.ok) {
-        authMsg.textContent = "Saved ✓";
-        await render();
-      } else {
-        const data = await res.json();
-        authMsg.textContent = data.message || "Save failed";
-      }
-    } catch (e) {
-      authMsg.textContent = "Error: " + e.message;
-    }
-    console.log("Spotify connection - implement OAuth redirect");
-  });
+btnSpotify.addEventListener("click", () => {
+  const userID = currentUser.username;
+  window.location.href =
+    `${API_BASE}/auth/spotify/login?username=${encodeURIComponent(userID)}&returnTo=${encodeURIComponent(FRONTEND_BASE)}`;
+});
 
   // Continue to prefs
   btnToPrefs.addEventListener("click", () => {
@@ -653,6 +646,13 @@
   });
 
   // Init
+  // If user came back from Spotify OAuth, go straight to setup view
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("spotify") === "connected") {
+  // Clean the URL so refresh doesn’t keep the param forever
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
   setTab("login");
   render();
 </script>
