@@ -8,9 +8,7 @@ Created: February 7, 2026
 Last Modified: February 14, 2026
 
 Notes:
-- Menu item symbols (:item_1, :item_2, :item_3) are defined in resources/menus/menu.xml.
-- Some menu actions are intended for local testing and will be removed once a
-    backend endpoint and workflow are in place.
+- Menu item symbols are defined in resources/menus/menu.xml.
 */
 
 
@@ -39,9 +37,9 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         } else if (item == :item_3) {
             System.println("Running HTTPS POST test.");
             _httpClient.sendPostTestRequest();
-        } else if (item == :item_4){
-            System.println("Running alarm vibration/tone test.");
-            getApp().getWakeAlarmManager().triggerNowTest();
+        } else if (item == :item_8) {
+            System.println("Scheduling alarm for 5 seconds from now.");
+            getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
         }
     }
 }
