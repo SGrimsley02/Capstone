@@ -21,15 +21,20 @@ PLEASE READ:
   - Add batching/streaming logic (automatic background sends) instead of manual menu-triggered POST.
 */
 
+import Toybox.Application;
 import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.PersistedContent;
+import Toybox.SensorHistory;
 import Toybox.System;
+import Toybox.Time;
 import Toybox.WatchUi;
 
 // ngrok URL that forwards to your local Python server
 //TODO: replace with real backend HTTPS endpoint
-const BASE_URL = "https://unfemale-ingeborg-hyperscholastically.ngrok-free.dev/";
+const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
+const SLEEP_WINDOW_SECONDS = 12 * 60 * 60;
+const USER_ID_KEY = "user_id";
 
 class SleepMonitorHttpClient {
 
@@ -40,7 +45,7 @@ class SleepMonitorHttpClient {
     function sendLocalHttpRequest() as Void {
         // GET request to a local server (mainly useful in simulator/dev).
         // TODO: remove this path and its menu item.
-        var url = "http://127.0.0.1:3000/";
+        var url = "http://192.168.68.52:8000/";
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
@@ -67,42 +72,175 @@ class SleepMonitorHttpClient {
         makeRequest(url, null, options);
     }
 
-    function sendPostTestRequest() as Void {
-        // POST request that sends simulated sleep data to the backend.
-        // TODO: replace URL, remove ngrok header
-        var url = BASE_URL + "upload";
+    function sendSleepSummaryRequest() as Void {
+        // POST request that sends a nightly HR summary for the last sleep window.
+        var url = BASE_URL + "sleep-summary";
+
         var params = buildSleepPayload();
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
-            :context => "SLEEP_POST",
+            :context => "SLEEP_SUMMARY",
             :headers => {
-                // With a Dictionary params + POST, the SDK sends a form-urlencoded body.
-                // TODO: if backend expects JSON, change Content-Type and send JSON string instead.
                 "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED,
-                "Accept" => "text/plain",
-                //remove once backend is set up
-                "ngrok-skip-browser-warning" => "true"
+                "Accept" => "text/plain"
             }
         };
 
-        System.println("POST payload: " + params.toString());
+        if (params == null) {
+            // TODO replace with proper error handling once we have real sleep data
+            params = {
+                "eventType" => "sleep_summary",
+                "timestamp" => "",
+                "username" => "demo",
+                "sleepQuality" => 0
+            };
+            System.println("No heart rate history available for sleep window.");
+        }
+
+        System.println("POST sleep summary: " + params.toString());
         makeRequest(url, params, options);
     }
 
-    private function buildSleepPayload() as Dictionary {
+    private function buildSleepPayload() as Dictionary or Null {
         // Create simulated sleep payload values (placeholder for now)
+        var userId = getUserId();
+        if (userId == null) {
+            userId = "demo"; // TODO: Remove this fallback. Just use demo id for now since we don't get the userId.
+        }
+
         var now = System.getClockTime();
         var ts = now.hour.toString() + ":" + now.min.toString() + ":" + now.sec.toString();
 
-        return {
-            "eventType" => "sleep_sample",
+        // Build a nightly heart rate summary for the last sleep window.
+        var window = new Time.Duration(SLEEP_WINDOW_SECONDS);
+        var hrIterator = getHeartRateIterator(window);
+        if (hrIterator == null) {
+            return null;
+        }
+
+        var hrSummary = summarizeSensorHistory(hrIterator);
+        if (hrSummary == null) {
+            return null;
+        }
+
+        var bbIterator = getHeartRateIterator(window);
+        if (bbIterator == null) {
+            return null;
+        }
+
+        var bbSummary = summarizeSensorHistory(bbIterator);
+        if (bbSummary == null) {
+            return null;
+        }
+
+        var sleepQuality = estimateSleepQuality(hrSummary, bbSummary);
+
+        var payload = {
+            "eventType" => "sleep_summary",
             "timestamp" => ts,
-            "heartRate" => "68",
-            "sleepStage" => "light",
-            "movement" => "0.02"
+            "username" => userId,
+            "sleepQuality" => sleepQuality
         };
+
+        var stressIterator = getStressIterator(window);
+        if (stressIterator != null) {
+            var stressSummary = summarizeSensorHistory(stressIterator);
+            if (stressSummary != null) {
+                payload["stressAvg"] = stressSummary["avg"];
+                payload["stressSamples"] = stressSummary["count"];
+            }
+        }
+
+        return payload;
+    }
+
+    private function getHeartRateIterator(window as Time.Duration)
+        as SensorHistory.SensorHistoryIterator or Null {
+        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getHeartRateHistory)) {
+            return SensorHistory.getHeartRateHistory({
+                :period => window,
+                :order => SensorHistory.ORDER_OLDEST_FIRST
+            });
+        }
+
+        return null;
+    }
+
+    private function getStressIterator(window as Time.Duration)
+        as SensorHistory.SensorHistoryIterator or Null {
+        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getStressHistory)) {
+            return SensorHistory.getStressHistory({
+                :period => window,
+                :order => SensorHistory.ORDER_OLDEST_FIRST
+            });
+        }
+
+        return null;
+    }
+
+    private function getBodyBatteryIterator(window as Time.Duration)
+        as SensorHistory.SensorHistoryIterator or Null {
+        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getBodyBatteryHistory)) {
+            return SensorHistory.getBodyBatteryHistory({
+                :period => window,
+                :order => SensorHistory.ORDER_OLDEST_FIRST
+            });
+        }
+
+        return null;
+    }
+
+    private function summarizeSensorHistory(
+        iter as SensorHistory.SensorHistoryIterator
+    ) as Dictionary or Null {
+        var count = 0;
+        var sum = 0.0;
+        var minValue = 999999;
+        var maxValue = 0;
+
+        var sample = iter.next();
+        var lastSample = sample;
+        while (sample != null) {
+            var value = sample.data;
+            if (value != null) {
+                sum += value;
+                count += 1;
+                if (value < minValue) {
+                    minValue = value;
+                }
+                if (value > maxValue) {
+                    maxValue = value;
+                }
+            }
+            lastSample = sample;
+            sample = iter.next();
+        }
+
+        if (count == 0) {
+            return null;
+        }
+
+        var avg = sum / count;
+        return {
+            "avg" => avg,
+            "min" => minValue,
+            "max" => maxValue,
+            "count" => count,
+            "lastSample" => lastSample
+        };
+    }
+
+    private function estimateSleepQuality(
+        hrSummary as Dictionary,
+        bbSummary as Dictionary
+    ) as Number {
+        // Placeholder sleep quality estimation logic based on HR and Body Battery summaries.
+        // This should be improved in the future.
+        var bbRecovery = bbSummary["max"] - bbSummary["min"];
+        return bbRecovery*1.1;
+
     }
 
     private function makeRequest(
@@ -112,6 +250,7 @@ class SleepMonitorHttpClient {
     ) as Void {
         // shared wrapper around Communications.makeWebRequest() that adds error handling and UI status updates.
         try {
+            options[:contentType] = Communications.REQUEST_CONTENT_TYPE_JSON;
             setStatus("Sending " + options[:context].toString());
             System.println("Sending request: " + options[:context] + " -> " + url);
             System.println("About to call makeWebRequest");
@@ -150,5 +289,13 @@ class SleepMonitorHttpClient {
         //store status in-memory and request a UI redraw
         getApp().setHttpStatus(message);
         WatchUi.requestUpdate();
+    }
+
+    function setUserId(userId as String) as Void {
+        Application.Storage.setValue(USER_ID_KEY, userId);
+    }
+
+    private function getUserId() as String or Null {
+        return Application.Storage.getValue(USER_ID_KEY) as String;
     }
 }
