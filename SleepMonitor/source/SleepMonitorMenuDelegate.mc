@@ -35,7 +35,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             System.println("Running public HTTPS test.");
             _httpClient.sendPublicHttpsRequest();
         } else if (item == :item_3) {
-            System.println("Sending sleep HR summary.");
+            System.println("Sending sleep summary.");
             _httpClient.sendSleepSummaryRequest();
         } else if (item == :item_8) {
             System.println("Scheduling alarm for 5 seconds from now.");

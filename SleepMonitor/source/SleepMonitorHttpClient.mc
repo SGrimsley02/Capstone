@@ -3,21 +3,16 @@ Name: source/SleepMonitorHttpClient.mc
 Description: Networking client for the SleepMonitor Connect IQ watch app.
              Wraps Communications.makeWebRequest() for DEV test calls (GET local, GET public HTTPS,
              POST simulated sleep payload) and updates the UI with status messages.
-Authors: Audrey Pan
+Authors: Audrey Pan, Lauren D'Souza
 Created: February 14, 2026
-Last Modified: February 14, 2026
+Last Modified: March 1st, 2026
 
 PLEASE READ:
 - CURRENTLY CODE:
-  - Uses a temporary ngrok HTTPS base URL to reach a local Python server.
-  - Adds header: "ngrok-skip-browser-warning" => "true" (required for ngrok convenience behavior).
   - Provides local HTTP + public HTTPS + POST test paths triggered manually from menu items.
   - Sends simulated/hardcoded sleep data.
 - LATER IMPLEMENT:
-  - Replace ngrok base URL with a real backend HTTPS endpoint.
-  - Remove ngrok-specific header.
   - Remove local HTTP test flows and menu items.
-  - Potentially switch POST body from form-urlencoded to JSON.
   - Add batching/streaming logic (automatic background sends) instead of manual menu-triggered POST.
 */
 
@@ -73,10 +68,15 @@ class SleepMonitorHttpClient {
     }
 
     function sendSleepSummaryRequest() as Void {
-        // POST request that sends a nightly HR summary for the last sleep window.
+        // POST request that sends a nightly summary for the last sleep window.
         var url = BASE_URL + "sleep-summary";
 
-        var params = buildSleepPayload();
+        var userId = getUserId();
+        if (userId == null) {
+            userId = "demo"; // TODO: Replace with proper error handling. Just use demo id for now since we don't get the userId.
+        }
+
+        var params = SleepAnalyzer.buildSleepPayload(userId);
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
@@ -96,151 +96,11 @@ class SleepMonitorHttpClient {
                 "username" => "demo",
                 "sleepQuality" => 0
             };
-            System.println("No heart rate history available for sleep window.");
+            System.println("No applicable sensor history could be extracted for sleep window.");
         }
 
         System.println("POST sleep summary: " + params.toString());
         makeRequest(url, params, options);
-    }
-
-    private function buildSleepPayload() as Dictionary or Null {
-        // Create simulated sleep payload values (placeholder for now)
-        var userId = getUserId();
-        if (userId == null) {
-            userId = "demo"; // TODO: Remove this fallback. Just use demo id for now since we don't get the userId.
-        }
-
-        var now = System.getClockTime();
-        var ts = now.hour.toString() + ":" + now.min.toString() + ":" + now.sec.toString();
-
-        // Build a nightly heart rate summary for the last sleep window.
-        var window = new Time.Duration(SLEEP_WINDOW_SECONDS);
-        var hrIterator = getHeartRateIterator(window);
-        if (hrIterator == null) {
-            return null;
-        }
-
-        var hrSummary = summarizeSensorHistory(hrIterator);
-        if (hrSummary == null) {
-            return null;
-        }
-
-        var bbIterator = getHeartRateIterator(window);
-        if (bbIterator == null) {
-            return null;
-        }
-
-        var bbSummary = summarizeSensorHistory(bbIterator);
-        if (bbSummary == null) {
-            return null;
-        }
-
-        var sleepQuality = estimateSleepQuality(hrSummary, bbSummary);
-
-        var payload = {
-            "eventType" => "sleep_summary",
-            "timestamp" => ts,
-            "username" => userId,
-            "sleepQuality" => sleepQuality
-        };
-
-        var stressIterator = getStressIterator(window);
-        if (stressIterator != null) {
-            var stressSummary = summarizeSensorHistory(stressIterator);
-            if (stressSummary != null) {
-                payload["stressAvg"] = stressSummary["avg"];
-                payload["stressSamples"] = stressSummary["count"];
-            }
-        }
-
-        return payload;
-    }
-
-    private function getHeartRateIterator(window as Time.Duration)
-        as SensorHistory.SensorHistoryIterator or Null {
-        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getHeartRateHistory)) {
-            return SensorHistory.getHeartRateHistory({
-                :period => window,
-                :order => SensorHistory.ORDER_OLDEST_FIRST
-            });
-        }
-
-        return null;
-    }
-
-    private function getStressIterator(window as Time.Duration)
-        as SensorHistory.SensorHistoryIterator or Null {
-        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getStressHistory)) {
-            return SensorHistory.getStressHistory({
-                :period => window,
-                :order => SensorHistory.ORDER_OLDEST_FIRST
-            });
-        }
-
-        return null;
-    }
-
-    private function getBodyBatteryIterator(window as Time.Duration)
-        as SensorHistory.SensorHistoryIterator or Null {
-        if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getBodyBatteryHistory)) {
-            return SensorHistory.getBodyBatteryHistory({
-                :period => window,
-                :order => SensorHistory.ORDER_OLDEST_FIRST
-            });
-        }
-
-        return null;
-    }
-
-    private function summarizeSensorHistory(
-        iter as SensorHistory.SensorHistoryIterator
-    ) as Dictionary or Null {
-        var count = 0;
-        var sum = 0.0;
-        var minValue = 999999;
-        var maxValue = 0;
-
-        var sample = iter.next();
-        var lastSample = sample;
-        while (sample != null) {
-            var value = sample.data;
-            if (value != null) {
-                sum += value;
-                count += 1;
-                if (value < minValue) {
-                    minValue = value;
-                }
-                if (value > maxValue) {
-                    maxValue = value;
-                }
-            }
-            lastSample = sample;
-            sample = iter.next();
-        }
-
-        if (count == 0) {
-            return null;
-        }
-
-        var avg = sum / count;
-        return {
-            "avg" => avg,
-            "min" => minValue,
-            "max" => maxValue,
-            "count" => count,
-            "lastSample" => lastSample
-        };
-    }
-
-    private function estimateSleepQuality(
-        hrSummary as Dictionary,
-        bbSummary as Dictionary
-    ) as Number {
-        // Placeholder sleep quality estimation logic based on HR and Body Battery summaries.
-        // This should be improved in the future.
-        var bbRecovery = bbSummary["max"] - bbSummary["min"];
-        return bbRecovery*1.1;
-
     }
 
     private function makeRequest(

@@ -15,6 +15,6 @@ Last Modified: February 14, 2026
 
     <string id="menu_label_1">Test local HTTP</string>
     <string id="menu_label_2">Test public HTTPS</string>
-    <string id="menu_label_3">Send sleep HR summary</string>
+    <string id="menu_label_3">Send sleep summary</string>
     <string id="menu_label_8">Alarm at (now + 5 sec)</string>
 </strings>
