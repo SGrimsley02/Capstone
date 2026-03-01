@@ -1,13 +1,13 @@
 <!--
   Name: index.html
   Description: Main HTML entry point for the Remix website.
-               This file serves as the root document that initializes and 
+               This file serves as the root document that initializes and
                renders the user interface for the Remix website.
-  
-  Authors: Ella Nguyen, Lauren D'Souza
-  
+
+  Authors: Ella Nguyen, Lauren D'Souza, Kiara Grimsley
+
   Created: February 12, 2026
-  Updated: February 28, 2026
+  Updated: March 1, 2026
 -->
 <!doctype html>
 <html lang="en">
@@ -396,7 +396,7 @@
   }
 
     // setup status (placeholder for OAuth integration)
-    const gOK = currentUser.googleEmail != null;
+    const gOK = (currentUser.googleConnected  === true) || (currentUser.googleEmail != null);
     const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
 
     googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
@@ -448,9 +448,9 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: u, password: p })
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         signupMsg.textContent = "Account created ✓";
         setTab("login");
@@ -475,9 +475,9 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: u, password: p })
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         authMsg.textContent = "Logged in ✓";
         formLogin.reset();
@@ -500,7 +500,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: "demo", password: "demo123" })
       });
-      
+
       if (!res.ok) {
         // Create demo user if doesn't exist
         await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
@@ -508,7 +508,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: "demo", password: "demo123" })
         });
-        
+
         // Now login
         await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
           method: 'POST',
@@ -531,7 +531,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: "demo", password: "demo123" })
       });
-      
+
       if (res.ok) {
         // Login with demo account
         await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
@@ -540,7 +540,7 @@
           body: JSON.stringify({ username: "demo", password: "demo123" })
         });
       }
-      
+
       saveSession({ username: "demo" });
       await render();
       setView("setup");
@@ -549,29 +549,10 @@
     }
   });
 
-  // Connect buttons (stubbed - integrate with OAuth later)
-  btnGoogle.addEventListener("click", async () => {
-    // TODO: Integrate with Google OAuth - redirect to /auth/google
-    try {
-      const googleEmail = "demo@gmail.com"; // Placeholder - replace with actual Google email after OAuth flow
-      const userID = currentUser.username
-      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/google?username=${userID}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ googleEmail })
-      });
-
-      if (res.ok) {
-        authMsg.textContent = "Saved ✓";
-        await render();
-      } else {
-        const data = await res.json();
-        authMsg.textContent = data.message || "Save failed";
-      }
-    } catch (e) {
-      authMsg.textContent = "Error: " + e.message;
-    }
-    console.log("Google connection - implement OAuth redirect");
+  btnGoogle.addEventListener("click", () => {
+    const userID = currentUser.username;
+    window.location.href =
+      `${API_BASE}/auth/google/login?username=${encodeURIComponent(userID)}&returnTo=${encodeURIComponent(FRONTEND_BASE)}`;
   });
 
 btnSpotify.addEventListener("click", () => {
@@ -646,9 +627,9 @@ btnSpotify.addEventListener("click", () => {
   });
 
   // Init
-  // If user came back from Spotify OAuth, go straight to setup view
+  // If user came back from Spotify or Google OAuth, go straight to setup view
   const params = new URLSearchParams(window.location.search);
-  if (params.get("spotify") === "connected") {
+  if (params.get("spotify") === "connected" || params.get("google") === "connected") {
   // Clean the URL so refresh doesn’t keep the param forever
   window.history.replaceState({}, document.title, window.location.pathname);
 }
