@@ -26,6 +26,10 @@ class WakeAlarmManager {
     // Tracks whether the alarm UI is already on-screen
     var _alarmShowing = false;
 
+    // Reuse the same alarm UI instance so it is unified across pushes
+    var _alarmView = null;
+    var _alarmDelegate = null;
+
     function initialize() { }
 
     // Schedules an alarm for an absolute epoch (seconds since epoch).
@@ -87,15 +91,21 @@ class WakeAlarmManager {
             System.println("WakeAlarmManager: alarm UI already showing");
             return;
         }
-
         _alarmShowing = true;
 
         // IMPORTANT: Use the SAME view instance so delegate updates affect it
-        var v = new AlarmView();
-        var d = new AlarmDelegate(v, self);
+        if (_alarmView == null) {
+            _alarmView = new AlarmView();
+
+            // Attach manager so AlarmView can clear _alarmShowing when user exits the screen
+            if (_alarmView has :setManager) { _alarmView.setManager(self); }
+
+            _alarmDelegate = new AlarmDelegate(_alarmView, self);
+        }
 
         System.println("WakeAlarmManager: pushing AlarmView");
-        WatchUi.pushView(v, d, WatchUi.SLIDE_UP);
+        WatchUi.pushView(_alarmView, _alarmDelegate, WatchUi.SLIDE_UP);
+
     }
 
     // Called by AlarmDelegate when user dismisses/snoozes (or when alarm view exits)

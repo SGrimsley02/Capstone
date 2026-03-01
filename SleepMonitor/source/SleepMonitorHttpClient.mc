@@ -25,7 +25,7 @@ import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.PersistedContent;
 import Toybox.System;
-using Toybox.WatchUI;
+import Toybox.WatchUi;
 
 // ngrok URL that forwards to your local Python server
 //TODO: replace with real backend HTTPS endpoint

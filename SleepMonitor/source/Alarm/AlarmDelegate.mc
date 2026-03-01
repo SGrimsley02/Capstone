@@ -18,17 +18,10 @@ import Toybox.Lang;
 
 class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
-    // Reference to UI view for updating text/state
-    var _view;
-
-    // Reference to alarm manager controlling ringing + scheduling
-    var _manager;
-
-    // Timer used for snooze countdown
-    var _snoozeTimer;
-
-    // Remaining snooze time (seconds) — default 10 minutes
-    var _secondsLeft = 600; 
+    var _view; // Reference to UI view for updating text/state
+    var _manager; // Reference to alarm manager controlling ringing + scheduling
+    var _snoozeTimer; // Timer used for snooze countdown
+    var _secondsLeft = 600; // Remaining snooze time (seconds) — default 10 minutes
 
     function initialize(view, manager) {
         WatchUi.BehaviorDelegate.initialize();
@@ -41,37 +34,43 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
     // Handles all hardware button input while alarm screen is active
     function onKey(evt) {
         var key = evt.getKey();
-        
-        // Safety check: prevent actions if alarm already handled
-        var isDismissed = false;
-        if (_view != null && _view has :_isDismissed) {
-            isDismissed = _view._isDismissed;
+        var isDismissed = _view.isDismissed();
+        // If alarm is already dismissed, allow native navigation behavior.
+        // Do not consume hardware buttons so user can exit screen or access menu.
+        if (isDismissed) {
+            if (key == WatchUi.KEY_UP) {
+                _playPodcast();
+                return true;
+            }
+
+            if (key == WatchUi.KEY_DOWN) {
+                _playMusic();
+                return true;
+            }
+             return false;
         }
 
-        // ENTER → Snooze alarm
-        if (key == WatchUi.KEY_ENTER) {
-            if (!isDismissed) { _snoozeAlarm(); }
-            return true;
-        }
+        switch (key) {
+            case WatchUi.KEY_ENTER:
+                if (!isDismissed) {
+                    _snoozeAlarm();
+                }
+                return true;
 
-        // ESC → Fully dismiss alarm
-        if (key == WatchUi.KEY_ESC) {
-            if (!isDismissed) { _dismissAlarm(); }
-            return true;
-        }
+            case WatchUi.KEY_ESC:
+                if (!isDismissed) {
+                    _dismissAlarm();
+                }
+                return true;
 
-        // UP → Switch to podcast playback
-        if (key == WatchUi.KEY_UP) { 
-            _playPodcast(); 
-            return true; 
-        }
+            case WatchUi.KEY_UP:
+                _playPodcast();
+                return true;
 
-        // DOWN → Switch to music playback
-        if (key == WatchUi.KEY_DOWN) { 
-            _playMusic(); 
-            return true; 
+            case WatchUi.KEY_DOWN:
+                _playMusic();
+                return true;
         }
-
         return false;
     }
 
@@ -93,7 +92,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         _stopAllAlarmActions();
 
         // Reset snooze duration
-        _secondsLeft = 600; 
+        _secondsLeft = 600;
         
         // Update UI state
         if (_view has :setDismissed) { _view.setDismissed(true); }
@@ -112,7 +111,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_view has :setStatusText) { _view.setStatusText("ALARM OFF"); }
     }
 
-    // Stops alarm and transitions to music mode
+
     function _playMusic() as Void {
         _stopAllAlarmActions();
 
