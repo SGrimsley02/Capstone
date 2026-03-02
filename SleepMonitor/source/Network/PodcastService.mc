@@ -1,5 +1,5 @@
 /*
-Name: source/Network/PodcastProvider.mc
+Name: source/Network/PodcastService.mc
 Description: Implements the PodcastProvider class responsible for communicating with 
              the AWS Lambda backend to check podcast status and trigger playback.
              This modular design keeps the API logic separate from the alarm management.
