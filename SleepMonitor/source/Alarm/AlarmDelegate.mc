@@ -37,39 +37,22 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         var isDismissed = _view.isDismissed();
         // If alarm is already dismissed, allow native navigation behavior.
         // Do not consume hardware buttons so user can exit screen or access menu.
-        if (isDismissed) {
-            if (key == WatchUi.KEY_UP) {
-                _playPodcast();
-                return true;
-            }
-
-            if (key == WatchUi.KEY_DOWN) {
-                _playMusic();
-                return true;
-            }
-             return false;
-        }
-
-        switch (key) {
-            case WatchUi.KEY_ENTER:
-                if (!isDismissed) {
+        if (key == WatchUi.KEY_UP) {
+            _playPodcast();
+            return true;
+        } else if (key == WatchUi.KEY_DOWN) {
+            _playMusic();
+            return true;
+        } else if (!isDismissed){
+            switch (key) {
+                case WatchUi.KEY_ENTER:
                     _snoozeAlarm();
-                }
-                return true;
+                    return true;
 
-            case WatchUi.KEY_ESC:
-                if (!isDismissed) {
+                case WatchUi.KEY_ESC:
                     _dismissAlarm();
-                }
-                return true;
-
-            case WatchUi.KEY_UP:
-                _playPodcast();
-                return true;
-
-            case WatchUi.KEY_DOWN:
-                _playMusic();
-                return true;
+                    return true;
+            }
         }
         return false;
     }
