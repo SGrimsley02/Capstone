@@ -57,10 +57,6 @@ class AlarmView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
-    public function isPodcastReady() {
-        return _podcastReady;
-    }
-
     // Returns whether the alarm has been dismissed (used by delegate to gate input handling)
     public function isDismissed() {
         return _isDismissed;
@@ -90,8 +86,8 @@ class AlarmView extends WatchUi.View {
             dc.drawText(cx, rowMid, font, _statusText, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        // 3. Media Labels (PODCAST turns GREEN when ready)
-        dc.setColor(_podcastReady ? Graphics.COLOR_GREEN : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        // 3. Media Labels (PODCAST turns WHITE when ready)
+        dc.setColor(_podcastReady ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(margin, H*0.38+8, Graphics.FONT_XTINY, "PODCAST", Graphics.TEXT_JUSTIFY_LEFT);
         
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);

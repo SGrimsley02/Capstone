@@ -4,14 +4,15 @@ Description: Manages wake alarms for the SleepMonitor Connect IQ watch app.
              Handles setting, retrieving, and triggering wake alarms.
 Authors: Audrey Pan
 Created: February 22, 2026
-Last Modified: February 27, 2026
+Last Modified: March 2, 2026
 */
 
-using Toybox.Timer;
-using Toybox.Time;
-using Toybox.System;
-using Toybox.Attention;
-using Toybox.WatchUi;
+import Toybox.Timer;
+import Toybox.Time;
+import Toybox.System;
+import Toybox.Attention;
+import Toybox.WatchUi;
+import Toybox.Lang;
 
 class WakeAlarmManager {
 
@@ -20,15 +21,18 @@ class WakeAlarmManager {
     var _ringTimer = null;
     var _isRinging = false;
     var _alarmShowing = false;
-    
-    // Store the view reference to update it later
-    var _currentView = null;
-
-    // Reuse the same alarm UI instance so it is unified across pushes
-    var _alarmView = null;
+    var _currentView = null; 
+    var _alarmView = null; 
     var _alarmDelegate = null;
+    var _podcastReady = false;
+    var _podcastPollTimer = null;
+    
+    // Instance of the new network provider
+    private var _podcastProvider;
 
-    function initialize() { }
+    function initialize() { 
+        _podcastProvider = new PodcastProvider();
+    }
 
     function scheduleAlarmAtEpoch(wakeEpoch) {
         if (_alarmTimer != null) {
@@ -74,24 +78,23 @@ class WakeAlarmManager {
         }
         _alarmShowing = true;
 
-        // IMPORTANT: Use the SAME view instance so delegate updates affect it
         if (_alarmView == null) {
             _alarmView = new AlarmView();
-
-            // Attach manager so AlarmView can clear _alarmShowing when user exits the screen
             if (_alarmView has :setManager) { _alarmView.setManager(self); }
-
             _alarmDelegate = new AlarmDelegate(_alarmView, self);
         }
 
         System.println("WakeAlarmManager: pushing AlarmView");
         WatchUi.pushView(_alarmView, _alarmDelegate, WatchUi.SLIDE_UP);
-
+        startPodcastPolling();
     }
 
     function setAlarmShowing(showing) {
         _alarmShowing = showing;
-        if (!showing) { _currentView = null; }
+        if (!showing) {
+            _currentView = null;
+            stopPodcastPolling();
+        }
     }
 
     function startRinging() {
@@ -108,6 +111,7 @@ class WakeAlarmManager {
             _ringTimer.stop();
             _ringTimer = null;
         }
+        stopPodcastPolling();
     }
 
     function isRinging() { return _isRinging; }
@@ -126,5 +130,56 @@ class WakeAlarmManager {
         ];
         Attention.vibrate(vibes);
         Attention.playTone(Attention.TONE_ALARM);
+    }
+
+    // Now uses the modular provider
+    function sendPodcastLinkToPhone() as Void {
+        _podcastProvider.openPodcast();
+    }
+
+    function isPodcastReady() {
+        return _podcastReady;
+    }
+
+    function startPodcastPolling() as Void {
+        _podcastReady = false;
+        if (_alarmView != null && (_alarmView has :setPodcastReady)) {
+            _alarmView.setPodcastReady(false);
+        }
+        //if (_alarmShowing && _alarmView != null && (_alarmView has :setStatusText)) {
+          //  _alarmView.setStatusText("PODCAST GENERATING...");
+        //}
+        if (_podcastPollTimer == null) {
+            _podcastPollTimer = new Timer.Timer();
+            _podcastPollTimer.start(method(:_pollPodcastStatus), 15000, true);
+        }
+        _pollPodcastStatus();
+    }
+
+    function stopPodcastPolling() as Void {
+        if (_podcastPollTimer != null) {
+            _podcastPollTimer.stop();
+            _podcastPollTimer = null;
+        }
+    }
+
+    function _pollPodcastStatus() as Void {
+        if (!_alarmShowing) { return; }
+        _podcastProvider.checkStatus(method(:_onPodcastUpdate));
+    }
+
+    // Callback received from PodcastProvider
+    function _onPodcastUpdate(responseCode as Lang.Number, isReady as Boolean) as Void {
+        if (isReady) {
+            _podcastReady = true;
+            stopPodcastPolling();
+
+            if (_alarmView != null && (_alarmView has :setStatusText)) {
+                _alarmView.setStatusText("PODCAST READY");
+            }
+            if (_alarmView != null && (_alarmView has :setPodcastReady)) {
+                _alarmView.setPodcastReady(true);
+            }
+        }
     }
 }
