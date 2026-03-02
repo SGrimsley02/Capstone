@@ -24,6 +24,10 @@ class WakeAlarmManager {
     // Store the view reference to update it later
     var _currentView = null;
 
+    // Reuse the same alarm UI instance so it is unified across pushes
+    var _alarmView = null;
+    var _alarmDelegate = null;
+
     function initialize() { }
 
     function scheduleAlarmAtEpoch(wakeEpoch) {
@@ -64,20 +68,25 @@ class WakeAlarmManager {
     }
 
     function _showAlarmUiOnce() {
-        if (_alarmShowing) { return; }
+        if (_alarmShowing) { 
+            System.println("WakeAlarmManager: alarm UI already showing");
+            return;
+        }
         _alarmShowing = true;
 
-        _currentView = new AlarmView();
-        var d = new AlarmDelegate(_currentView, self);
+        // IMPORTANT: Use the SAME view instance so delegate updates affect it
+        if (_alarmView == null) {
+            _alarmView = new AlarmView();
 
-        WatchUi.pushView(_currentView, d, WatchUi.SLIDE_UP);
-    }
-    
-    // Call this method when your podcast download/prep is finished
-    function updatePodcastStatus(isReady) {
-        if (_currentView != null && _currentView has :setPodcastReady) {
-            _currentView.setPodcastReady(isReady);
+            // Attach manager so AlarmView can clear _alarmShowing when user exits the screen
+            if (_alarmView has :setManager) { _alarmView.setManager(self); }
+
+            _alarmDelegate = new AlarmDelegate(_alarmView, self);
         }
+
+        System.println("WakeAlarmManager: pushing AlarmView");
+        WatchUi.pushView(_alarmView, _alarmDelegate, WatchUi.SLIDE_UP);
+
     }
 
     function setAlarmShowing(showing) {

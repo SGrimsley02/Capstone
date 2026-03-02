@@ -12,18 +12,50 @@ import Toybox.WatchUi;
 import Toybox.Lang;
 
 class AlarmView extends WatchUi.View {
-    var _statusText = "WAKE UP!";
-    var _isDismissed = false;
-    var _snoozeTimeRemaining = 0;
-    var _podcastReady = false; // Internal flag for green label
+
+    var _statusText = "WAKE UP!";// Current UI state shown in the center area (e.g., "WAKE UP!", "ALARM OFF")
+    var _isDismissed = false;  // True once the alarm has been handled (dismissed / music / podcast)
+    var _snoozeTimeRemaining = 0; // Snooze countdown in seconds (0 means not snoozing)
+    var _manager; // Reference to the alarm manager for potential future use (e.g., showing next alarm time)
 
     function initialize() { WatchUi.View.initialize(); }
 
-    function setSnoozeTime(s) { _snoozeTimeRemaining = s; WatchUi.requestUpdate(); }
-    function setStatusText(t) { _statusText = t; WatchUi.requestUpdate(); }
-    function setDismissed(d) { _isDismissed = d; WatchUi.requestUpdate(); }
-    function setPodcastReady(r) { _podcastReady = r; WatchUi.requestUpdate(); }
+    // Setter for manager reference (called by delegate after both are initialized)
+    function setManager(manager) {
+        _manager = manager;
+    }
 
+    function onHide() {
+        // Reset state when view is hidden (alarm handled or user navigated away)
+        if (_manager != null && (_manager has :setAlarmShowing)) {
+            _manager.setAlarmShowing(false);
+        }
+    }
+
+    // Updates snooze timer state and refreshes the screen
+    function setSnoozeTime(seconds) {
+        _snoozeTimeRemaining = seconds;
+        WatchUi.requestUpdate();
+    }
+
+    // Updates the center status text and refreshes the screen
+    function setStatusText(msg) {
+        _statusText = msg;
+        WatchUi.requestUpdate();
+    }
+
+    // Updates whether alarm controls should be hidden/shown and refreshes the screen
+    function setDismissed(state) {
+        _isDismissed = state;
+        WatchUi.requestUpdate();
+    }
+
+    // Returns whether the alarm has been dismissed (used by delegate to gate input handling)
+    public function isDismissed() {
+        return _isDismissed;
+    }
+
+    // Draws the alarm screen UI each frame
     function onUpdate(dc) {
         var W = dc.getWidth(), H = dc.getHeight(), cx = W/2;
         var rowMid = H * 0.54, margin = W * 0.10;

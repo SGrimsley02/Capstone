@@ -11,8 +11,11 @@ import Toybox.WatchUi;
 import Toybox.Timer;
 
 class AlarmDelegate extends WatchUi.BehaviorDelegate {
-    var _view, _manager, _snoozeTimer;
-    var _secondsLeft = 600;
+
+    var _view; // Reference to UI view for updating text/state
+    var _manager; // Reference to alarm manager controlling ringing + scheduling
+    var _snoozeTimer; // Timer used for snooze countdown
+    var _secondsLeft = 600; // Remaining snooze time (seconds) — default 10 minutes
 
     function initialize(view, manager) {
         WatchUi.BehaviorDelegate.initialize();
@@ -22,21 +25,25 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
     function onKey(evt) {
         var key = evt.getKey();
-        var dismissed = (_view != null && _view has :_isDismissed) ? _view._isDismissed : false;
+        var isDismissed = _view.isDismissed();
+        // If alarm is already dismissed, allow native navigation behavior.
+        // Do not consume hardware buttons so user can exit screen or access menu.
+        if (key == WatchUi.KEY_UP) {
+            _playPodcast();
+            return true;
+        } else if (key == WatchUi.KEY_DOWN) {
+            _playMusic();
+            return true;
+        } else if (!isDismissed){
+            switch (key) {
+                case WatchUi.KEY_ENTER:
+                    _snoozeAlarm();
+                    return true;
 
-        if (key == WatchUi.KEY_ENTER && !dismissed) { _snoozeAlarm(); return true; }
-        if (key == WatchUi.KEY_ESC && !dismissed) { _dismissAlarm(); return true; }
-        
-        // PODCAST BUTTON (UP)
-        if (key == WatchUi.KEY_UP) { 
-            _playPodcast(); 
-            return true; 
-        }
-        
-        // MUSIC BUTTON (DOWN)
-        if (key == WatchUi.KEY_DOWN) { 
-            _playMusic(); 
-            return true; 
+                case WatchUi.KEY_ESC:
+                    _dismissAlarm();
+                    return true;
+            }
         }
         return false;
     }
@@ -47,20 +54,34 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_view has :setSnoozeTime) { _view.setSnoozeTime(0); }
     }
 
-    function _playPodcast() {
-        // ONLY allow if the podcast is ready
-        if (_view != null && _view._podcastReady) {
-            _stopAll();
-            if (_view has :setDismissed) { _view.setDismissed(true); }
-            // New specific confirmation message
-            if (_view has :setStatusText) { _view.setStatusText("LINK SENT TO PHONE"); }
-        } else {
-            System.println("Podcast not ready yet.");
-        }
+    // Snoozes alarm and starts countdown timer
+    function _snoozeAlarm() as Void {
+        _stopAllAlarmActions();
+
+        // Reset snooze duration
+        _secondsLeft = 600;
+        
+        // Update UI state
+        if (_view has :setDismissed) { _view.setDismissed(true); }
+        if (_view has :setStatusText) { _view.setStatusText("SNOOZING..."); }
+        
+        // Start 1-second repeating timer
+        _snoozeTimer = new Timer.Timer();
+        _snoozeTimer.start(method(:onTimerTick), 1000, true);
     }
 
-    function _playMusic() {
-        _stopAll();
+    // Permanently stops the alarm
+    function _dismissAlarm() as Void {
+        _stopAllAlarmActions();
+
+        if (_view has :setDismissed) { _view.setDismissed(true); }
+        if (_view has :setStatusText) { _view.setStatusText("ALARM OFF"); }
+    }
+
+
+    function _playMusic() as Void {
+        _stopAllAlarmActions();
+
         if (_view has :setDismissed) { _view.setDismissed(true); }
         if (_view has :setStatusText) { _view.setStatusText("PLAYING MUSIC"); }
     }
