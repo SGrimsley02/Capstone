@@ -10,13 +10,15 @@ Last Modified: February 27, 2026
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Lang;
+import Toybox.System;
 
 class AlarmView extends WatchUi.View {
 
-    var _statusText = "WAKE UP!";// Current UI state shown in the center area (e.g., "WAKE UP!", "ALARM OFF")
+    var _statusText = "WAKE UP!"; // Current UI state shown in the center area (e.g., "WAKE UP!", "ALARM OFF")
     var _isDismissed = false;  // True once the alarm has been handled (dismissed / music / podcast)
     var _snoozeTimeRemaining = 0; // Snooze countdown in seconds (0 means not snoozing)
     var _manager; // Reference to the alarm manager for potential future use (e.g., showing next alarm time)
+    var _podcastReady = false; // Podcast becomes active when a link is available
 
     function initialize() { WatchUi.View.initialize(); }
 
@@ -48,6 +50,15 @@ class AlarmView extends WatchUi.View {
     function setDismissed(state) {
         _isDismissed = state;
         WatchUi.requestUpdate();
+    }
+
+    function setPodcastReady(isReady) {
+        _podcastReady = isReady;
+        WatchUi.requestUpdate();
+    }
+
+    public function isPodcastReady() {
+        return _podcastReady;
     }
 
     // Returns whether the alarm has been dismissed (used by delegate to gate input handling)

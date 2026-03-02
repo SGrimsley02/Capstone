@@ -16,6 +16,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
     var _manager; // Reference to alarm manager controlling ringing + scheduling
     var _snoozeTimer; // Timer used for snooze countdown
     var _secondsLeft = 600; // Remaining snooze time (seconds) — default 10 minutes
+    
 
     function initialize(view, manager) {
         WatchUi.BehaviorDelegate.initialize();
@@ -48,9 +49,15 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         return false;
     }
 
-    function _stopAll() {
+    // Stops ringing and cancels any active snooze timer
+    function _stopAllAlarmActions() as Void {
         _manager.stopRinging();
-        if (_snoozeTimer != null) { _snoozeTimer.stop(); _snoozeTimer = null; }
+
+        if (_snoozeTimer != null) {
+            _snoozeTimer.stop();
+            _snoozeTimer = null;
+        }
+        // Reset snooze display if supported by view
         if (_view has :setSnoozeTime) { _view.setSnoozeTime(0); }
     }
 
@@ -78,6 +85,34 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_view has :setStatusText) { _view.setStatusText("ALARM OFF"); }
     }
 
+    // Stops alarm and transitions to podcast mode
+    function _playPodcast() as Void {
+
+        // Ask manager if podcast is ready (if method exists)
+        var ready = false;
+        if (_manager != null && (_manager has :isPodcastReady)) {
+            ready = _manager.isPodcastReady();
+        }
+
+        // If NOT ready → do NOT stop alarm
+        if (!ready) {
+            if (_view has :setStatusText) { 
+                _view.setStatusText("PODCAST GENERATING..."); 
+            }
+            return; // important: do nothing else
+        }
+
+        // If ready → stop alarm and proceed
+        _stopAllAlarmActions();
+
+        if (_view has :setDismissed) { _view.setDismissed(true); }
+        if (_view has :setStatusText) { _view.setStatusText("LINK SENT..."); }
+
+        // Optional: send link to phone if implemented
+        if (_manager != null && (_manager has :sendPodcastLinkToPhone)) {
+            _manager.sendPodcastLinkToPhone();
+        }
+    }
 
     function _playMusic() as Void {
         _stopAllAlarmActions();
@@ -86,25 +121,10 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_view has :setStatusText) { _view.setStatusText("PLAYING MUSIC"); }
     }
 
-    function _snoozeAlarm() {
-        _stopAll();
-        _secondsLeft = 600;
-        if (_view has :setDismissed) { _view.setDismissed(true); }
-        if (_view has :setStatusText) { _view.setStatusText("SNOOZING..."); }
-        _snoozeTimer = new Timer.Timer();
-        _snoozeTimer.start(method(:onTimerTick), 1000, true);
-    }
-
-    function _dismissAlarm() {
-        _stopAll();
-        if (_view has :setDismissed) { _view.setDismissed(true); }
-        if (_view has :setStatusText) { _view.setStatusText("ALARM OFF"); }
-    }
-
     function onTimerTick() as Void {
         _secondsLeft--;
         if (_secondsLeft <= 0) {
-            _stopAll();
+            _stopAllAlarmActions();
             if (_view has :setDismissed) { _view.setDismissed(false); }
             if (_view has :setStatusText) { _view.setStatusText("WAKE UP!"); }
             _manager.scheduleAlarmInSeconds(0);
