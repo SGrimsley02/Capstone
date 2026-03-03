@@ -11,13 +11,18 @@ Last Modified: March 2, 2026
 import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.System;
+import Toybox.Application;
 
 class PodcastProvider {
-    private var _username = "test_user42";
-    private var _notifyBaseUrl = Secrets.PODCAST_NOTIFY_URL; // Defined in Secrets.mc 
+    private var _username;
+    private var _notifyBaseUrl = "https://fopzwr25foju62tnwa3hqyk6su0utwkh.lambda-url.us-east-2.on.aws/";
     private var _statusCallback;
 
-    function initialize() { }
+    function initialize() { 
+        var stored = Application.Storage.getValue("user_id");
+        _username = stored != null ? stored.toString() : "test_user42"; //Fall back to defaul username if not yet set
+        System.println("PodcastProvider user_id: " + _username);
+    }
 
     // Requests the status of the podcast.
     // Callback must accept (responseCode as Number, isReady as Boolean)
@@ -31,8 +36,8 @@ class PodcastProvider {
                 url,
                 null,
                 {
-                    :method => 1 as Communications.HttpRequestMethod,
-                    :responseType => 0 as Communications.HttpResponseContentType
+                    :method => Communications.HTTP_REQUEST_METHOD_GET,
+                    :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
                 },
                 method(:_onPodcastStatusResponse)
             );
@@ -59,14 +64,8 @@ class PodcastProvider {
         if (responseCode == 200 && data != null) {
             if (data instanceof Lang.Dictionary) {
                 var dict = data as Lang.Dictionary;
-                var statusVal = null;
 
-                // Try symbol first
-                if (dict has :status) {
-                    statusVal = dict[:status];
-                } else {
-                    statusVal = dict.get("status");
-                }
+                var statusVal = dict.get("status");
 
                 // USE .equals() and .toString() to bridge the Symbol/String gap
                 if (statusVal != null && statusVal.toString().equals("READY")) {
