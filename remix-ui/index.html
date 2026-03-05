@@ -220,13 +220,11 @@
 
             <div class="row" style="margin-top:10px;">
               <div>
-                <label for="temp">Podcast Voice</label>
-                <select id="temp" name="temp" required>
-                  <option value="temp1">Temporary1</option>
-                  <option value="temp2">Temporary2</option>
-                  <option value="temp3">Temporary3</option>
-                  <option value="temp4">Temporary4</option>
-                  <option value="temp5">Temporary5</option>
+                <label for="tone">Podcast Tone</label>
+                <select id="tone" name="tone" required>
+                  <option value="tone1">Very Peppy</option>
+                  <option value="tone2">Slightly Peppy</option>
+                  <option value="tone3">Neutral</option>
                 </select>
               </div>
               <div>
@@ -246,8 +244,8 @@
 
             <div class="toggle-grid">
               <label class="checkbox-label">
-                <input type="checkbox" id="pod_news" />
-                <span>News</span>
+                <input type="checkbox" id="pod_schedule" />
+                <span>Schedule</span>
               </label>
 
               <label class="checkbox-label">
@@ -256,8 +254,8 @@
               </label>
 
               <label class="checkbox-label">
-                <input type="checkbox" id="pod_schedule" />
-                <span>Schedule</span>
+                <input type="checkbox" id="pod_news" />
+                <span>News</span>
               </label>
 
               <label class="checkbox-label">
@@ -469,7 +467,7 @@
     dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
     dbgPrefs.className = pOK ? "ok" : "warn";
     dbgPrefsSummary.textContent = pOK
-      ? `${currentUser.preferences?.wakeStart || "07:00"}–${currentUser.preferences?.wakeEnd || "07:30"} • ${currentUser.preferences?.temp || "temp1"}`
+      ? `${currentUser.preferences?.wakeStart || "07:00"}–${currentUser.preferences?.wakeEnd || "07:30"} • ${currentUser.preferences?.tone || "tone1"}`
       : "—";
 
     if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
@@ -615,9 +613,8 @@ btnSpotify.addEventListener("click", () => {
     if (currentUser && currentUser.preferences) {
       prefsForm.wakeStart.value = currentUser.preferences.wakeStart;
       prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd;
-      prefsForm.temp.value = currentUser.preferences.temp;
+      prefsForm.tone.value = currentUser.preferences.tone;
       prefsForm.explicit.value = currentUser.preferences.explicit;
-      prefsForm.ramp.checked = !!currentUser.preferences.ramp;
     }
 
     const podcast = (currentUser && currentUser.preferences && currentUser.preferences.podcast) || {
@@ -641,9 +638,8 @@ btnSpotify.addEventListener("click", () => {
           const prefs = {
             wakeStart: prefsForm.wakeStart.value,
             wakeEnd: prefsForm.wakeEnd.value,
-            temp: prefsForm.temp.value,
+            tone: prefsForm.tone.value,
             explicit: prefsForm.explicit.value,
-            ramp: prefsForm.ramp.checked,
             podcast: {
               news: podNews.checked,
               weather: podWeather.checked,
