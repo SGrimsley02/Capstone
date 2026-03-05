@@ -7,7 +7,7 @@
   Authors: Ella Nguyen, Lauren D'Souza, Kiara Grimsley
 
   Created: February 12, 2026
-  Updated: March 1, 2026
+  Updated: March 5, 2026
 -->
 <!doctype html>
 <html lang="en">
@@ -79,6 +79,28 @@
     .hide { display:none !important; }
     .toast { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
     .kbd { border:1px solid var(--border); padding:2px 6px; border-radius:8px; font-size: 11px; color: var(--muted); }
+
+    .checkbox-label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .checkbox-label input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      accent-color: var(--accent);
+    }
+    .toggle-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (min-width: 560px){
+      .toggle-grid{ grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 
@@ -179,11 +201,10 @@
             <span class="kbd">Connect Spotify</span> → <span class="kbd">/auth/spotify</span>.
           </div>
         </div>
-
         <!-- PREFS VIEW -->
         <div id="viewPrefs" class="hide">
           <h2>Wake & music preferences</h2>
-          <p>TEMPORARY PREFERENCES TO SWITCH LATER, These persist for the logged-in user (localStorage demo)</p>
+          <p>TEMPORARY PREFERENCES (SWITCH LATER), These persist for the logged-in user (localStorage demo)</p>
 
           <form id="prefsForm">
             <div class="row">
@@ -199,7 +220,7 @@
 
             <div class="row" style="margin-top:10px;">
               <div>
-                <label for="temp">Temporary Pref</label>
+                <label for="temp">Podcast Voice</label>
                 <select id="temp" name="temp" required>
                   <option value="temp1">Temporary1</option>
                   <option value="temp2">Temporary2</option>
@@ -216,13 +237,33 @@
                 </select>
               </div>
             </div>
+            <div class="divider" style="margin-top:14px;"></div>
 
-            <div style="margin-top:10px;">
+            <h3 style="margin:0 0 6px; font-size:14px;">Podcast includes</h3>
+            <p style="margin:0 0 10px; color: var(--muted); font-size:13px;">
+              Choose what REMix should include in your morning podcast.
+            </p>
+
+            <div class="toggle-grid">
               <label class="checkbox-label">
-                <input type="checkbox" id="ramp" name="ramp" />
-                <span>Start quiet then ramp volume up</span>
+                <input type="checkbox" id="pod_news" />
+                <span>News</span>
               </label>
-              <div class="mini">Optional.</div>
+
+              <label class="checkbox-label">
+                <input type="checkbox" id="pod_weather" />
+                <span>Weather</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" id="pod_schedule" />
+                <span>Schedule</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" id="pod_horoscope" />
+                <span>Horoscope</span>
+              </label>
             </div>
 
             <div class="btns">
@@ -324,6 +365,11 @@
   const prefsMsg = el("prefsMsg");
   const btnBackToSetup = el("btnBackToSetup");
 
+  const podNews = el("pod_news");
+  const podWeather = el("pod_weather");
+  const podSchedule = el("pod_schedule");
+  const podHoroscope = el("pod_horoscope");
+
   const dbgUser = el("dbgUser");
   const dbgAuth = el("dbgAuth");
   const dbgGoogle = el("dbgGoogle");
@@ -419,11 +465,11 @@
     dbgSpotify.className = sOK ? "ok" : "warn";
     dbgSpotifyAcct.textContent = sOK ? (currentUser.spotifyName || "@spotify_user") : "—";
 
-    const pOK = !!currentUser.preferences.wakeEnd;
+    const pOK = !!currentUser.preferences?.wakeEnd;
     dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
     dbgPrefs.className = pOK ? "ok" : "warn";
     dbgPrefsSummary.textContent = pOK
-      ? `${currentUser.preferences.wakeStart}–${currentUser.preferences.wakeEnd} • ${currentUser.preferences.temp}`
+      ? `${currentUser.preferences?.wakeStart || "07:00"}–${currentUser.preferences?.wakeEnd || "07:30"} • ${currentUser.preferences?.temp || "temp1"}`
       : "—";
 
     if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
@@ -573,6 +619,18 @@ btnSpotify.addEventListener("click", () => {
       prefsForm.explicit.value = currentUser.preferences.explicit;
       prefsForm.ramp.checked = !!currentUser.preferences.ramp;
     }
+
+    const podcast = (currentUser && currentUser.preferences && currentUser.preferences.podcast) || {
+      news: true,
+      weather: true,
+      schedule: true,
+      horoscope: false
+    };
+
+    podNews.checked = !!podcast.news;
+    podWeather.checked = !!podcast.weather;
+    podSchedule.checked = !!podcast.schedule;
+    podHoroscope.checked = !!podcast.horoscope;
   });
 
   // Save prefs
@@ -580,13 +638,19 @@ btnSpotify.addEventListener("click", () => {
     e.preventDefault();
 
     try {
-      const prefs = {
-        wakeStart: prefsForm.wakeStart.value,
-        wakeEnd: prefsForm.wakeEnd.value,
-        temp: prefsForm.temp.value,
-        explicit: prefsForm.explicit.value,
-        ramp: prefsForm.ramp.checked
-      };
+          const prefs = {
+            wakeStart: prefsForm.wakeStart.value,
+            wakeEnd: prefsForm.wakeEnd.value,
+            temp: prefsForm.temp.value,
+            explicit: prefsForm.explicit.value,
+            ramp: prefsForm.ramp.checked,
+            podcast: {
+              news: podNews.checked,
+              weather: podWeather.checked,
+              schedule: podSchedule.checked,
+              horoscope: podHoroscope.checked
+            }
+          };
       const userID = currentUser.username
 
       const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/preferences?username=${userID}`, {
