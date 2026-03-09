@@ -26,6 +26,15 @@ class AlarmView extends WatchUi.View {
         WatchUi.View.initialize();
     }
 
+    function onLayout(dc) {
+        // Replacing onUpdate with onLayout for UI updates
+
+        setLayout(Rez.Layouts.AlarmScreen(dc));
+    }
+
+
+
+
     // Setter for manager reference (called by delegate after both are initialized)
     function setManager(manager) {
         _manager = manager;
@@ -63,17 +72,20 @@ class AlarmView extends WatchUi.View {
 
     // Draws the alarm screen UI each frame
     function onUpdate(dc) {
+        View.onUpdate(dc);
+
+
         var W = dc.getWidth();
         var H = dc.getHeight();
         var cx = W / 2;
 
         // Layout grid positions (scaled to screen height)
-        var rowTime   = H * 0.22; 
-        var rowTopBtn = H * 0.38; 
-        var rowMid    = H * 0.54; 
-        var rowBotBtn = H * 0.64; 
-        var rowPill   = H * 0.82; 
-        var margin    = W * 0.10; 
+        var rowTime   = H * 0.22;
+        var rowTopBtn = H * 0.38;
+        var rowMid    = H * 0.54;
+        var rowBotBtn = H * 0.64;
+        var rowPill   = H * 0.82;
+        var margin    = W * 0.10;
 
         // Clear background
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
@@ -155,5 +167,28 @@ class AlarmView extends WatchUi.View {
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
             );
         }
+    }
+}
+
+
+
+class PodcastIcon extends WatchUi.Drawable {
+    var _isActive = false;
+
+    function initialize(params as Dictionary) {
+        Drawable.initialize(params);
+
+        _isActive = params.get(:isActive) as Boolean;
+    }
+
+    function draw(dc as Dc) as Void {
+        dc.drawBitmap2(
+            x=x,
+            y=y,
+            bitmap=WatchUi.loadResource(Rez.Drawables.podcast_icon),
+            options={
+                :tintColor => _isActive ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY
+            }
+        )
     }
 }

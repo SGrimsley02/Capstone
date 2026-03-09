@@ -9,4 +9,8 @@ Last Modified: February 7, 2026
 
 <drawables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <bitmap id="LauncherIcon" filename="launcher_icon.svg" dithering="none" />
+    <bitmap id="music_note" filename="music_note.png" dithering="none" />
+    <bitmap id="snooze" filename="snooze.png" dithering="none" />
+    <bitmap id="dismiss" filename="dismiss.png" dithering="none" />
+    <bitmap id="podcast" filename="podcast.png" dithering="none" />
 </drawables>
