@@ -13,4 +13,7 @@ Last Modified: February 7, 2026
     <bitmap id="snoozeIcon" filename="snoozeIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="dismissIcon" filename="dismissIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="podcastIcon" filename="podcastIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="remixLogo" filename="remixLogo.png" dithering="none" packingFormat="png" />
+    <bitmap id="soundwaveIcon" filename="soundwaveIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="alarmIcon" filename="alarmIcon.png" dithering="none" packingFormat="png" />
 </drawables>
