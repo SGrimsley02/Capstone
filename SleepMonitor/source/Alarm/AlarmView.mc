@@ -21,14 +21,17 @@ class AlarmView extends WatchUi.View {
     var _isDismissed = false;  // True once the alarm has been handled (dismissed / music / podcast)
     var _snoozeTimeRemaining = 0; // Snooze countdown in seconds (0 means not snoozing)
     var _manager; // Reference to the alarm manager for potential future use (e.g., showing next alarm time)
+    var _music_icon;
+    var _podcast_icon;
 
     function initialize() {
         WatchUi.View.initialize();
+        _music_icon = loadResource(Rez.Drawables.musicIcon);
+        _podcast_icon = loadResource(Rez.Drawables.podcastIcon);
     }
 
     function onLayout(dc) {
         // Replacing onUpdate with onLayout for UI updates
-
         setLayout(Rez.Layouts.AlarmScreen(dc));
     }
 
@@ -149,6 +152,10 @@ class AlarmView extends WatchUi.View {
         dc.drawText(margin, rowTopBtn + 8, Graphics.FONT_XTINY, "PODCAST", Graphics.TEXT_JUSTIFY_LEFT);
         dc.drawText(margin, rowBotBtn,      Graphics.FONT_XTINY, "MUSIC",   Graphics.TEXT_JUSTIFY_LEFT);
 
+        dc.drawBitmap2(100, 100, _podcast_icon, {
+            :tintColor => Graphics.COLOR_PINK,
+        });
+
         // 4) Alarm-only controls (only while alarm is actively ringing)
         if (!_isDismissed && _snoozeTimeRemaining <= 0) {
 
@@ -171,24 +178,3 @@ class AlarmView extends WatchUi.View {
 }
 
 
-
-class PodcastIcon extends WatchUi.Drawable {
-    var _isActive = false;
-
-    function initialize(params as Dictionary) {
-        Drawable.initialize(params);
-
-        _isActive = params.get(:isActive) as Boolean;
-    }
-
-    function draw(dc as Dc) as Void {
-        dc.drawBitmap2(
-            x=x,
-            y=y,
-            bitmap=WatchUi.loadResource(Rez.Drawables.podcast_icon),
-            options={
-                :tintColor => _isActive ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY
-            }
-        )
-    }
-}

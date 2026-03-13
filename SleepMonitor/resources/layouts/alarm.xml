@@ -11,16 +11,11 @@ Last Modified: March 9, 2026
 
 <layout id="AlarmScreen" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <label x="center" y="5" text="@Strings.prompt" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <bitmap id="music_icon" x="center" y="30" filename="../drawables/music_note.png" />
-    <bitmap id="snooze_icon" x="center" y="80" filename="../drawables/snooze.png" />
-    <bitmap id="dismiss_icon" x="center" y="130" filename="../drawables/dismiss.png" />
-    <drawable id="podcast_icon" x="center" y="180" class="PodcastIcon" >
-        <param name="isActive" >false</param>
-    </drawable>
-    <label x="center" y="60" text="@Strings.music" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label x="center" y="110" text="@Strings.snooze" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label x="center" y="160" text="@Strings.dismiss" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
-    <label x="center" y="210" text="@Strings.podcast" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <bitmap id="music_icon" x="left" y="dc.getHeight() * 0.64" filename="../drawables/musicIcon.png" />
+    <bitmap id="snooze_icon" x="right" y="dc.getHeight() * 0.24" filename="../drawables/snoozeIcon.png" />
+    <bitmap id="dismiss_icon" x="right" y="dc.getHeight() * 0.64" filename="../drawables/dismissIcon.png" />
+    <bitmap id="podcast_icon" x="left" y="dc.getHeight() * 0.38" filename="../drawables/podcastIcon.png" />
+
 
 
 </layout>
