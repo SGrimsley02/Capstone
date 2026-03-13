@@ -101,6 +101,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         var key = evt.getKey();
         if (key == WatchUi.KEY_ESC) {
             _escHoldFired = false;
+            _cancelEscTimer();
             _escHoldTimer = new Timer.Timer();
             _escHoldTimer.start(method(:_onEscHeld), HOLD_MS, false);
             return true;
