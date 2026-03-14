@@ -16,4 +16,5 @@ Last Modified: February 7, 2026
     <bitmap id="remixLogo" filename="remixLogo.png" dithering="none" packingFormat="png" />
     <bitmap id="soundwaveIcon" filename="soundwaveIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="alarmIcon" filename="alarmIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="starIcon" filename="star.png" dithering="none" packingFormat="png" />
 </drawables>

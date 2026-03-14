@@ -26,13 +26,15 @@ const HOLD_MS = 700;
 
 class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
 
-    private var _escHoldTimer as Timer.Timer?;
-    private var _escHoldFired as Boolean = false;
+    private var _escHoldTimer  as Timer.Timer?;
+    private var _escHoldFired  as Boolean = false;
+    private var _escPressedHere as Boolean = false; // true only when THIS delegate handled the key-down
 
     function initialize() {
         BehaviorDelegate.initialize();
-        _escHoldTimer = null;
-        _escHoldFired = false;
+        _escHoldTimer   = null;
+        _escHoldFired   = false;
+        _escPressedHere = false;
     }
 
     function onMenu() as Boolean {
@@ -100,6 +102,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     function onKeyPressed(evt as WatchUi.KeyEvent) as Boolean {
         var key = evt.getKey();
         if (key == WatchUi.KEY_ESC) {
+            _escPressedHere = true;
             _escHoldFired = false;
             _cancelEscTimer();
             _escHoldTimer = new Timer.Timer();
@@ -121,9 +124,16 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     }
 
     // ESC released → if hold didn't fire yet, treat as short-press (music).
+    // Guard with _escPressedHere so a release that arrives after returning from
+    // a sub-view (e.g. back from the menu) doesn't spuriously trigger the deeplink.
     function onKeyReleased(evt as WatchUi.KeyEvent) as Boolean {
 
         if (evt.getKey() == WatchUi.KEY_ESC) {
+            if (!_escPressedHere) {
+                // The press was handled by another delegate; ignore the orphaned release.
+                return false;
+            }
+            _escPressedHere = false;
             _cancelEscTimer();
             if (!_escHoldFired) {
                 System.println("SleepMonitorDelegate: opening music deeplink");
