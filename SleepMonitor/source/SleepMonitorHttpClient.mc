@@ -25,10 +25,8 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.WatchUi;
 
-// ngrok URL that forwards to your local Python server
-//TODO: replace with real backend HTTPS endpoint
+// URL to AWS API Gateway endpoint
 const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
-const SLEEP_WINDOW_SECONDS = 12 * 60 * 60;
 const USER_ID_KEY = "user_id";
 
 class SleepMonitorHttpClient {
@@ -40,7 +38,7 @@ class SleepMonitorHttpClient {
     function sendLocalHttpRequest() as Void {
         // GET request to a local server (mainly useful in simulator/dev).
         // TODO: remove this path and its menu item.
-        var url = "http://192.168.68.52:8000/";
+        var url = "http://127.0.0.1:3000/";
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
@@ -50,17 +48,12 @@ class SleepMonitorHttpClient {
         makeRequest(url, null, options);
     }
 
-    function sendPublicHttpsRequest() as Void {
+    function sendPublicHttpsRequest(url as String) as Void {
         // GET request to the ngrok public HTTPS URL (proves HTTPS works).
-        var url = BASE_URL;
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
             :context => "PUBLIC_HTTPS",
-            :headers      => {
-                "ngrok-skip-browser-warning" => "true",
-                "Accept" => "text/plain"
-            },
             :timeout      => 15,
         };
 

@@ -33,7 +33,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             _httpClient.sendLocalHttpRequest();
         } else if (item == :item_2) {
             System.println("Running public HTTPS test.");
-            _httpClient.sendPublicHttpsRequest();
+            _httpClient.sendPublicHttpsRequest("https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/");
         } else if (item == :item_3) {
             System.println("Sending sleep summary.");
             _httpClient.sendSleepSummaryRequest();

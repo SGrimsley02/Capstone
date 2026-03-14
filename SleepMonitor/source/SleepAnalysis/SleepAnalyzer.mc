@@ -14,24 +14,13 @@ import Toybox.System;
 import Toybox.Time;
 
 module SleepAnalyzer {   
+    const SLEEP_WINDOW_SECONDS = 12 * 60 * 60; // Analyze last 12 hours by default
 
     function buildSleepPayload(userId as String) as Dictionary or Null {
-        // Create simulated sleep payload values (placeholder for now)
-
-        var now = System.getClockTime();
-        var ts = now.hour.toString() + ":" + now.min.toString() + ":" + now.sec.toString();
+        // Create sleep payload values (placeholders for now)
 
         // Build a nightly sleep summary for the last sleep window based on heart rate/body battery.
         var window = new Time.Duration(SLEEP_WINDOW_SECONDS);
-        var hrIterator = getHeartRateIterator(window);
-        if (hrIterator == null) {
-            return null;
-        }
-
-        var hrSummary = summarizeSensorHistory(hrIterator);
-        if (hrSummary == null) {
-            return null;
-        }
 
         var bbIterator = getHeartRateIterator(window);
         if (bbIterator == null) {
@@ -43,11 +32,16 @@ module SleepAnalyzer {
             return null;
         }
 
+        var hrSummary = null;
+        var hrIterator = getHeartRateIterator(window);
+        if (hrIterator != null) {
+            hrSummary = summarizeSensorHistory(hrIterator);
+        }
+
         var sleepQuality = estimateSleepQuality(hrSummary, bbSummary);
 
         var payload = {
             "eventType" => "sleep_summary",
-            "timestamp" => ts,
             "username" => userId,
             "sleepQuality" => sleepQuality
         };
@@ -57,7 +51,6 @@ module SleepAnalyzer {
             var stressSummary = summarizeSensorHistory(stressIterator);
             if (stressSummary != null) {
                 payload["stressAvg"] = stressSummary["avg"];
-                payload["stressSamples"] = stressSummary["count"];
             }
         }
 
@@ -141,13 +134,13 @@ module SleepAnalyzer {
     }
 
     function estimateSleepQuality(
-        hrSummary as Dictionary,
+        hrSummary as Dictionary?,
         bbSummary as Dictionary
     ) as Number {
         // Placeholder sleep quality estimation logic based on HR and Body Battery summaries.
         // This should be improved in the future.
         var bbRecovery = bbSummary["max"] - bbSummary["min"];
-        return bbRecovery*1.1;
+        return bbSummary["lastSample"].data * 0.7 + bbRecovery * 0.3;
 
     }
 }
