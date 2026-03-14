@@ -41,7 +41,7 @@ class RatingView extends WatchUi.View {
 
     function initialize(song as Object) {
         View.initialize();
-        _userId = Storage.getValue("userId");
+        _userId = Storage.getValue("user_id");
         if (_userId == null) {
             _userId = "unknown";
         }
