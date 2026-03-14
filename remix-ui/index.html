@@ -7,7 +7,7 @@
   Authors: Ella Nguyen, Lauren D'Souza, Kiara Grimsley
 
   Created: February 12, 2026
-  Updated: March 5, 2026
+  Updated: March 14, 2026
 -->
 <!doctype html>
 <html lang="en">
@@ -264,6 +264,69 @@
               </label>
             </div>
 
+            <div id="newsOptions" class="hide" style="margin-top:12px;">
+              <label style="margin-bottom:8px;">Preferred News Outlets</label>
+              <div class="toggle-grid">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_nytimes" />
+                  <span>NY Times</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_bbc" />
+                  <span>BBC News</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_guardian" />
+                  <span>The Guardian</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_aljazeera" />
+                  <span>Al Jazeera</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_techradar" />
+                  <span>TechRadar</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_time" />
+                  <span>Time Magazine</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_yahoo" />
+                  <span>Yahoo Sports</span>
+                </label>
+
+                <label class="checkbox-label">
+                  <input type="checkbox" id="news_notboring" />
+                  <span>Not Boring</span>
+                </label>
+              </div>
+            </div>
+
+<div id="zodiacOptions" class="hide" style="margin-top:12px;">
+  <label for="zodiac">Zodiac Sign</label>
+  <select id="zodiac">
+    <option value="aries">Aries</option>
+    <option value="taurus">Taurus</option>
+    <option value="gemini">Gemini</option>
+    <option value="cancer">Cancer</option>
+    <option value="leo">Leo</option>
+    <option value="virgo">Virgo</option>
+    <option value="libra">Libra</option>
+    <option value="scorpio">Scorpio</option>
+    <option value="sagittarius">Sagittarius</option>
+    <option value="capricorn">Capricorn</option>
+    <option value="aquarius">Aquarius</option>
+    <option value="pisces">Pisces</option>
+  </select>
+</div>
+
             <div class="btns">
               <button type="submit" class="primary">Save preferences</button>
               <button type="button" id="btnBackToSetup" class="ghost">Back</button>
@@ -367,6 +430,28 @@
   const podWeather = el("pod_weather");
   const podSchedule = el("pod_schedule");
   const podHoroscope = el("pod_horoscope");
+
+  const zodiacOptions = el("zodiacOptions");
+  const zodiacSelect = el("zodiac");
+
+  const newsOptions = el("newsOptions");
+
+  const newsNYTimes = el("news_nytimes");
+  const newsBBC = el("news_bbc");
+  const newsGuardian = el("news_guardian");
+  const newsAlJazeera = el("news_aljazeera");
+  const newsTechRadar = el("news_techradar");
+  const newsTime = el("news_time");
+  const newsYahoo = el("news_yahoo");
+  const newsNotBoring = el("news_notboring");
+
+  podHoroscope.addEventListener("change", () => {
+    zodiacOptions.classList.toggle("hide", !podHoroscope.checked);
+  });
+
+  podNews.addEventListener("change", () => {
+    newsOptions.classList.toggle("hide", !podNews.checked);
+  });
 
   const dbgUser = el("dbgUser");
   const dbgAuth = el("dbgAuth");
@@ -625,9 +710,27 @@ btnSpotify.addEventListener("click", () => {
     };
 
     podNews.checked = !!podcast.news;
+    newsOptions.classList.toggle("hide", !podNews.checked);
     podWeather.checked = !!podcast.weather;
     podSchedule.checked = !!podcast.schedule;
     podHoroscope.checked = !!podcast.horoscope;
+
+    zodiacOptions.classList.toggle("hide", !podHoroscope.checked);
+
+    if (currentUser.preferences?.podcast?.zodiac) {
+      zodiacSelect.value = currentUser.preferences.podcast.zodiac;
+    }
+
+    const savedSources = currentUser?.preferences?.news?.sources || [];
+
+    newsNYTimes.checked = savedSources.includes("NY Times");
+    newsBBC.checked = savedSources.includes("BBC News");
+    newsGuardian.checked = savedSources.includes("The Guardian");
+    newsAlJazeera.checked = savedSources.includes("Al Jazeera");
+    newsTechRadar.checked = savedSources.includes("TechRadar");
+    newsTime.checked = savedSources.includes("Time Magazine");
+    newsYahoo.checked = savedSources.includes("Yahoo Sports");
+    newsNotBoring.checked = savedSources.includes("Not Boring");
   });
 
   // Save prefs
@@ -635,6 +738,16 @@ btnSpotify.addEventListener("click", () => {
     e.preventDefault();
 
     try {
+          const selectedNewsSources = [];
+          if (newsNYTimes.checked) selectedNewsSources.push("NY Times");
+          if (newsBBC.checked) selectedNewsSources.push("BBC News");
+          if (newsGuardian.checked) selectedNewsSources.push("The Guardian");
+          if (newsAlJazeera.checked) selectedNewsSources.push("Al Jazeera");
+          if (newsTechRadar.checked) selectedNewsSources.push("TechRadar");
+          if (newsTime.checked) selectedNewsSources.push("Time Magazine");
+          if (newsYahoo.checked) selectedNewsSources.push("Yahoo Sports");
+          if (newsNotBoring.checked) selectedNewsSources.push("Not Boring");
+
           const prefs = {
             wakeStart: prefsForm.wakeStart.value,
             wakeEnd: prefsForm.wakeEnd.value,
@@ -644,7 +757,11 @@ btnSpotify.addEventListener("click", () => {
               news: podNews.checked,
               weather: podWeather.checked,
               schedule: podSchedule.checked,
-              horoscope: podHoroscope.checked
+              horoscope: podHoroscope.checked,
+              zodiac: podHoroscope.checked ? zodiacSelect.value : null
+            },
+            news: {
+              sources: selectedNewsSources
             }
           };
       const userID = currentUser.username
@@ -696,6 +813,7 @@ btnSpotify.addEventListener("click", () => {
 
   setTab("login");
   render();
+  // setView("prefs");   // TEMP: jump straight to preferences
 </script>
 </body>
 </html>
