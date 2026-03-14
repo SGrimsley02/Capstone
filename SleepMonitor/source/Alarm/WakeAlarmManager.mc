@@ -87,7 +87,7 @@ class WakeAlarmManager {
 
     // Shows the alarm UI exactly once while alarm is active
     function _showAlarmUiOnce() {
-        if (_alarmShowing) { 
+        if (_alarmShowing) {
             System.println("WakeAlarmManager: alarm UI already showing");
             return;
         }
@@ -138,6 +138,11 @@ class WakeAlarmManager {
 
     function isRinging() {
         return _isRinging;
+    }
+
+    // Returns the scheduled wake epoch (seconds since epoch), or null if not set.
+    function getWakeEpoch() {
+        return _wakeEpoch;
     }
 
     function _onRingTick() as Void {
