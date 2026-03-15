@@ -9,6 +9,7 @@ Last Modified: February 27, 2026
 
 import Toybox.WatchUi;
 import Toybox.Timer;
+import Toybox.Lang;
 
 class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
@@ -49,6 +50,58 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         return false;
     }
 
+    // Touch Taps
+   function onTap(evt as WatchUi.ClickEvent) as Boolean {
+        var coords = evt.getCoordinates();
+        var tapX = coords[0];
+        var tapY = coords[1];
+
+        // Podcast
+        if (isInHitbox(tapX, tapY, _view._podcastHitbox)) {
+            _playPodcast();
+            return true;
+        }
+
+        // Music
+        if (isInHitbox(tapX, tapY, _view._musicHitbox)) {
+            _playMusic();
+            return true;
+        }
+
+        // Dismiss / leave screen
+        if (isInHitbox(tapX, tapY, _view._dismissIconHitbox) ||
+            isInHitbox(tapX, tapY, _view._dismissPillHitbox)) {
+
+            if (!_view.isDismissed()) {
+                _dismissAlarm();
+            } else {
+                WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+            }
+            return true;
+        }
+
+        // Snooze only while alarm is actively ringing
+        if (!_view.isDismissed()) {
+            if (isInHitbox(tapX, tapY, _view._snoozeHitbox)) {
+                _snoozeAlarm();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Helper for onTap: Check if a point (tx, ty) is inside a square [x, y, size]
+    private function isInHitbox(tx, ty, hitbox) as Boolean {
+        if (hitbox == null) { return false; }
+        var hX = hitbox[0];
+        var hY = hitbox[1];
+        var hW = hitbox[2];
+        var hH = hitbox.size() > 3 ? hitbox[3] : hitbox[2];
+
+        return (tx >= hX && tx <= hX + hW && ty >= hY && ty <= hY + hH);
+    }
+
     // Stops ringing and cancels any active snooze timer
     function _stopAllAlarmActions() as Void {
         _manager.stopRinging();
@@ -69,7 +122,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         _secondsLeft = 600;
 
         // Update UI state
-        if (_view has :setDismissed) { _view.setDismissed(true); }
+        if (_view has :setDismissed) { _view.setDismissed(false); }
         if (_view has :setStatusText) { _view.setStatusText("SNOOZING..."); }
 
         // Start 1-second repeating timer
@@ -95,12 +148,10 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         }
 
         // If NOT ready → do NOT stop alarm
-        if (!ready) {
-            if (_view has :setStatusText) {
-                _view.setStatusText("PODCAST GENERATING...");
+         if (!ready) {
+             return; // so when the podcast is not ready and the button is clicked, don't do anything
             }
-            return; // important: do nothing else
-        }
+
 
         // If ready → stop alarm and proceed
         _stopAllAlarmActions();

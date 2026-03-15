@@ -112,6 +112,7 @@ class WakeAlarmManager {
             _ringTimer = null;
         }
         stopPodcastPolling();
+        _wakeEpoch = null;
     }
 
     function isRinging() { return _isRinging; }
@@ -179,9 +180,6 @@ class WakeAlarmManager {
             _podcastReady = true;
             stopPodcastPolling();
 
-            if (_alarmView != null && (_alarmView has :setStatusText)) {
-                _alarmView.setStatusText("PODCAST READY");
-            }
             if (_alarmView != null && (_alarmView has :setPodcastReady)) {
                 _alarmView.setPodcastReady(true);
             }
