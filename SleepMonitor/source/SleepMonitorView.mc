@@ -51,53 +51,10 @@ class SleepMonitorView extends WatchUi.View {
 
 
         // ── "REMix" brand logo or fallback text ───────────────────
-        if (_remixLogo != null) {
-            // Center the logo horizontally near the top
-            var logoW = _remixLogo.getWidth();
-            dc.drawBitmap2(cx - logoW / 2, (H * 0.04).toNumber(), _remixLogo, {:tintColor => Colors.PURPLE_LITE});
-        } else {
-            dc.setColor(Colors.PURPLE_LITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(
-                cx, (H * 0.10).toNumber(),
-                Graphics.FONT_TINY,
-                "REMix",
-                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
-            );
-        }
+        UIHelpers.drawBranding(dc, cx, H, _remixLogo);
 
         // ── Current time ───────────────────────────────────────────
-        var ct   = System.getClockTime();
-        var hour = ct.hour;
-        var amPm = "";
-        var use12h = !System.getDeviceSettings().is24Hour;
-
-        if (use12h) {
-            if      (hour == 0)  { hour = 12; amPm = "AM"; }
-            else if (hour < 12)  { amPm = "AM"; }
-            else if (hour == 12) { amPm = "PM"; }
-            else                 { hour -= 12; amPm = "PM"; }
-        }
-
-        var timeStr = Lang.format("$1$:$2$", [hour.format("%d"), ct.min.format("%02d")]);
-
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(
-            cx, (H * 0.30).toNumber(),
-            Graphics.FONT_NUMBER_MEDIUM,
-            timeStr,
-            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
-        );
-
-        // AM / PM superscript
-        if (use12h && amPm.length() > 0) {
-            dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(
-                (cx + W * 0.23).toNumber(), (H * 0.27).toNumber(),
-                Graphics.FONT_XTINY,
-                amPm,
-                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
-            );
-        }
+        UIHelpers.drawClock(dc, cx, (H * 0.30).toNumber(), Graphics.FONT_NUMBER_MEDIUM);
 
         // ── Date ───────────────────────────────────────────────────
         var info    = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
