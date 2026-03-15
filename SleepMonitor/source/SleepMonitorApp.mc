@@ -14,15 +14,17 @@ import Toybox.WatchUi;
 import Toybox.Application.Storage;
 import Toybox.Communications;
 
-
+(:background_exluded)
 class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
     private var _wakeAlarmManager;
+    private var _httpClient;
 
 
     function initialize() {
         AppBase.initialize();
         _wakeAlarmManager = new WakeAlarmManager();
+        _httpClient = new SleepMonitorHttpClient();
     }
 
     // onStart() is called on application start up
@@ -37,9 +39,13 @@ class SleepMonitorApp extends Application.AppBase {
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
-            var wakeStartTime = "16:59"; // TODO: remove placeholder wake time. will be fixing this in next PR -Lauren
+            var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
+            if (wakeStartTime == null) {
+                wakeStartTime = "00:00";
+            }
             var wakeStartEpoch = WakeAlarmManager.getNextDayEpoch(wakeStartTime);
             getWakeAlarmManager().scheduleAlarmAtEpoch(wakeStartEpoch);
+            System.println("Wake alarm scheduled for epoch: " + wakeStartEpoch);
             WatchUi.requestUpdate();
         }
 }
@@ -65,6 +71,9 @@ class SleepMonitorApp extends Application.AppBase {
     function getWakeAlarmManager() {
         return _wakeAlarmManager;
     }  
+    function updateUserInfo() as Void {
+        _httpClient.getUserInfo();
+    }
 }
 
 // Convenience helper to access the App instance from other modules.

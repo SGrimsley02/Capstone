@@ -19,7 +19,7 @@ class SleepMonitorOnboarding {
     var _sessionId as String = "";
     var _timer as Timer.Timer?;
     var _pollCount as Number = 0;
-    const MAX_POLLS = 0;  // stop after 5 minutes (60 x 5s)
+    const MAX_POLLS = 15;  // stop after 5 minutes (15 x 20s)
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
@@ -49,7 +49,7 @@ class SleepMonitorOnboarding {
 
         // Start polling every 5 seconds
         _timer = new Timer.Timer();
-        _timer.start(method(:pollForResult), 10000, true);
+        _timer.start(method(:pollForResult), 20000, true);
 
         return true;
     }
@@ -79,12 +79,12 @@ class SleepMonitorOnboarding {
             _timer.stop();
 
             var preferences = data["preferences"];
-            Storage.setValue("username",     data["username"]);
+            SleepMonitorHttpClient.setUserId(data["username"]);
             Storage.setValue("hasOnboarded", true);
 
             if (preferences != null) {
-                Storage.setValue("pref_wakeStart", preferences["wakeStart"]);
-                Storage.setValue("pref_wakeEnd",   preferences["wakeEnd"]);
+                Storage.setValue("wakeStart", preferences["wakeStart"]);
+                Storage.setValue("wakeEnd",   preferences["wakeEnd"]);
             }
 
             System.println("Onboarding complete for: " + data["username"]);
