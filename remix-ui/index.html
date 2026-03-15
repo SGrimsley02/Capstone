@@ -309,23 +309,23 @@
               </div>
             </div>
 
-<div id="zodiacOptions" class="hide" style="margin-top:12px;">
-  <label for="zodiac">Zodiac Sign</label>
-  <select id="zodiac">
-    <option value="aries">Aries</option>
-    <option value="taurus">Taurus</option>
-    <option value="gemini">Gemini</option>
-    <option value="cancer">Cancer</option>
-    <option value="leo">Leo</option>
-    <option value="virgo">Virgo</option>
-    <option value="libra">Libra</option>
-    <option value="scorpio">Scorpio</option>
-    <option value="sagittarius">Sagittarius</option>
-    <option value="capricorn">Capricorn</option>
-    <option value="aquarius">Aquarius</option>
-    <option value="pisces">Pisces</option>
-  </select>
-</div>
+            <div id="zodiacOptions" class="hide" style="margin-top:12px;">
+              <label for="zodiac">Zodiac Sign</label>
+              <select id="zodiac">
+                <option value="aries">Aries</option>
+                <option value="taurus">Taurus</option>
+                <option value="gemini">Gemini</option>
+                <option value="cancer">Cancer</option>
+                <option value="leo">Leo</option>
+                <option value="virgo">Virgo</option>
+                <option value="libra">Libra</option>
+                <option value="scorpio">Scorpio</option>
+                <option value="sagittarius">Sagittarius</option>
+                <option value="capricorn">Capricorn</option>
+                <option value="aquarius">Aquarius</option>
+                <option value="pisces">Pisces</option>
+              </select>
+            </div>
 
             <div class="btns">
               <button type="submit" class="primary">Save preferences</button>
@@ -763,7 +763,7 @@ btnSpotify.addEventListener("click", () => {
             if (podNews.checked && selectedNewsSources.length === 0) {
               prefsMsg.textContent = "Please select at least one news source.";
               return;
-            }
+            };
 
           const prefs = {
             wakeStart: prefsForm.wakeStart.value,
@@ -781,7 +781,7 @@ btnSpotify.addEventListener("click", () => {
               sources: selectedNewsSources
             }
           };
-      const userID = currentUser.username
+      const userID = currentUser.username;
 
       const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/preferences?username=${userID}`, {
         method: 'PUT',
