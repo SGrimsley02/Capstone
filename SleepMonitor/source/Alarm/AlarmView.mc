@@ -59,6 +59,8 @@ class AlarmView extends WatchUi.View {
         // Reset state when view is hidden (alarm handled or user navigated away)
         if (_manager != null && (_manager has :setAlarmShowing)) {
             _manager.setAlarmShowing(false);
+            setDismissed(false);
+
         }
     }
 

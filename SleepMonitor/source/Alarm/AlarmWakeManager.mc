@@ -112,6 +112,7 @@ class WakeAlarmManager {
             _ringTimer = null;
         }
         stopPodcastPolling();
+        _wakeEpoch = null;
     }
 
     function isRinging() { return _isRinging; }
