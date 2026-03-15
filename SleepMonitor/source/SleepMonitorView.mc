@@ -5,7 +5,7 @@ Description: Home screen view for the REMix watch app.
              and quick-action buttons for music and podcast features.
 Authors: Kiara Rose
 Created: February 7, 2026
-Last Modified: March 13, 2026
+Last Modified: March 15, 2026
 */
 
 import Toybox.Graphics;
@@ -15,16 +15,7 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 
-class SleepMonitorView extends WatchUi.View {
-
-    // Brand / accent palette
-    private const PURPLE_MID  = 0x7B5EA7; // muted purple (arcs, rings)
-    private const PURPLE_LITE = 0xB39DDB; // lavender (logo, podcast tint)
-    private const PURPLE_DARK = 0x2D1B4E; // deep purple (podcast btn bg)
-    private const TEAL_LITE   = 0x4FC3F7; // light blue (alarm text, music tint)
-    private const TEAL_DARK   = 0x0D2B3E; // deep teal (music btn bg)
-    private const GRAY_MID    = 0x9E9E9E; // mid-gray (date, labels)
-    private const GRAY_DARK   = 0x333355; // dark blue-gray (divider)
+class SleepMonitorView extends WatchUi.View { 
 
     private var _musicIcon;
     private var _podcastIcon;
@@ -63,9 +54,9 @@ class SleepMonitorView extends WatchUi.View {
         if (_remixLogo != null) {
             // Center the logo horizontally near the top
             var logoW = _remixLogo.getWidth();
-            dc.drawBitmap2(cx - logoW / 2, (H * 0.04).toNumber(), _remixLogo, {:tintColor => PURPLE_LITE});
+            dc.drawBitmap2(cx - logoW / 2, (H * 0.04).toNumber(), _remixLogo, {:tintColor => Colors.PURPLE_LITE});
         } else {
-            dc.setColor(PURPLE_LITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Colors.PURPLE_LITE, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 cx, (H * 0.10).toNumber(),
                 Graphics.FONT_TINY,
@@ -99,7 +90,7 @@ class SleepMonitorView extends WatchUi.View {
 
         // AM / PM superscript
         if (use12h && amPm.length() > 0) {
-            dc.setColor(GRAY_MID, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
             dc.drawText(
                 (cx + W * 0.23).toNumber(), (H * 0.27).toNumber(),
                 Graphics.FONT_XTINY,
@@ -112,7 +103,7 @@ class SleepMonitorView extends WatchUi.View {
         var info    = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var dateStr = Lang.format("$1$, $2$ $3$", [info.day_of_week, info.month, info.day]);
 
-        dc.setColor(GRAY_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx, (H * 0.45).toNumber(),
             Graphics.FONT_XTINY,
@@ -121,7 +112,7 @@ class SleepMonitorView extends WatchUi.View {
         );
 
         // ── Thin divider ───────────────────────────────────────────
-        dc.setColor(GRAY_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.GRAY_DARK, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
         dc.drawLine(
             (cx - W * 0.28).toNumber(), (H * 0.52).toNumber(),
@@ -130,7 +121,7 @@ class SleepMonitorView extends WatchUi.View {
 
         // ── Next alarm ─────────────────────────────────────────────
         var alarmStr = _getAlarmString();
-        dc.setColor(TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx, (H * 0.58).toNumber(),
             Graphics.FONT_XTINY,
@@ -140,7 +131,7 @@ class SleepMonitorView extends WatchUi.View {
         if (_alarmIcon != null) {
             var iconW = _alarmIcon.getWidth();
             var iconY = (H * 0.58).toNumber() + dc.getFontHeight(Graphics.FONT_XTINY) / 2 + 4;
-            dc.drawBitmap2(cx - iconW / 2, iconY, _alarmIcon, {:tintColor => TEAL_LITE});
+            dc.drawBitmap2(cx - iconW / 2, iconY, _alarmIcon, {:tintColor => Colors.TEAL_LITE});
         }
 
         // ── Action button circles ──────────────────────────────────
@@ -150,30 +141,30 @@ class SleepMonitorView extends WatchUi.View {
         var btnR   = (W * 0.19).toNumber();
 
         // Podcast button (left)
-        dc.setColor(PURPLE_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.PURPLE_DARK, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(leftX, btnY, btnR);
-        dc.setColor(PURPLE_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.PURPLE_MID, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(leftX, btnY, btnR);
 
         // Music button (right)
-        dc.setColor(TEAL_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.TEAL_DARK, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(rightX, btnY, btnR);
-        dc.setColor(TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(rightX, btnY, btnR);
 
         // Icons (centered in each button circle; icons are ~20x20 px)
         if (_podcastIcon != null) {
             dc.drawBitmap2(leftX - 16, btnY - 42, _podcastIcon, {
-                :tintColor => PURPLE_LITE,
+                :tintColor => Colors.PURPLE_LITE,
                 });
         }
         if (_musicIcon != null) {
-            dc.drawBitmap2(rightX - 36, btnY - 42, _musicIcon, {:tintColor => TEAL_LITE});
+            dc.drawBitmap2(rightX - 36, btnY - 42, _musicIcon, {:tintColor => Colors.TEAL_LITE});
         }
 
         // ── Decorative top arc (brand color) ───────────────────────
         // Arc spans the top of the round face (~10 o'clock → ~2 o'clock)
-        dc.setColor(PURPLE_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Colors.PURPLE_MID, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(4);
         dc.drawArc(cx, cy, (W / 2) - 6, Graphics.ARC_COUNTER_CLOCKWISE, 125, 55);
         dc.setPenWidth(1);

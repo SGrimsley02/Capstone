@@ -4,22 +4,13 @@ Description: Wake alarm UI view for the SleepMonitor Connect IQ watch app.
              Renders the current time, alarm status messaging, and snooze countdown.
 Authors: Audrey Pan
 Created: February 22, 2026
-Last Modified: February 27, 2026
+Last Modified: March 15, 2026
 */
 
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.System;
-
-// --- GLOBAL THEME CONSTANTS ---
-const PURPLE_MID  = 0x7B5EA7;
-const PURPLE_LITE = 0xB39DDB;
-const PURPLE_DARK = 0x2D1B4E;
-const TEAL_LITE   = 0x4FC3F7;
-const TEAL_DARK   = 0x0D2B3E;
-const GRAY_MID    = 0x9E9E9E;
-const SUNSET_ROSE = 0xFF8A80; 
 
 class AlarmView extends WatchUi.View {
 
@@ -36,7 +27,7 @@ class AlarmView extends WatchUi.View {
     var _dismiss_icon;
     private var _remixLogo;
 
-    //Hitbox!
+    //Hitbox
     var _podcastHitbox = [0, 0, 0]; // [x, y, size]
     var _musicHitbox   = [0, 0, 0];
     var _snoozeHitbox  = [0, 0, 0];
@@ -128,7 +119,7 @@ class AlarmView extends WatchUi.View {
 
         // 2. Center State
         if (_snoozeTimeRemaining > 0) {
-            dc.setColor(TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
             var mins = _snoozeTimeRemaining / 60;
             var secs = _snoozeTimeRemaining % 60;
             dc.drawText(cx, rowMid, Graphics.FONT_MEDIUM, 
@@ -136,7 +127,7 @@ class AlarmView extends WatchUi.View {
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         } else {
-            var statusColor = _isDismissed ? PURPLE_LITE : TEAL_LITE;
+            var statusColor = _isDismissed ? Colors.PURPLE_LITE : Colors.TEAL_LITE;
             dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
             
             var font = (_statusText.length() > 10) ? Graphics.FONT_XTINY : Graphics.FONT_TINY;
@@ -146,32 +137,32 @@ class AlarmView extends WatchUi.View {
 
         // 3. Media Labels (PODCAST turns WHITE when ready)
         // PODCAST 
-        var podColor = _podcastReady ? PURPLE_LITE : GRAY_MID;
+        var podColor = _podcastReady ? Colors.PURPLE_LITE : Colors.GRAY_MID;
         _podcastHitbox = [topMargin, rowTopBtn, hitboxSize];
         dc.drawBitmap2(topMargin, rowTopBtn, _podcast_icon, { :tintColor => podColor });
 
         // MUSIC
         _musicHitbox = [botMargin, rowBotBtn, hitboxSize];
-        dc.drawBitmap2(botMargin, rowBotBtn, _music_icon, { :tintColor => PURPLE_MID });
+        dc.drawBitmap2(botMargin, rowBotBtn, _music_icon, { :tintColor => Colors.PURPLE_MID });
 
         //DISMISS
             var dW = _dismiss_icon.getWidth();
             var dX = W - botMargin - dW;
             _dismissIconHitbox = [dX, rowBotBtn, hitboxSize];
-            dc.drawBitmap2(dX, rowBotBtn, _dismiss_icon, { :tintColor => TEAL_LITE });
+            dc.drawBitmap2(dX, rowBotBtn, _dismiss_icon, { :tintColor => Colors.TEAL_LITE });
 
  // --- 4) Alarm Controls & Dynamic Footer ---
         
         // Bubbles (Persistent background)
         var bubbleRadius = W * 0.50;
         var bubbleY = H * 1.30;
-        dc.setColor(PURPLE_DARK, Graphics.COLOR_TRANSPARENT); 
+        dc.setColor(Colors.PURPLE_DARK, Graphics.COLOR_TRANSPARENT); 
         dc.fillCircle(W * 0.25, bubbleY, bubbleRadius); 
-        dc.setColor(TEAL_DARK, Graphics.COLOR_TRANSPARENT); 
+        dc.setColor(Colors.TEAL_DARK, Graphics.COLOR_TRANSPARENT); 
         dc.fillCircle(W * 0.75, bubbleY, bubbleRadius); 
 
         var pillY = H * 0.90;
-        var pillW = W * 0.53; // Perfect fit for the curve!
+        var pillW = W * 0.53; 
         var pillH = 34;
 
         // Logic: Show "Dismiss" if it's ringing OR if it's currently snoozing
@@ -181,11 +172,10 @@ class AlarmView extends WatchUi.View {
         if (!_isDismissed && _snoozeTimeRemaining <= 0) {
             var snoozeW = _snooze_icon.getWidth();
             _snoozeHitbox = [W - topMargin - snoozeW, rowTopBtn, hitboxSize];
-            dc.drawBitmap2(W - topMargin - snoozeW, rowTopBtn, _snooze_icon, { :tintColor => TEAL_LITE });
+            dc.drawBitmap2(W - topMargin - snoozeW, rowTopBtn, _snooze_icon, { :tintColor => Colors.TEAL_LITE });
         }
 
         // --- 2. THE DYNAMIC PILL ---
-        // 1. Declare and initialize here
         var outlineColor = Graphics.COLOR_TRANSPARENT;
         var footerText = "";
         var textColor = Graphics.COLOR_WHITE;
@@ -197,13 +187,13 @@ class AlarmView extends WatchUi.View {
             dc.fillRoundedRectangle(cx - (pillW/2), pillY - (pillH/2), pillW, pillH, 17);
 
             if (showDismissAction) {
-                outlineColor = PURPLE_LITE;
+                outlineColor = Colors.PURPLE_LITE;
                 footerText   = "CLICK TO DISMISS";
                 textColor    = Graphics.COLOR_WHITE;
                 _dismissPillHitbox = [cx - (pillW/2), pillY - (pillH/2), pillW, pillH];
             } 
             else if (_isDismissed && _podcastReady) {
-                outlineColor = GRAY_MID;
+                outlineColor = Colors.GRAY_MID;
                 footerText   = "PODCAST READY";
                 textColor    = Graphics.COLOR_WHITE;
                 _dismissPillHitbox = [0,0,0,0];
