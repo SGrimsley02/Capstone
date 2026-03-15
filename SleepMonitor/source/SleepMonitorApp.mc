@@ -32,7 +32,7 @@ class SleepMonitorApp extends Application.AppBase {
         //System.println("Storage cleared for test.");
         
         // One-time onboarding: prompt user to open a web page on their phone.
-        var didOnboard = SleepMonitorOnboarding.runIfFirstTime("http://127.0.0.1:3000/");
+        var didOnboard = SleepMonitorOnboarding.runIfFirstTime("http://127.0.0.1:5000/");
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");

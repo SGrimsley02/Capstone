@@ -29,7 +29,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         // Handle menu item selections and trigger the corresponding HTTP client methods.
         // (Item symbols map to menu.xml entries)
         if (item == :item_1) {
-            System.println("Running local HTTP test on http://127.0.0.1:3000/");
+            System.println("Running local HTTP test on http://127.0.0.1:5000/");
             _httpClient.sendLocalHttpRequest();
         } else if (item == :item_2) {
             System.println("Running public HTTPS test.");

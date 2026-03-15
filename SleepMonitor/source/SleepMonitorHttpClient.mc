@@ -38,7 +38,7 @@ class SleepMonitorHttpClient {
     function sendLocalHttpRequest() as Void {
         // GET request to a local server (mainly useful in simulator/dev).
         // TODO: remove this path and its menu item.
-        var url = "http://127.0.0.1:3000/";
+        var url = "http://127.0.0.1:5000/";
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
@@ -149,6 +149,6 @@ class SleepMonitorHttpClient {
     }
 
     private function getUserId() as String or Null {
-        return Application.Storage.getValue(USER_ID_KEY) as String;
+        return Application.Storage.getValue(USER_ID_KEY) as String?;
     }
 }

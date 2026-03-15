@@ -22,7 +22,7 @@ module SleepAnalyzer {
         // Build a nightly sleep summary for the last sleep window based on heart rate/body battery.
         var window = new Time.Duration(SLEEP_WINDOW_SECONDS);
 
-        var bbIterator = getHeartRateIterator(window);
+        var bbIterator = getBodyBatteryIterator(window);
         if (bbIterator == null) {
             return null;
         }

@@ -190,8 +190,6 @@ class WakeAlarmManager {
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();
 
-        System.println("Parsed time - Hours: " + hours + ", Minutes: " + minutes);
-
         // Get current local time info
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
 
