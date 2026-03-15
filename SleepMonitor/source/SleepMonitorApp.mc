@@ -30,7 +30,7 @@ class SleepMonitorApp extends Application.AppBase {
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
         //DELETE THIS LATER (ONLY FOR TESTING)
-        Storage.deleteValue("hasOnboarded");
+        // Storage.deleteValue("hasOnboarded");
         //System.println("Storage cleared for test.");
         
         // One-time onboarding: prompt user to open a web page on their phone.
