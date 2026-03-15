@@ -27,6 +27,9 @@ import Toybox.WatchUi;
 
 // URL to AWS API Gateway endpoint
 const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
+const USER_ID_KEY = "username";
+const WAKE_START_KEY = "wakeStart";
+const WAKE_END_KEY = "wakeEnd";
 
 class SleepMonitorHttpClient {
 
@@ -172,26 +175,26 @@ class SleepMonitorHttpClient {
     }
 
     static function setUserId(userId as String) as Void {
-        Application.Storage.setValue(Constants.USER_ID_KEY, userId);
+        Application.Storage.setValue(USER_ID_KEY, userId);
     }
 
     private function getUserId() as String or Null {
-        return Application.Storage.getValue(Constants.USER_ID_KEY) as String?;
+        return Application.Storage.getValue(USER_ID_KEY) as String?;
     }
 
     static function setWakeStart(wakeStartTime as String) as Void {
-        Application.Storage.setValue(Constants.WAKE_START_KEY, wakeStartTime);
+        Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
     }
 
     static function getWakeStart() as String or Null {
-        return Application.Storage.getValue(Constants.WAKE_START_KEY) as String?;
+        return Application.Storage.getValue(WAKE_START_KEY) as String?;
     }
 
     static function setWakeEnd(wakeEndTime as String) as Void {
-        Application.Storage.setValue(Constants.WAKE_END_KEY, wakeEndTime);
+        Application.Storage.setValue(WAKE_END_KEY, wakeEndTime);
     }
 
     static function getWakeEnd() as String or Null {
-        return Application.Storage.getValue(Constants.WAKE_END_KEY) as String?;
+        return Application.Storage.getValue(WAKE_END_KEY) as String?;
     }
 }
