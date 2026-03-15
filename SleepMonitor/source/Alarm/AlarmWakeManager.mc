@@ -63,8 +63,10 @@ class WakeAlarmManager {
             _alarmTimer = null;
         }
         _fireAlarmUiAndRing();
-        // TODO: re-poll server for user preferences to see if we should change the alarm time
-        scheduleAlarmAtEpoch(getNextDayEpoch("07:00")); // Reschedule for next day (placeholder time)
+
+        getApp().updateUserInfo();
+        var wakeTime = SleepMonitorHttpClient.getWakeStart();
+        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime)); // Reschedule for next day (placeholder time)
         return;
     }
 
