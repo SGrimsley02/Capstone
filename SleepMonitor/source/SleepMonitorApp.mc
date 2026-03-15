@@ -30,7 +30,7 @@ class SleepMonitorApp extends Application.AppBase {
         //DELETE THIS LATER (ONLY FOR TESTING)
         //Storage.deleteValue("hasOnboarded");
         //System.println("Storage cleared for test.");
-        
+
         // One-time onboarding: prompt user to open a web page on their phone.
         var didOnboard = SleepMonitorOnboarding.runIfFirstTime("https://www.google.com");
 
@@ -60,7 +60,7 @@ class SleepMonitorApp extends Application.AppBase {
     }
     function getWakeAlarmManager() {
         return _wakeAlarmManager;
-    }  
+    }
 }
 
 // Convenience helper to access the App instance from other modules.
