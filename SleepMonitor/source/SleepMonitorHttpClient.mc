@@ -3,33 +3,31 @@ Name: source/SleepMonitorHttpClient.mc
 Description: Networking client for the SleepMonitor Connect IQ watch app.
              Wraps Communications.makeWebRequest() for DEV test calls (GET local, GET public HTTPS,
              POST simulated sleep payload) and updates the UI with status messages.
-Authors: Audrey Pan
+Authors: Audrey Pan, Lauren D'Souza
 Created: February 14, 2026
-Last Modified: February 14, 2026
+Last Modified: March 1st, 2026
 
 PLEASE READ:
 - CURRENTLY CODE:
-  - Uses a temporary ngrok HTTPS base URL to reach a local Python server.
-  - Adds header: "ngrok-skip-browser-warning" => "true" (required for ngrok convenience behavior).
   - Provides local HTTP + public HTTPS + POST test paths triggered manually from menu items.
   - Sends simulated/hardcoded sleep data.
 - LATER IMPLEMENT:
-  - Replace ngrok base URL with a real backend HTTPS endpoint.
-  - Remove ngrok-specific header.
   - Remove local HTTP test flows and menu items.
-  - Potentially switch POST body from form-urlencoded to JSON.
   - Add batching/streaming logic (automatic background sends) instead of manual menu-triggered POST.
 */
 
+import Toybox.Application;
 import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.PersistedContent;
+import Toybox.SensorHistory;
 import Toybox.System;
+import Toybox.Time;
 import Toybox.WatchUi;
 
-// ngrok URL that forwards to your local Python server
-//TODO: replace with real backend HTTPS endpoint
-const BASE_URL = "https://unfemale-ingeborg-hyperscholastically.ngrok-free.dev/";
+// URL to AWS API Gateway endpoint
+const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
+const USER_ID_KEY = "user_id";
 
 class SleepMonitorHttpClient {
 
@@ -40,7 +38,7 @@ class SleepMonitorHttpClient {
     function sendLocalHttpRequest() as Void {
         // GET request to a local server (mainly useful in simulator/dev).
         // TODO: remove this path and its menu item.
-        var url = "http://127.0.0.1:3000/";
+        var url = "http://127.0.0.1:5000/";
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
@@ -50,59 +48,52 @@ class SleepMonitorHttpClient {
         makeRequest(url, null, options);
     }
 
-    function sendPublicHttpsRequest() as Void {
+    function sendPublicHttpsRequest(url as String) as Void {
         // GET request to the ngrok public HTTPS URL (proves HTTPS works).
-        var url = BASE_URL;
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
             :context => "PUBLIC_HTTPS",
-            :headers      => {
-                "ngrok-skip-browser-warning" => "true",
-                "Accept" => "text/plain"
-            },
             :timeout      => 15,
         };
 
         makeRequest(url, null, options);
     }
 
-    function sendPostTestRequest() as Void {
-        // POST request that sends simulated sleep data to the backend.
-        // TODO: replace URL, remove ngrok header
-        var url = BASE_URL + "upload";
-        var params = buildSleepPayload();
+    function sendSleepSummaryRequest() as Void {
+        // POST request that sends a nightly summary for the last sleep window.
+        var url = BASE_URL + "sleep-summary";
+
+        var userId = getUserId();
+        if (userId == null) {
+            userId = "demo"; // TODO: Replace with proper error handling. Just use demo id for now since we don't get the userId.
+        }
+
+        var params = SleepAnalyzer.buildSleepPayload(userId);
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
-            :context => "SLEEP_POST",
+            :context => "SLEEP_SUMMARY",
             :headers => {
-                // With a Dictionary params + POST, the SDK sends a form-urlencoded body.
-                // TODO: if backend expects JSON, change Content-Type and send JSON string instead.
                 "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED,
-                "Accept" => "text/plain",
-                //remove once backend is set up
-                "ngrok-skip-browser-warning" => "true"
+                "Accept" => "text/plain"
             }
         };
 
-        System.println("POST payload: " + params.toString());
+        if (params == null) {
+            // TODO replace with proper error handling once we have real sleep data
+            params = {
+                "eventType" => "sleep_summary",
+                "timestamp" => "",
+                "username" => "demo",
+                "sleepQuality" => 0
+            };
+            System.println("No applicable sensor history could be extracted for sleep window.");
+        }
+
+        System.println("POST sleep summary: " + params.toString());
         makeRequest(url, params, options);
-    }
-
-    private function buildSleepPayload() as Dictionary {
-        // Create simulated sleep payload values (placeholder for now)
-        var now = System.getClockTime();
-        var ts = now.hour.toString() + ":" + now.min.toString() + ":" + now.sec.toString();
-
-        return {
-            "eventType" => "sleep_sample",
-            "timestamp" => ts,
-            "heartRate" => "68",
-            "sleepStage" => "light",
-            "movement" => "0.02"
-        };
     }
 
     private function makeRequest(
@@ -112,6 +103,7 @@ class SleepMonitorHttpClient {
     ) as Void {
         // shared wrapper around Communications.makeWebRequest() that adds error handling and UI status updates.
         try {
+            options[:contentType] = Communications.REQUEST_CONTENT_TYPE_JSON;
             setStatus("Sending " + options[:context].toString());
             System.println("Sending request: " + options[:context] + " -> " + url);
             System.println("About to call makeWebRequest");
@@ -150,5 +142,13 @@ class SleepMonitorHttpClient {
         //store status in-memory and request a UI redraw
         getApp().setHttpStatus(message);
         WatchUi.requestUpdate();
+    }
+
+    function setUserId(userId as String) as Void {
+        Application.Storage.setValue(USER_ID_KEY, userId);
+    }
+
+    private function getUserId() as String or Null {
+        return Application.Storage.getValue(USER_ID_KEY) as String?;
     }
 }

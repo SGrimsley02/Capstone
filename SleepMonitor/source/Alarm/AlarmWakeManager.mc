@@ -63,6 +63,8 @@ class WakeAlarmManager {
             _alarmTimer = null;
         }
         _fireAlarmUiAndRing();
+        // TODO: re-poll server for user preferences to see if we should change the alarm time
+        scheduleAlarmAtEpoch(getNextDayEpoch("07:00")); // Reschedule for next day (placeholder time)
         return;
     }
 
@@ -181,5 +183,29 @@ class WakeAlarmManager {
                 _alarmView.setPodcastReady(true);
             }
         }
+    }
+
+    static function getNextDayEpoch(timeStr as String) as Lang.Number {
+        // Parse hours, minutes, seconds from "HH:MM:SS"
+        var hours = timeStr.substring(0, 2).toNumber();
+        var minutes = timeStr.substring(3, 5).toNumber();
+
+        // Get current local time info
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+
+        // Build tomorrow's date at the given time
+        var options = {
+            :year   => now.year,
+            :month  => now.month,
+            :day    => now.day + 1,  // following day — Gregorian.moment() handles month/year overflow
+            :hour   => hours,
+            :minute => minutes,
+            :second => 0,
+        };
+
+        var moment = Gregorian.moment(options);
+        var tzOffset = System.getClockTime().timeZoneOffset;
+
+        return moment.value() - tzOffset;  // UTC epoch time expected by alarm scheduler
     }
 }

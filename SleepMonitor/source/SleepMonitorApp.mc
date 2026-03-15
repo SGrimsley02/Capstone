@@ -32,10 +32,13 @@ class SleepMonitorApp extends Application.AppBase {
         //System.println("Storage cleared for test.");
         
         // One-time onboarding: prompt user to open a web page on their phone.
-        var didOnboard = SleepMonitorOnboarding.runIfFirstTime("https://www.google.com");
+        var didOnboard = SleepMonitorOnboarding.runIfFirstTime("http://127.0.0.1:5000/");
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
+            var wakeStartTime = "16:59"; // TODO: remove placeholder wake time. will be fixing this in next PR -Lauren
+            var wakeStartEpoch = WakeAlarmManager.getNextDayEpoch(wakeStartTime);
+            getWakeAlarmManager().scheduleAlarmAtEpoch(wakeStartEpoch);
             WatchUi.requestUpdate();
         }
 }
