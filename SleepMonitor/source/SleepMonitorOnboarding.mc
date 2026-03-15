@@ -23,11 +23,9 @@ class SleepMonitorOnboarding {
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
-        var key = "hasOnboarded";
-
         System.println("Onboarding check started...");
 
-        var hasOnboarded = Storage.getValue(key);
+        var hasOnboarded = Storage.getValue(Constants.HAS_ONBOARDED_KEY);
         System.println("Stored value: " + hasOnboarded);
 
         if (hasOnboarded == true) {
@@ -80,11 +78,11 @@ class SleepMonitorOnboarding {
 
             var preferences = data["preferences"];
             SleepMonitorHttpClient.setUserId(data["username"]);
-            Storage.setValue("hasOnboarded", true);
+            Storage.setValue(Constants.HAS_ONBOARDED_KEY, true);
 
             if (preferences != null) {
-                Storage.setValue("wakeStart", preferences["wakeStart"]);
-                Storage.setValue("wakeEnd",   preferences["wakeEnd"]);
+                Storage.setValue(Constants.WAKE_START_KEY, preferences["wakeStart"]);
+                Storage.setValue(Constants.WAKE_END_KEY,   preferences["wakeEnd"]);
             }
 
             System.println("Onboarding complete for: " + data["username"]);
@@ -96,7 +94,7 @@ class SleepMonitorOnboarding {
         } else {
             // Something went wrong — stop polling
             _timer.stop();
-            Storage.setValue("hasOnboarded", false);
+            Storage.setValue(Constants.HAS_ONBOARDED_KEY, false);
             System.println("Poll failed: " + responseCode);
         }
     }

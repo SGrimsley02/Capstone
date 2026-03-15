@@ -19,7 +19,7 @@ class PodcastProvider {
     private var _statusCallback;
 
     function initialize() { 
-        var stored = Application.Storage.getValue("user_id");
+        var stored = Application.Storage.getValue(Constants.USER_ID_KEY);
         _username = stored != null ? stored.toString() : "test_user42"; //Fall back to defaul username if not yet set
         System.println("PodcastProvider user_id: " + _username);
     }
