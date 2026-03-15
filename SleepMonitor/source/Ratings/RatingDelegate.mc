@@ -58,15 +58,12 @@ class RatingDelegate extends WatchUi.InputDelegate {
     function onKeyPressed(evt as WatchUi.KeyEvent) as Boolean {
         var key = evt.getKey();
 
-        if (key == WatchUi.KEY_ESC) {
-            // BACK -- exit without submitting.
-            WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-            return true;
-        } else if (key == WatchUi.KEY_ENTER) {
+        if (key == WatchUi.KEY_ENTER) {
             // START -- submit if a star is selected, then exit.
             var rating = _view.getRating();
             if (rating > 0) {
-                submitSongRating(_view.getUserId(), _view.getSong(), rating);
+                var request = new SongRatingService();
+                request.submitRating(_view.getUserId(), _view.getSong(), rating);
             }
             WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
             return true;

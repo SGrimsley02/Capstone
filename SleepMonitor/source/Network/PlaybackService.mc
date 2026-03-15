@@ -18,6 +18,7 @@ import Toybox.Application;
 class PlaybackProvider {
     private var _userId;
     private var _notifyUrl = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify/playback";
+    private var _statusCallback as Lang.Method?;
 
 
     function initialize() {
@@ -25,6 +26,7 @@ class PlaybackProvider {
         _userId = stored != null ? stored.toString() : "unknown"; //Fall back to default username if not yet set
         _userId = "playbacktest"; // Hardcode for testing purposes
         System.println("PlaybackProvider user_id: " + _userId);
+        _statusCallback = null;
     }
 
 
@@ -40,12 +42,14 @@ class PlaybackProvider {
     // Goal: allow user to pause, resume, skip, replay, and adjust volume through watch app UI
     //       Use "status" action to check if a song is playing and retrieve its URI for review submission.
 
-    function sendPlaybackCommand(action as String, volume as Number?) as Void {
+    function sendPlaybackCommand(action as String, volume as Number?, callback as Lang.Method?) as Void {
+        _statusCallback = callback;
+
         var payload = {
             "userId" => _userId,
             "action" => action
         };
-        if (action == "volume" && volume != null) {
+        if (action.equals("volume")) {
             payload["volume"] = volume;
         }
 
@@ -66,5 +70,9 @@ class PlaybackProvider {
 
     function _onPlaybackResponse(responseCode as Lang.Number, data as Lang.Dictionary or Lang.String or Null) as Void {
         System.println("PlaybackProvider._onPlaybackResponse: responseCode=" + responseCode + " data=" + data);
+        if (_statusCallback != null && data instanceof Lang.Dictionary) {
+            _statusCallback.invoke(data);
+            _statusCallback = null;
+        }
     }
 }

@@ -43,10 +43,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
         } else if (item == :testReview) {
             System.println("Navigating to the song rating screen.");
-            var song   = {
-                :title => "Test Song",
-                :artist => "Test Artist"
-            }; // Example song object
+            var song = "fakeSongUri";
             var ratingView = new RatingView(song);
             var ratingDelegate = new RatingDelegate(ratingView);
             WatchUi.pushView(ratingView, ratingDelegate, WatchUi.SLIDE_UP);

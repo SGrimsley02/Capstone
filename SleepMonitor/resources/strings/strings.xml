@@ -20,4 +20,6 @@ Last Modified: February 14, 2026
 
     <string id="RateThisSong">Rate This Song</string>
     <string id="RatingHint">START to confirm</string>
+    <string id="NowPlaying">Now Playing</string>
+    <string id="VolumeControl">Volume</string>
 </strings>

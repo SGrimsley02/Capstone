@@ -23,8 +23,8 @@ class RatingView extends WatchUi.View {
     private const STAR_GRAY   = 0x555555;
 
     // Data for the submission
-    private var _userId as Object;
-    private var _song   as Object;
+    private var _userId as String;
+    private var _song   as String;
     private var _rating as Number;   // 0 = none selected; 1–5 = selected
 
     // Star bitmap resource
@@ -39,7 +39,7 @@ class RatingView extends WatchUi.View {
 
     // ── Lifecycle ──────────────────────────────────────────────────
 
-    function initialize(song as Object) {
+    function initialize(song as String) {
         View.initialize();
         _userId = Storage.getValue("user_id");
         if (_userId == null) {
@@ -102,8 +102,8 @@ class RatingView extends WatchUi.View {
         }
     }
 
-    function getUserId() as Object { return _userId; }
-    function getSong()   as Object { return _song;   }
+    function getUserId() as String { return _userId; }
+    function getSong()   as String { return _song;   }
 
     // Returns [x, y, w, h] of the i-th star (0-indexed) for hit testing.
     function getStarBounds(i as Number) as Array {

@@ -18,9 +18,7 @@ import Toybox.Timer;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
 
-// TODO: replace MUSIC_URL with a playback menu
 // TODO: add podcast_url to storage in PodcastService.mc
-const MUSIC_URL   = "https://remix.app/music";
 // Hold threshold for back-button exit (milliseconds)
 const HOLD_MS = 700;
 
@@ -83,11 +81,8 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         var dyR = tapY - btnY;
         if (dxR * dxR + dyR * dyR <= btnR * btnR) {
             System.println("SleepMonitorDelegate: music button tapped");
-            try {
-                Communications.openWebPage(MUSIC_URL, null, null);
-            } catch (ex) {
-                System.println("Music deeplink failed: " + ex.toString());
-            }
+            var pbView = new PlaybackView();
+            WatchUi.pushView(pbView, new PlaybackDelegate(pbView), WatchUi.SLIDE_UP);
             return true;
         }
 
@@ -136,12 +131,9 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
             _escPressedHere = false;
             _cancelEscTimer();
             if (!_escHoldFired) {
-                System.println("SleepMonitorDelegate: opening music deeplink");
-                try {
-                    Communications.openWebPage(MUSIC_URL, null, null);
-                } catch (ex) {
-                    System.println("Music deeplink failed: " + ex.toString());
-                }
+                System.println("SleepMonitorDelegate: opening music playback");
+                var pbView = new PlaybackView();
+                WatchUi.pushView(pbView, new PlaybackDelegate(pbView), WatchUi.SLIDE_UP);
             }
             _escHoldFired = false;
             return true;

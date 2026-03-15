@@ -1,6 +1,6 @@
 /*
 Name: source/Alarm/AlarmDelegate.mc
-Description: Handles user input for the alarm. Now includes logic to disable 
+Description: Handles user input for the alarm. Now includes logic to disable
              the podcast action until the content is verified as ready.
 Authors: Audrey Pan
 Created: February 22, 2026
@@ -16,7 +16,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
     var _manager; // Reference to alarm manager controlling ringing + scheduling
     var _snoozeTimer; // Timer used for snooze countdown
     var _secondsLeft = 600; // Remaining snooze time (seconds) — default 10 minutes
-    
+
 
     function initialize(view, manager) {
         WatchUi.BehaviorDelegate.initialize();
@@ -67,11 +67,11 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         // Reset snooze duration
         _secondsLeft = 600;
-        
+
         // Update UI state
         if (_view has :setDismissed) { _view.setDismissed(true); }
         if (_view has :setStatusText) { _view.setStatusText("SNOOZING..."); }
-        
+
         // Start 1-second repeating timer
         _snoozeTimer = new Timer.Timer();
         _snoozeTimer.start(method(:onTimerTick), 1000, true);
@@ -96,8 +96,8 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         // If NOT ready → do NOT stop alarm
         if (!ready) {
-            if (_view has :setStatusText) { 
-                _view.setStatusText("PODCAST GENERATING..."); 
+            if (_view has :setStatusText) {
+                _view.setStatusText("PODCAST GENERATING...");
             }
             return; // important: do nothing else
         }
@@ -119,6 +119,9 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         if (_view has :setDismissed) { _view.setDismissed(true); }
         if (_view has :setStatusText) { _view.setStatusText("PLAYING MUSIC"); }
+
+        var pbView = new PlaybackView();
+        WatchUi.pushView(pbView, new PlaybackDelegate(pbView), WatchUi.SLIDE_UP);
     }
 
     function onTimerTick() as Void {
