@@ -9,4 +9,11 @@ Last Modified: February 7, 2026
 
 <drawables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <bitmap id="LauncherIcon" filename="launcher_icon.svg" dithering="none" />
+    <bitmap id="musicIcon" filename="musicIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="snoozeIcon" filename="snoozeIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="dismissIcon" filename="dismissIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="podcastIcon" filename="podcastIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="remixLogo" filename="remixLogo.png" dithering="none" packingFormat="png" />
+    <bitmap id="soundwaveIcon" filename="soundwaveIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="alarmIcon" filename="alarmIcon.png" dithering="none" packingFormat="png" />
 </drawables>

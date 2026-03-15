@@ -9,7 +9,7 @@ Last Modified: February 14, 2026
 -->
 
 <strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
-    <string id="AppName">SleepMonitor</string>
+    <string id="AppName">REMix</string>
 
     <string id="prompt">Open menu to test HTTP/HTTPS</string>
 
