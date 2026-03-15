@@ -7,7 +7,7 @@
   Authors: Ella Nguyen, Lauren D'Souza, Kiara Grimsley
 
   Created: February 12, 2026
-  Updated: March 14, 2026
+  Updated: March 15, 2026
 -->
 <!doctype html>
 <html lang="en">
@@ -445,6 +445,28 @@
   const newsYahoo = el("news_yahoo");
   const newsNotBoring = el("news_notboring");
 
+  const ALL_NEWS_SOURCES = [
+    "NY Times",
+    "BBC News",
+    "The Guardian",
+    "Al Jazeera",
+    "TechRadar",
+    "Time Magazine",
+    "Yahoo Sports",
+    "Not Boring"
+  ];
+  
+  const newsSourceInputs = {
+    "NY Times": newsNYTimes,
+    "BBC News": newsBBC,
+    "The Guardian": newsGuardian,
+    "Al Jazeera": newsAlJazeera,
+    "TechRadar": newsTechRadar,
+    "Time Magazine": newsTime,
+    "Yahoo Sports": newsYahoo,
+    "Not Boring": newsNotBoring
+  };
+
   podHoroscope.addEventListener("change", () => {
     zodiacOptions.classList.toggle("hide", !podHoroscope.checked);
   });
@@ -695,11 +717,11 @@ btnSpotify.addEventListener("click", () => {
     setView("prefs");
     prefsMsg.textContent = "";
 
-    if (currentUser && currentUser.preferences) {
-      prefsForm.wakeStart.value = currentUser.preferences.wakeStart;
-      prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd;
-      prefsForm.tone.value = currentUser.preferences.tone;
-      prefsForm.explicit.value = currentUser.preferences.explicit;
+    if (currentUser?.preferences) {
+      prefsForm.wakeStart.value = currentUser.preferences.wakeStart || "07:00";
+      prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd || "07:30";
+      prefsForm.tone.value = currentUser.preferences.tone || "tone1";
+      prefsForm.explicit.value = currentUser.preferences.explicit || "filter";
     }
 
     const podcast = (currentUser && currentUser.preferences && currentUser.preferences.podcast) || {
@@ -721,16 +743,12 @@ btnSpotify.addEventListener("click", () => {
       zodiacSelect.value = currentUser.preferences.podcast.zodiac;
     }
 
-    const savedSources = currentUser?.preferences?.news?.sources || [];
+    const savedSources = currentUser?.preferences?.news?.sources;
+    const effectiveSources = savedSources == null ? ALL_NEWS_SOURCES : savedSources;
 
-    newsNYTimes.checked = savedSources.includes("NY Times");
-    newsBBC.checked = savedSources.includes("BBC News");
-    newsGuardian.checked = savedSources.includes("The Guardian");
-    newsAlJazeera.checked = savedSources.includes("Al Jazeera");
-    newsTechRadar.checked = savedSources.includes("TechRadar");
-    newsTime.checked = savedSources.includes("Time Magazine");
-    newsYahoo.checked = savedSources.includes("Yahoo Sports");
-    newsNotBoring.checked = savedSources.includes("Not Boring");
+    Object.entries(newsSourceInputs).forEach(([sourceName, checkbox]) => {
+      checkbox.checked = effectiveSources.includes(sourceName);
+    });
   });
 
   // Save prefs
@@ -738,15 +756,14 @@ btnSpotify.addEventListener("click", () => {
     e.preventDefault();
 
     try {
-          const selectedNewsSources = [];
-          if (newsNYTimes.checked) selectedNewsSources.push("NY Times");
-          if (newsBBC.checked) selectedNewsSources.push("BBC News");
-          if (newsGuardian.checked) selectedNewsSources.push("The Guardian");
-          if (newsAlJazeera.checked) selectedNewsSources.push("Al Jazeera");
-          if (newsTechRadar.checked) selectedNewsSources.push("TechRadar");
-          if (newsTime.checked) selectedNewsSources.push("Time Magazine");
-          if (newsYahoo.checked) selectedNewsSources.push("Yahoo Sports");
-          if (newsNotBoring.checked) selectedNewsSources.push("Not Boring");
+          const selectedNewsSources = Object.entries(newsSourceInputs)
+            .filter(([, checkbox]) => checkbox.checked)
+            .map(([sourceName]) => sourceName);
+
+            if (podNews.checked && selectedNewsSources.length === 0) {
+              prefsMsg.textContent = "Please select at least one news source.";
+              return;
+            }
 
           const prefs = {
             wakeStart: prefsForm.wakeStart.value,
