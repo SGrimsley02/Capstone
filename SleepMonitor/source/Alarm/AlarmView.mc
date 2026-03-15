@@ -179,7 +179,7 @@ class AlarmView extends WatchUi.View {
         var outlineColor = Graphics.COLOR_TRANSPARENT;
         var footerText = "";
         var textColor = Graphics.COLOR_WHITE;
-        var showPill = (showDismissAction || (_isDismissed && _podcastReady ));
+        var showPill = (showDismissAction || _isDismissed );
 
         if (showPill) {
             
@@ -192,10 +192,14 @@ class AlarmView extends WatchUi.View {
                 textColor    = Graphics.COLOR_WHITE;
                 _dismissPillHitbox = [cx - (pillW/2), pillY - (pillH/2), pillW, pillH];
             } 
-            else if (_isDismissed && _podcastReady) {
-                outlineColor = Colors.GRAY_MID;
-                footerText   = "PODCAST READY";
-                textColor    = Graphics.COLOR_WHITE;
+            else if (_isDismissed) {
+                if (_podcastReady) {
+                    outlineColor = Colors.PURPLE_LITE;
+                    footerText   = "PODCAST READY";
+                } else{
+                    outlineColor = Colors.GRAY_MID;
+                    footerText   = "PODCAST LOADING";
+                }
                 _dismissPillHitbox = [0,0,0,0];
             }
 

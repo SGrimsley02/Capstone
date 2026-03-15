@@ -148,12 +148,10 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         }
 
         // If NOT ready → do NOT stop alarm
-        if (!ready) {
-            if (_view has :setStatusText) { 
-                _view.setStatusText("PODCAST GENERATING..."); 
+         if (!ready) {
+             return; // so when the podcast is not ready and the button is clicked, don't do anything
             }
-            return; // important: do nothing else
-        }
+         
 
         // If ready → stop alarm and proceed
         _stopAllAlarmActions();
