@@ -29,14 +29,14 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         // Handle menu item selections and trigger the corresponding HTTP client methods.
         // (Item symbols map to menu.xml entries)
         if (item == :item_1) {
-            System.println("Running local HTTP test on http://127.0.0.1:3000/");
+            System.println("Running local HTTP test on http://127.0.0.1:5000/");
             _httpClient.sendLocalHttpRequest();
         } else if (item == :item_2) {
             System.println("Running public HTTPS test.");
-            _httpClient.sendPublicHttpsRequest();
+            _httpClient.sendPublicHttpsRequest("https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/");
         } else if (item == :item_3) {
-            System.println("Running HTTPS POST test.");
-            _httpClient.sendPostTestRequest();
+            System.println("Sending sleep summary.");
+            _httpClient.sendSleepSummaryRequest();
         } else if (item == :item_8) {
             System.println("Scheduling alarm for 5 seconds from now.");
             getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
