@@ -210,4 +210,4 @@ __marimo__/
 developer_key
 SleepMonitor/bin/
 SleepMonitor/docs/
-.gitignore
+Secrets.mc
