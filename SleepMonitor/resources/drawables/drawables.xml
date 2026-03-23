@@ -16,4 +16,11 @@ Last Modified: February 7, 2026
     <bitmap id="remixLogo" filename="remixLogo.png" dithering="none" packingFormat="png" />
     <bitmap id="soundwaveIcon" filename="soundwaveIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="alarmIcon" filename="alarmIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="starIcon" filename="star.png" dithering="none" packingFormat="png" />
+    <bitmap id="rewindIcon" filename="rewindIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="skipIcon" filename="skipIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="playIcon" filename="playIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="volumeIcon" filename="volumeIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="upArrow" filename="upArrow.png" dithering="none" packingFormat="png" />
+    <bitmap id="downArrow" filename="downArrow.png" dithering="none" packingFormat="png" />
 </drawables>
