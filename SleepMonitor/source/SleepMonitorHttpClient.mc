@@ -27,7 +27,9 @@ import Toybox.WatchUi;
 
 // URL to AWS API Gateway endpoint
 const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
-const USER_ID_KEY = "user_id";
+const USER_ID_KEY = "username";
+const WAKE_START_KEY = "wakeStart";
+const WAKE_END_KEY = "wakeEnd";
 
 class SleepMonitorHttpClient {
 
@@ -69,7 +71,8 @@ class SleepMonitorHttpClient {
 
         var userId = getUserId();
         if (userId == null) {
-            userId = "demo"; // TODO: Replace with proper error handling. Just use demo id for now since we don't get the userId.
+            System.println("No user ID found in storage. Cannot send sleep summary.");
+            return;
         }
 
         var params = SleepAnalyzer.buildSleepPayload(userId);
@@ -102,6 +105,24 @@ class SleepMonitorHttpClient {
         makeRequest(url, params, options);
     }
 
+    function getUserInfo() {
+        var url = BASE_URL + "user";
+        var username = getUserId();
+        if (username == null) {
+            System.println("No user ID found in storage.");
+            return;
+        }
+        var params = {"username" => username};
+        var options = {
+            :method => Communications.HTTP_REQUEST_METHOD_GET,
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
+            :context => "USER_INFO",
+            :timeout      => 15,
+        };
+        makeRequest(url, params, options);
+
+    }
+
     private function makeRequest(
         url as String,
         params as Dictionary or Null,
@@ -128,11 +149,20 @@ class SleepMonitorHttpClient {
     ) as Void {
         //handle HTTP/web responses and update the on-screen status.
         var label = context.toString();
-        if (responseCode == 200) {
+        if (responseCode == 200 or responseCode == 201) {
             setStatus(label + " ok");
             //response body may come back as Dictionary, String, Iterator, null
             if (data instanceof Dictionary) {
                 System.println(label + " success. JSON response: " + data.toString());
+                var preferences = data["preferences"];
+                var wakeStart = preferences["wakeStart"] as String?;
+                var wakeEnd = preferences["wakeEnd"] as String?;
+                if (wakeStart != null && wakeEnd != null) {
+                    setWakeStart(wakeStart);
+                    setWakeEnd(wakeEnd);
+                    System.println("Updated wake times from response: " + wakeStart + " - " + wakeEnd);
+                }
+
             } else if (data != null) {
                 System.println(label + " success. Body: " + data.toString());
             } else {
@@ -150,7 +180,7 @@ class SleepMonitorHttpClient {
         WatchUi.requestUpdate();
     }
 
-    function setUserId(userId as String) as Void {
+    static function setUserId(userId as String) as Void {
         Application.Storage.setValue(USER_ID_KEY, userId);
     }
 
@@ -183,5 +213,19 @@ class SleepMonitorHttpClient {
         }
 
         _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
+    static function setWakeStart(wakeStartTime as String) as Void {
+        Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
+    }
+
+    static function getWakeStart() as String or Null {
+        return Application.Storage.getValue(WAKE_START_KEY) as String?;
+    }
+
+    static function setWakeEnd(wakeEndTime as String) as Void {
+        Application.Storage.setValue(WAKE_END_KEY, wakeEndTime);
+    }
+
+    static function getWakeEnd() as String or Null {
+        return Application.Storage.getValue(WAKE_END_KEY) as String?;
     }
 }

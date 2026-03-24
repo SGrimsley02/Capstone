@@ -70,10 +70,19 @@ class WakeAlarmManager {
         }
 
         _fireAlarmUiAndRing();
+        getApp().updateUserInfo();
 
-        // TODO: re-poll server for user preferences to see if we should change the alarm time
-        scheduleAlarmAtEpoch(getNextDayEpoch("07:00"));
+        var wakeTime = SleepMonitorHttpClient.getWakeStart();
+        if (wakeTime == null) {
+            System.println("WakeAlarmManager: no stored wake start time, defaulting to 07:00");
+            wakeTime = "07:00";
+        }
+  
+        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime));
+        return;
+
     }
+        
 
     function _fireAlarmUiAndRing() {
         _showAlarmUiOnce();
