@@ -14,7 +14,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REMix – Smart Alarm</title>
+  <title>REMix — Smart Alarm</title>
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
@@ -32,6 +32,31 @@
     </header>
 
     <div class="grid">
+      <section class="card hero-card" aria-label="About REMix">
+        <h2>What REMix does for you</h2>
+        <p class="hero-subtitle">
+          REMix is a smart alarm and morning assistant that blends sleep science with personalization so your wake-up feels timely, useful, and low-friction.
+        </p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <strong>Wake timing by sleep stage</strong>
+            <span>Triggers your alarm in an optimal window to reduce grogginess and help you start your day clearer.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Sleep-aware music playback</strong>
+            <span>Adapts your wake soundtrack based on sleep quality and your selected podcast tone preferences.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Daily podcast-style briefing</strong>
+            <span>Combines schedule, weather, news, and optional horoscope into a concise morning summary.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Connected routine</strong>
+            <span>Integrates with Google Calendar and Spotify so your morning context and media are ready immediately.</span>
+          </div>
+        </div>
+      </section>
+
       <!-- MAIN -->
       <section class="card">
         <!-- AUTH VIEW -->
@@ -57,7 +82,6 @@
             </div>
             <div class="btns">
               <button class="primary" type="submit">Log in</button>
-              <button class="ghost" type="button" id="btnDemoLogin">Demo login</button>
             </div>
             <div class="toast" id="authMsg"></div>
           </form>

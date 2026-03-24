@@ -57,23 +57,6 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
     }
   });
 
-  elements.btnDemoLogin.addEventListener("click", async () => {
-    try {
-      const { ok } = await loginUser("demo", "demo123");
-
-      if (!ok) {
-        await signupUser("demo", "demo123");
-        await loginUser("demo", "demo123");
-      }
-
-      saveSession({ username: "demo" });
-      await render();
-      setView("setup");
-    } catch (e2) {
-      console.error("Demo login error:", e2);
-    }
-  });
-
   elements.btnDemoSignup.addEventListener("click", async () => {
     try {
       const { ok } = await signupUser("demo", "demo123");
