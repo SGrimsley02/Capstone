@@ -51,15 +51,7 @@ export function getElements() {
     zodiacOptions: el("zodiacOptions"),
     zodiacSelect: el("zodiac"),
     newsOptions: el("newsOptions"),
-    newsSourceInputs,
-    dbgUser: el("dbgUser"),
-    dbgAuth: el("dbgAuth"),
-    dbgGoogle: el("dbgGoogle"),
-    dbgGoogleAcct: el("dbgGoogleAcct"),
-    dbgSpotify: el("dbgSpotify"),
-    dbgSpotifyAcct: el("dbgSpotifyAcct"),
-    dbgPrefs: el("dbgPrefs"),
-    dbgPrefsSummary: el("dbgPrefsSummary")
+    newsSourceInputs
   };
 }
 
@@ -79,18 +71,6 @@ export function setTab(elements, which) {
   elements.signupMsg.textContent = "";
 }
 
-export function renderSignedOutDebug(elements) {
-  elements.dbgUser.textContent = "—";
-  elements.dbgUser.className = "warn";
-  elements.dbgAuth.textContent = "Signed out";
-  elements.dbgGoogle.textContent = "Not connected";
-  elements.dbgSpotify.textContent = "Not connected";
-  elements.dbgPrefs.textContent = "Not set";
-  elements.dbgGoogleAcct.textContent = "—";
-  elements.dbgSpotifyAcct.textContent = "—";
-  elements.dbgPrefsSummary.textContent = "—";
-}
-
 export function renderConnectedState(elements, currentUser) {
   const gOK = (currentUser.googleConnected === true) || (currentUser.googleEmail != null);
   const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
@@ -99,25 +79,5 @@ export function renderConnectedState(elements, currentUser) {
   elements.googleStatus.className = gOK ? "ok" : "warn";
   elements.spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
   elements.spotifyStatus.className = sOK ? "ok" : "warn";
-
-  elements.dbgUser.textContent = currentUser.username;
-  elements.dbgUser.className = "ok";
-  elements.dbgAuth.textContent = "Signed in";
-
-  elements.dbgGoogle.textContent = gOK ? "Connected ✅" : "Not connected";
-  elements.dbgGoogle.className = gOK ? "ok" : "warn";
-  elements.dbgGoogleAcct.textContent = gOK ? (currentUser.googleEmail || "google_user@gmail.com") : "—";
-
-  elements.dbgSpotify.textContent = sOK ? "Connected ✅" : "Not connected";
-  elements.dbgSpotify.className = sOK ? "ok" : "warn";
-  elements.dbgSpotifyAcct.textContent = sOK ? (currentUser.spotifyName || "@spotify_user") : "—";
-
-  const pOK = !!currentUser.preferences?.wakeEnd;
-  elements.dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
-  elements.dbgPrefs.className = pOK ? "ok" : "warn";
-  elements.dbgPrefsSummary.textContent = pOK
-    ? `${currentUser.preferences?.wakeStart || "07:00"}–${currentUser.preferences?.wakeEnd || "07:30"} • ${currentUser.preferences?.tone || "tone1"}`
-    : "—";
-
-  return { gOK, sOK, pOK };
+  return { gOK, sOK };
 }

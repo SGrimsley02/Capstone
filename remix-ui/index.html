@@ -14,7 +14,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REMix – Website Skeleton</title>
+  <title>REMix – Smart Alarm</title>
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
@@ -24,8 +24,8 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>REMix • Onboarding Skeleton</h1>
-          <div class="mini">Local auth + Google + Spotify (UI-only demo)</div>
+          <h1>REMix • Smart Alarm</h1>
+          <div class="mini">Wake in your optimal sleep stage with music and your daily briefing.</div>
         </div>
       </div>
       <div class="pill" id="pillState">Signed out</div>
@@ -37,7 +37,7 @@
         <!-- AUTH VIEW -->
         <div id="viewAuth">
           <h2>Sign in</h2>
-          <p>Create an account for REMix, then connect your services. (Skeleton only: stored in localStorage.)</p>
+          <p>Create your REMix account, then connect services and personalize your wake experience.</p>
 
           <div class="tabs" role="tablist">
             <button class="tab active" id="tabLogin" type="button">Log in</button>
@@ -107,18 +107,14 @@
           <div class="btns">
             <button id="btnToPrefs" type="button" disabled>Continue to preferences</button>
             <button id="btnLogout" type="button" class="ghost">Log out</button>
-            <button id="btnResetAll" type="button" class="ghost">Reset demo data</button>
+            <button id="btnResetAll" type="button" class="ghost">Reset session</button>
           </div>
 
-          <div class="toast">
-            Later: <span class="kbd">Connect Google</span> → <span class="kbd">/auth/google</span>,
-            <span class="kbd">Connect Spotify</span> → <span class="kbd">/auth/spotify</span>.
-          </div>
         </div>
         <!-- PREFS VIEW -->
         <div id="viewPrefs" class="hide">
           <h2>Wake & music preferences</h2>
-          <p>TEMPORARY PREFERENCES (SWITCH LATER), These persist for the logged-in user (localStorage demo)</p>
+          <p>Set your wake window, podcast style, and morning briefing content.</p>
 
           <form id="prefsForm">
             <div class="row">
@@ -251,53 +247,6 @@
         </div>
       </section>
 
-      <!-- SIDEBAR -->
-      <aside class="card">
-        <h2>Current state</h2>
-        <p>This is for demos/testing.</p>
-
-        <div class="status">
-          <div>
-            <div class="mini">Signed in as</div>
-            <div id="dbgUser" class="warn">—</div>
-          </div>
-          <div class="mini" id="dbgAuth">Signed out</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Google</div>
-            <div id="dbgGoogle" class="warn">Not connected</div>
-          </div>
-          <div class="mini" id="dbgGoogleAcct">—</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Spotify</div>
-            <div id="dbgSpotify" class="warn">Not connected</div>
-          </div>
-          <div class="mini" id="dbgSpotifyAcct">—</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Preferences</div>
-            <div id="dbgPrefs" class="warn">Not set</div>
-          </div>
-          <div class="mini" id="dbgPrefsSummary">—</div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="mini">
-          Skeleton notes:
-          <ul>
-            <li>This is UI-only (localStorage).</li>
-            <li>Real OAuth will be backend routes + redirect URIs.</li>
-            <li>Real passwords must be hashed + never stored client-side.</li>
-          </ul>
-        </div>
-      </aside>
     </div>
   </div>
 

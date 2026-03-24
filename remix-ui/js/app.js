@@ -6,7 +6,6 @@ import { bindPreferencesHandlers, bindPreferenceToggles } from "./prefs.js";
 import {
   getElements,
   renderConnectedState,
-  renderSignedOutDebug,
   setTab as setTabUI,
   setView as setViewUI
 } from "./ui.js";
@@ -32,7 +31,6 @@ async function render() {
 
   if (!signedIn) {
     setView("auth");
-    renderSignedOutDebug(elements);
     return;
   }
 
