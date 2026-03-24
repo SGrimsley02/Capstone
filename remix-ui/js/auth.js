@@ -1,7 +1,7 @@
 import { loginUser, signupUser } from "./api.js";
 import { saveSession } from "./storage.js";
 
-export function bindAuthHandlers({ elements, render, setView, setTab }) {
+export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
   elements.tabLogin.addEventListener("click", () => setTab("login"));
   elements.tabSignup.addEventListener("click", () => setTab("signup"));
 
@@ -16,14 +16,14 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
       const { ok, data } = await signupUser(username, password);
 
       if (ok) {
-        elements.signupMsg.textContent = "Account created ✓";
+        elements.signupMsg.textContent = t("auth.accountCreated", "Account created ✓");
         setTab("login");
         elements.formSignup.reset();
       } else {
-        elements.signupMsg.textContent = data.message || "Registration failed";
+        elements.signupMsg.textContent = data.message || t("auth.registrationFailed", "Registration failed");
       }
     } catch (e2) {
-      elements.signupMsg.textContent = "Error: " + e2.message;
+      elements.signupMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
     }
   });
 
@@ -36,7 +36,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
       const { ok, data } = await loginUser(username, password);
 
       if (ok) {
-        elements.authMsg.textContent = "Logged in ✓";
+        elements.authMsg.textContent = t("auth.loggedIn", "Logged in ✓");
         elements.formLogin.reset();
         saveSession({ username });
         const sessionId = new URLSearchParams(window.location.search).get("sessionId");
@@ -50,10 +50,10 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
         await render();
         setView("setup");
       } else {
-        elements.authMsg.textContent = data.message || "Login failed";
+        elements.authMsg.textContent = data.message || t("auth.loginFailed", "Login failed");
       }
     } catch (e2) {
-      elements.authMsg.textContent = "Error: " + e2.message;
+      elements.authMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
     }
   });
 
@@ -69,7 +69,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
       await render();
       setView("setup");
     } catch (e2) {
-      console.error("Demo signup error:", e2);
+      elements.signupMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
     }
   });
 }

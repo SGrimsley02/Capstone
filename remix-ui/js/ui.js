@@ -25,6 +25,7 @@ export function getElements() {
     viewAuth,
     viewSetup,
     viewPrefs,
+    languageSelect: el("languageSelect"),
     pillState: el("pillState"),
     tabLogin: el("tabLogin"),
     tabSignup: el("tabSignup"),
@@ -70,13 +71,13 @@ export function setTab(elements, which) {
   elements.signupMsg.textContent = "";
 }
 
-export function renderConnectedState(elements, currentUser) {
+export function renderConnectedState(elements, currentUser, t) {
   const gOK = (currentUser.googleConnected === true) || (currentUser.googleEmail != null);
   const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
 
-  elements.googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
+  elements.googleStatus.textContent = gOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.googleStatus.className = gOK ? "ok" : "warn";
-  elements.spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
+  elements.spotifyStatus.textContent = sOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.spotifyStatus.className = sOK ? "ok" : "warn";
   return { gOK, sOK };
 }

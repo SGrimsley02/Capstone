@@ -12,7 +12,7 @@ export function bindPreferenceToggles(elements) {
   });
 }
 
-export function bindPreferencesHandlers({ elements, state, render, setView }) {
+export function bindPreferencesHandlers({ elements, state, render, setView, t }) {
   elements.btnToPrefs.addEventListener("click", () => {
     setView("prefs");
     elements.prefsMsg.textContent = "";
@@ -60,7 +60,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView }) {
         .map(([sourceName]) => sourceName);
 
       if (elements.podNews.checked && selectedNewsSources.length === 0) {
-        elements.prefsMsg.textContent = "Please select at least one news source.";
+        elements.prefsMsg.textContent = t("prefs.selectNewsRequired", "Please select at least one news source.");
         return;
       }
 
@@ -83,20 +83,20 @@ export function bindPreferencesHandlers({ elements, state, render, setView }) {
 
       const userID = state.currentUser?.username || loadSession().username;
       if (!userID) {
-        elements.prefsMsg.textContent = "Session expired. Please log in again.";
+        elements.prefsMsg.textContent = t("auth.sessionExpired", "Session expired. Please log in again.");
         return;
       }
 
       const { ok, data } = await updatePreferences(userID, prefs);
 
       if (ok) {
-        elements.prefsMsg.textContent = "Saved ✓";
+        elements.prefsMsg.textContent = t("prefs.saved", "Saved ✓");
         await render();
       } else {
-        elements.prefsMsg.textContent = data.message || "Save failed";
+        elements.prefsMsg.textContent = data.message || t("prefs.saveFailed", "Save failed");
       }
     } catch (e2) {
-      elements.prefsMsg.textContent = "Error: " + e2.message;
+      elements.prefsMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
     }
   });
 

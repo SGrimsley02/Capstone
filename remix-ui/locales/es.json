@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "title": "REMix — Alarma Inteligente"
+  },
+  "header": {
+    "title": "REMix • Alarma Inteligente",
+    "subtitle": "Despierta en tu etapa óptima de sueño con música y tu resumen diario.",
+    "language": "Idioma",
+    "languageSelector": "Selector de idioma",
+    "signedOut": "Sesión cerrada",
+    "signedIn": "Sesión iniciada: {{username}}"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español"
+  },
+  "hero": {
+    "title": "Qué hace REMix por ti",
+    "subtitle": "REMix es una alarma inteligente y asistente matutino que combina ciencia del sueño con personalización para que tu despertar sea oportuno, útil y sin fricción.",
+    "f1t": "Despertar según etapa de sueño",
+    "f1d": "Activa la alarma en una ventana óptima para reducir la somnolencia y ayudarte a empezar el día con mayor claridad.",
+    "f2t": "Música adaptada al sueño",
+    "f2d": "Ajusta tu música de despertar según la calidad de sueño y el tono de podcast que elijas.",
+    "f3t": "Resumen diario tipo podcast",
+    "f3d": "Combina agenda, clima, noticias y horóscopo opcional en un resumen matutino conciso.",
+    "f4t": "Rutina conectada",
+    "f4d": "Se integra con Google Calendar y Spotify para que tu contexto y contenido estén listos al instante."
+  },
+  "auth": {
+    "title": "Iniciar sesión",
+    "subtitle": "Crea tu cuenta de REMix, conecta tus servicios y personaliza tu experiencia de despertar.",
+    "tabLogin": "Iniciar sesión",
+    "tabSignup": "Crear cuenta",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "login": "Iniciar sesión",
+    "createAccount": "Crear cuenta",
+    "demoSignup": "Registro demo",
+    "accountCreated": "Cuenta creada ✓",
+    "registrationFailed": "Error de registro",
+    "loggedIn": "Sesión iniciada ✓",
+    "loginFailed": "Error de inicio de sesión",
+    "profileLoadFailed": "Sesión iniciada, pero no se pudo cargar el perfil desde la API. Actualiza en un momento.",
+    "sessionExpired": "Tu sesión expiró. Inicia sesión nuevamente.",
+    "errorPrefix": "Error: "
+  },
+  "setup": {
+    "title": "Conecta tus servicios",
+    "subtitle": "Conecta Google Calendar y Spotify, luego define tus preferencias de despertar y música.",
+    "googleAccount": "Cuenta de Google",
+    "spotifyAccount": "Cuenta de Spotify",
+    "notConnected": "No conectada",
+    "connected": "Conectada ✅",
+    "connectGoogle": "Conectar Google",
+    "connectSpotify": "Conectar Spotify",
+    "continue": "Continuar a preferencias",
+    "logout": "Cerrar sesión",
+    "reset": "Reiniciar sesión"
+  },
+  "prefs": {
+    "title": "Preferencias de despertar y música",
+    "subtitle": "Configura tu ventana de despertar, estilo de podcast y contenido del resumen matutino.",
+    "earliestWake": "Hora más temprana",
+    "latestWake": "Hora más tardía",
+    "podcastTone": "Tono del podcast",
+    "tone1": "Muy enérgico",
+    "tone2": "Algo enérgico",
+    "tone3": "Neutral",
+    "explicit": "Contenido explícito",
+    "filterExplicit": "Filtrar explícito",
+    "allowExplicit": "Permitir explícito",
+    "podcastIncludes": "El podcast incluye",
+    "podcastIncludesHelp": "Elige qué debe incluir REMix en tu podcast matutino.",
+    "schedule": "Agenda",
+    "weather": "Clima",
+    "news": "Noticias",
+    "horoscope": "Horóscopo",
+    "preferredNews": "Fuentes de noticias preferidas",
+    "zodiac": "Signo zodiacal",
+    "save": "Guardar preferencias",
+    "back": "Atrás",
+    "selectNewsRequired": "Selecciona al menos una fuente de noticias.",
+    "saved": "Guardado ✓",
+    "saveFailed": "Error al guardar"
+  },
+  "newsSources": {
+    "nytimes": "NY Times",
+    "bbc": "BBC News",
+    "guardian": "The Guardian",
+    "aljazeera": "Al Jazeera",
+    "techradar": "TechRadar",
+    "time": "Time Magazine",
+    "yahoo": "Yahoo Sports",
+    "notboring": "Not Boring"
+  },
+  "zodiac": {
+    "aries": "Aries",
+    "taurus": "Tauro",
+    "gemini": "Géminis",
+    "cancer": "Cáncer",
+    "leo": "Leo",
+    "virgo": "Virgo",
+    "libra": "Libra",
+    "scorpio": "Escorpio",
+    "sagittarius": "Sagitario",
+    "capricorn": "Capricornio",
+    "aquarius": "Acuario",
+    "pisces": "Piscis"
+  }
+}

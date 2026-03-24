@@ -22,9 +22,17 @@ body::before {
 .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 56px; }
 header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px; }
 .brand { display:flex; align-items:center; gap:10px; }
+.header-actions { display:flex; align-items:center; gap:10px; flex-wrap: wrap; justify-content: flex-end; }
 .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), #37d3ff); }
 h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
 .pill { font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; }
+.language-select {
+  width: auto;
+  min-width: 112px;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 10px;
+}
 
 .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
 
