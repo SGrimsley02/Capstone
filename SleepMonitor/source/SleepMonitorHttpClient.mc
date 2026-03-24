@@ -33,7 +33,10 @@ const WAKE_END_KEY = "wakeEnd";
 
 class SleepMonitorHttpClient {
 
+    private var _wakeAlarmManager; // Reference to the alarm manager for potential future use (e.g., triggering podcast status checks)
+
     function initialize() {
+        _wakeAlarmManager = new WakeAlarmManager(); 
         // Purpose: Construct the HTTP client (no state needed currently).
     }
 
@@ -73,6 +76,9 @@ class SleepMonitorHttpClient {
         }
 
         var params = SleepAnalyzer.buildSleepPayload(userId);
+        if (params != null && _wakeAlarmManager != null) {
+            _wakeAlarmManager.scheduleAlarmFromSleepPayload(params);
+        }
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
@@ -182,6 +188,31 @@ class SleepMonitorHttpClient {
         return Application.Storage.getValue(USER_ID_KEY) as String?;
     }
 
+    function scheduleAlarmFromSleepPayload(payload as Dictionary) as Void {
+        if (payload == null) {
+            System.println("WakeAlarmManager: no sleep payload provided");
+            return;
+        }
+
+        var wakeEpoch = null;
+
+        var recommended = payload.get("recommendedHandoffEpochSec");
+        var fallback = payload.get("fallbackHandoffEpochSec");
+
+        if (recommended != null) {
+            wakeEpoch = recommended;
+            System.println("WakeAlarmManager: using recommended handoff epoch " + wakeEpoch);
+        } else if (fallback != null) {
+            wakeEpoch = fallback;
+            System.println("WakeAlarmManager: using fallback handoff epoch " + wakeEpoch);
+        }
+
+        if (wakeEpoch == null) {
+            System.println("WakeAlarmManager: no handoff epoch found in payload");
+            return;
+        }
+
+        _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
     static function setWakeStart(wakeStartTime as String) as Void {
         Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
     }

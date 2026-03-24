@@ -4,7 +4,7 @@ Description: Manages wake alarms for the SleepMonitor Connect IQ watch app.
              Handles setting, retrieving, and triggering wake alarms.
 Authors: Audrey Pan
 Created: February 22, 2026
-Last Modified: March 2, 2026
+Last Modified: March 15, 2026
 */
 
 import Toybox.Timer;
@@ -13,6 +13,7 @@ import Toybox.System;
 import Toybox.Attention;
 import Toybox.WatchUi;
 import Toybox.Lang;
+import Toybox.Time.Gregorian;
 
 class WakeAlarmManager {
 
@@ -21,16 +22,16 @@ class WakeAlarmManager {
     var _ringTimer = null;
     var _isRinging = false;
     var _alarmShowing = false;
-    var _currentView = null; 
-    var _alarmView = null; 
+    var _currentView = null;
+    var _alarmView = null;
     var _alarmDelegate = null;
     var _podcastReady = false;
     var _podcastPollTimer = null;
-    
-    // Instance of the new network provider
+
+    // Instance of the network provider
     private var _podcastProvider;
 
-    function initialize() { 
+    function initialize() {
         _podcastProvider = new PodcastProvider();
     }
 
@@ -39,9 +40,14 @@ class WakeAlarmManager {
             _alarmTimer.stop();
             _alarmTimer = null;
         }
+
         _wakeEpoch = wakeEpoch;
         var nowEpoch = Time.now().value();
         var secondsUntil = wakeEpoch - nowEpoch;
+
+        System.println("WakeAlarmManager: scheduling alarm for epoch " + wakeEpoch);
+        System.println("WakeAlarmManager: current epoch " + nowEpoch);
+        System.println("WakeAlarmManager: seconds until alarm " + secondsUntil);
 
         if (secondsUntil <= 0) {
             _fireAlarmUiAndRing();
@@ -62,13 +68,21 @@ class WakeAlarmManager {
             _alarmTimer.stop();
             _alarmTimer = null;
         }
-        _fireAlarmUiAndRing();
 
+        _fireAlarmUiAndRing();
         getApp().updateUserInfo();
+
         var wakeTime = SleepMonitorHttpClient.getWakeStart();
-        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime)); // Reschedule for next day (placeholder time)
+        if (wakeTime == null) {
+            System.println("WakeAlarmManager: no stored wake start time, defaulting to 07:00");
+            wakeTime = "07:00";
+        }
+  
+        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime));
         return;
+
     }
+        
 
     function _fireAlarmUiAndRing() {
         _showAlarmUiOnce();
@@ -76,7 +90,7 @@ class WakeAlarmManager {
     }
 
     function _showAlarmUiOnce() {
-        if (_alarmShowing) { 
+        if (_alarmShowing) {
             System.println("WakeAlarmManager: alarm UI already showing");
             return;
         }
@@ -84,7 +98,9 @@ class WakeAlarmManager {
 
         if (_alarmView == null) {
             _alarmView = new AlarmView();
-            if (_alarmView has :setManager) { _alarmView.setManager(self); }
+            if (_alarmView has :setManager) {
+                _alarmView.setManager(self);
+            }
             _alarmDelegate = new AlarmDelegate(_alarmView, self);
         }
 
@@ -103,27 +119,32 @@ class WakeAlarmManager {
 
     function startRinging() {
         if (_isRinging) { return; }
+
         _isRinging = true;
         _ringOnce();
+
         _ringTimer = new Timer.Timer();
         _ringTimer.start(method(:_onRingTick), 2000, true);
     }
 
     function stopRinging() {
         _isRinging = false;
+
         if (_ringTimer != null) {
             _ringTimer.stop();
             _ringTimer = null;
         }
+
         stopPodcastPolling();
     }
 
-    function isRinging() { return _isRinging; }
+    function isRinging() {
+        return _isRinging;
+    }
 
     function _onRingTick() as Void {
         if (!_isRinging) { return; }
         _ringOnce();
-        return;
     }
 
     function _ringOnce() {
@@ -136,7 +157,7 @@ class WakeAlarmManager {
         Attention.playTone(Attention.TONE_ALARM);
     }
 
-    // Now uses the modular provider
+    // Uses the modular provider
     function sendPodcastLinkToPhone() as Void {
         _podcastProvider.openPodcast();
     }
@@ -147,16 +168,16 @@ class WakeAlarmManager {
 
     function startPodcastPolling() as Void {
         _podcastReady = false;
+
         if (_alarmView != null && (_alarmView has :setPodcastReady)) {
             _alarmView.setPodcastReady(false);
         }
-        //if (_alarmShowing && _alarmView != null && (_alarmView has :setStatusText)) {
-          //  _alarmView.setStatusText("PODCAST GENERATING...");
-        //}
+
         if (_podcastPollTimer == null) {
             _podcastPollTimer = new Timer.Timer();
             _podcastPollTimer.start(method(:_pollPodcastStatus), 15000, true);
         }
+
         _pollPodcastStatus();
     }
 
@@ -188,26 +209,49 @@ class WakeAlarmManager {
     }
 
     static function getNextDayEpoch(timeStr as String) as Lang.Number {
-        // Parse hours, minutes, seconds from "HH:MM:SS"
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();
 
-        // Get current local time info
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
 
-        // Build tomorrow's date at the given time
         var options = {
             :year   => now.year,
             :month  => now.month,
-            :day    => now.day + 1,  // following day — Gregorian.moment() handles month/year overflow
+            :day    => now.day + 1,
             :hour   => hours,
             :minute => minutes,
-            :second => 0,
+            :second => 0
         };
 
         var moment = Gregorian.moment(options);
         var tzOffset = System.getClockTime().timeZoneOffset;
 
-        return moment.value() - tzOffset;  // UTC epoch time expected by alarm scheduler
+        return moment.value() - tzOffset;
+    }
+
+    function scheduleAlarmFromSleepPayload(payload as Dictionary) as Void {
+        if (payload == null) {
+            System.println("WakeAlarmManager: no sleep payload provided");
+            return;
+        }
+
+        var wakeEpoch = null;
+        var recommended = payload.get("recommendedHandoffEpochSec");
+        var fallback = payload.get("fallbackHandoffEpochSec");
+
+        if (recommended != null) {
+            wakeEpoch = recommended;
+            System.println("WakeAlarmManager: using recommended handoff epoch " + wakeEpoch);
+        } else if (fallback != null) {
+            wakeEpoch = fallback;
+            System.println("WakeAlarmManager: using fallback handoff epoch " + wakeEpoch);
+        }
+
+        if (wakeEpoch == null) {
+            System.println("WakeAlarmManager: no handoff epoch found in payload");
+            return;
+        }
+
+        scheduleAlarmAtEpoch(wakeEpoch);
     }
 }
