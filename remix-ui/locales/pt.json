@@ -23,13 +23,13 @@
     "f4d": "Integra-se com Google Calendar e Spotify para que seu contexto matinal e mídia estejam prontos imediatamente."
   },
   "auth": {
-    "title": "Conectar",
+    "title": "Entrar",
     "subtitle": "Crie sua conta REMix, depois conecte serviços e personalize sua experiência de despertar.",
-    "tabLogin": "Conectar",
+    "tabLogin": "Entrar",
     "tabSignup": "Criar conta",
     "username": "Nome de usuário",
     "password": "Senha",
-    "login": "Conectar",
+    "login": "Entrar",
     "createAccount": "Criar conta",
     "demoSignup": "Inscrição de demonstração",
     "accountCreated": "Conta criada ✓",
