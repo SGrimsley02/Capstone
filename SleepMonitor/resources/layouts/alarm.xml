@@ -1,0 +1,21 @@
+<!--
+Name: resources/layouts/alarm.xml
+Description: Defines the visual layout structure for the alarm screen.
+             Specifies UI components, positioning, and layout elements
+Authors: Kiara Rose, Audrey Pan
+Created: March 9, 2026
+Last Modified: March 9, 2026
+-->
+
+
+
+<layout id="AlarmScreen" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <label x="center" y="5" text="@Strings.prompt" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <bitmap id="music_icon" x="left" y="dc.getHeight() * 0.64" filename="../drawables/musicIcon.png" />
+    <bitmap id="snooze_icon" x="right" y="dc.getHeight() * 0.24" filename="../drawables/snoozeIcon.png" />
+    <bitmap id="dismiss_icon" x="right" y="dc.getHeight() * 0.64" filename="../drawables/dismissIcon.png" />
+    <bitmap id="podcast_icon" x="left" y="dc.getHeight() * 0.38" filename="../drawables/podcastIcon.png" />
+
+
+
+</layout>

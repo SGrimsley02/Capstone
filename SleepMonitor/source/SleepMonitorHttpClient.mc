@@ -36,7 +36,7 @@ class SleepMonitorHttpClient {
     private var _wakeAlarmManager; // Reference to the alarm manager for potential future use (e.g., triggering podcast status checks)
 
     function initialize() {
-        _wakeAlarmManager = new WakeAlarmManager(); 
+        _wakeAlarmManager = new WakeAlarmManager();
         // Purpose: Construct the HTTP client (no state needed currently).
     }
 
@@ -59,7 +59,7 @@ class SleepMonitorHttpClient {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
             :context => "PUBLIC_HTTPS",
-            :timeout      => 15,
+            :timeout => 15,
         };
 
         makeRequest(url, null, options);
@@ -112,15 +112,14 @@ class SleepMonitorHttpClient {
             System.println("No user ID found in storage.");
             return;
         }
-        var params = {"username" => username};
+        var params = { "username" => username };
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
             :context => "USER_INFO",
-            :timeout      => 15,
+            :timeout => 15,
         };
         makeRequest(url, params, options);
-
     }
 
     private function makeRequest(
@@ -175,20 +174,16 @@ class SleepMonitorHttpClient {
     }
 
     private function setStatus(message as String) as Void {
-        //store status in-memory and request a UI redraw
+        // store status in-memory and request a UI redraw
         getApp().setHttpStatus(message);
         WatchUi.requestUpdate();
     }
 
-    static function setUserId(userId as String) as Void {
-        Application.Storage.setValue(USER_ID_KEY, userId);
-    }
+    static function setUserId(userId as String) as Void { Application.Storage.setValue(USER_ID_KEY, userId); }
 
-    private function getUserId() as String or Null {
-        return Application.Storage.getValue(USER_ID_KEY) as String?;
-    }
+    private function getUserId() as String or Null { return Application.Storage.getValue(USER_ID_KEY) as String ? ; }
 
-    function scheduleAlarmFromSleepPayload(payload as Dictionary) as Void {
+    function scheduleAlarmFromSleepPayload(payload as Dictionary?) as Void {
         if (payload == null) {
             System.println("WakeAlarmManager: no sleep payload provided");
             return;
@@ -213,6 +208,7 @@ class SleepMonitorHttpClient {
         }
 
         _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
+    }
     static function setWakeStart(wakeStartTime as String) as Void {
         Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
     }

@@ -11,7 +11,6 @@ Notes:
 - Menu item symbols are defined in resources/menus/menu.xml.
 */
 
-
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
@@ -51,7 +50,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             System.println("Opening website.");
             try {
                 System.println("Attempting openWebPage...");
-                Communications.openWebPage("https://www.google.com", null, null); // TODO: replace with real URL, need to replace elsewhere too
+                Communications.openWebPage("http://localhost:5000", null, null);
                 System.println("openWebPage call completed.");
             } catch (ex) {
                 System.println("openWebPage FAILED: " + ex.toString());

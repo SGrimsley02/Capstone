@@ -3,12 +3,18 @@ Name: source/SleepMonitorDelegate.mc
 Description: Input delegate for the SleepMonitor Connect IQ watch app.
              Handles user interactions that are not menu-based and coordinates
              input behavior with the active view.
+             - Down (lower-left)       → opens the REMix morning podcast deeplink on the paired phone
+             - Back short (lower-right) → opens music playback deeplink on the paired phone
+             - Back hold  (lower-right) → exits the app
 Authors: Kiara Rose
 Created: February 7, 2026
-Last Modified: February 7, 2026
+Last Modified: March 13, 2026
 */
 
+import Toybox.Communications;
 import Toybox.Lang;
+import Toybox.System;
+import Toybox.Timer;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
 
