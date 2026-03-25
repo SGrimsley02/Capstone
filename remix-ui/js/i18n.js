@@ -1,6 +1,6 @@
 const LANGUAGE_KEY = "remix_language_v1";
 const DEFAULT_LANGUAGE = "en";
-const SUPPORTED_LANGUAGES = ["de", "en", "es", "fr", "it", "ja", "ko", "nl", "pt", "ru", "th", "wo", "zh"];
+const SUPPORTED_LANGUAGES = ["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "nl", "pt", "ru", "th", "vi", "wo", "zh"];
 
 let currentLanguage = DEFAULT_LANGUAGE;
 let translations = {};
