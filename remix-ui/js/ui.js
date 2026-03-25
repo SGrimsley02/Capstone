@@ -1,3 +1,12 @@
+/**
+  * ui.js - UI helper functions for the Remix dashboard
+  * This file contains functions to get references to DOM elements,
+  * switch views and tabs, and render the connected state of external services.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
 const el = (id) => document.getElementById(id);
 
 export function getElements() {

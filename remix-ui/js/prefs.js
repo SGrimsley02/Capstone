@@ -1,8 +1,23 @@
-import { ALL_NEWS_SOURCES } from "./config.js";
+/**
+  * prefs.js - User preferences management for the Remix dashboard
+  * This file contains functions to handle user preferences, including
+  * binding event handlers for the preferences form and saving preferences
+  * to the backend API.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
+import { DEFAULT_NEWS_SOURCES } from "./config.js";
 import { updatePreferences } from "./api.js";
 import { loadSession } from "./storage.js";
 
 export function bindPreferenceToggles(elements) {
+  /**
+   * Bind change event listeners to the podcast option checkboxes to show/hide
+   * related settings when toggled.
+   * In charge of showing/hiding dynamic content options.
+   */
   elements.podHoroscope.addEventListener("change", () => {
     elements.zodiacOptions.classList.toggle("hide", !elements.podHoroscope.checked);
   });
@@ -13,6 +28,11 @@ export function bindPreferenceToggles(elements) {
 }
 
 export function bindPreferencesHandlers({ elements, state, render, setView, t }) {
+  /**
+   * Bind event handlers for the preferences form, including loading existing
+   * preferences when entering the view and saving changes to the backend.
+   * In charge of loading/saving user preferences and managing the preferences form.
+   */
   elements.btnToPrefs.addEventListener("click", () => {
     setView("prefs");
     elements.prefsMsg.textContent = "";
@@ -44,7 +64,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
     }
 
     const savedSources = state.currentUser?.preferences?.news?.sources;
-    const effectiveSources = savedSources == null ? ALL_NEWS_SOURCES : savedSources;
+    const effectiveSources = savedSources == null ? DEFAULT_NEWS_SOURCES : savedSources;
 
     Object.entries(elements.newsSourceInputs).forEach(([sourceName, checkbox]) => {
       checkbox.checked = effectiveSources.includes(sourceName);

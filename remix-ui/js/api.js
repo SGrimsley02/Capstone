@@ -1,3 +1,11 @@
+/**
+  * api.js - API helper functions for the Remix dashboard
+  * This file contains functions to interact with the backend API.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
 import { API_BASE } from "./config.js";
 
 async function parseResponse(res) {

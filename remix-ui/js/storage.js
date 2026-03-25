@@ -1,3 +1,11 @@
+/**
+  * storage.js - Storage helper functions for the Remix dashboard
+  * This file contains functions to manage session data in local storage.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
 import { LS_SESSION } from "./config.js";
 
 export function loadSession() {
