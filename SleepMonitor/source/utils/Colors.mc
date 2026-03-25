@@ -1,5 +1,5 @@
 /*
-Name: source/Theme/Theme.mc
+Name: source/utils/Colors.mc
 Description: Shared theme constants for the SleepMonitor Connect IQ app.
              Centralizes colors and reusable UI styling values so they
              remain consistent across screens.

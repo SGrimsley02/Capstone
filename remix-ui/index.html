@@ -633,6 +633,14 @@
         authMsg.textContent = "Logged in ✓";
         formLogin.reset();
         saveSession({ username: u });
+        const sessionId = new URLSearchParams(window.location.search).get("sessionId");
+        if (sessionId != null) {
+          await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/session/store', {
+              method: 'PUT',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({sessionId: sessionId, username: u })
+          });
+        }
         await render();
         setView("setup");
       } else {

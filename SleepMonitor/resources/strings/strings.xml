@@ -11,11 +11,11 @@ Last Modified: February 14, 2026
 <strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <string id="AppName">REMix</string>
 
-    <string id="prompt">Open menu to test HTTP/HTTPS</string>
+    <string id="prompt">Open menu to send sleep summary</string>
 
     <string id="menu_label_1">Test local HTTP</string>
     <string id="menu_label_2">Test public HTTPS</string>
-    <string id="menu_label_3">Test HTTPS POST</string>
+    <string id="menu_label_3">Send sleep summary</string>
     <string id="menu_label_8">Alarm at (now + 5 sec)</string>
 
     <string id="RateThisSong">Rate This Song</string>

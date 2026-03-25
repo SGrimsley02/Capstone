@@ -11,7 +11,6 @@ Notes:
 - Menu item symbols are defined in resources/menus/menu.xml.
 */
 
-
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
@@ -30,14 +29,14 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         // Handle menu item selections and trigger the corresponding HTTP client methods.
         // (Item symbols map to menu.xml entries)
         if (item == :httpLocal) {
-            System.println("Running local HTTP test on http://127.0.0.1:3000/");
+            System.println("Running local HTTP test on http://127.0.0.1:5000/");
             _httpClient.sendLocalHttpRequest();
         } else if (item == :httpPublic) {
             System.println("Running public HTTPS test.");
-            _httpClient.sendPublicHttpsRequest();
+            _httpClient.sendPublicHttpsRequest("https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/");
         } else if (item == :httpPost) {
-            System.println("Running HTTPS POST test.");
-            _httpClient.sendPostTestRequest();
+            System.println("Sending sleep summary.");
+            _httpClient.sendSleepSummaryRequest();
         } else if (item == :scheduleAlarm) {
             System.println("Scheduling alarm for 5 seconds from now.");
             getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
@@ -51,7 +50,7 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             System.println("Opening website.");
             try {
                 System.println("Attempting openWebPage...");
-                Communications.openWebPage("https://www.google.com", null, null); // TODO: replace with real URL, need to replace elsewhere too
+                Communications.openWebPage("http://localhost:5000", null, null);
                 System.println("openWebPage call completed.");
             } catch (ex) {
                 System.println("openWebPage FAILED: " + ex.toString());
