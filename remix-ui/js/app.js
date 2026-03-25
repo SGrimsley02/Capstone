@@ -1,3 +1,12 @@
+/**
+  * app.js - Main application logic for the Remix dashboard
+  * This file initializes the application, manages global state, and coordinates
+  * interactions between the UI, authentication, and preferences modules.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
 import { API_BASE, FRONTEND_BASE } from "./config.js";
 import { clearSession, loadSession } from "./storage.js";
 import { getCurrentUser } from "./api.js";
@@ -23,7 +32,7 @@ function setTab(which) {
   setTabUI(elements, which);
 }
 
-async function render() {
+async function render() { // Main render function to initialize the app state and UI based on authentication status
   const session = loadSession();
   const signedIn = !!session.username;
 

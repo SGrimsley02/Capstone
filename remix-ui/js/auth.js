@@ -1,11 +1,25 @@
+/**
+  * auth.js - Authentication helper functions for the Remix dashboard
+  * This file contains functions to handle user authentication, including
+  * binding event handlers for the login and signup forms and managing session data.
+  * Authors: Kiara Rose
+  * Created: March 24, 2026
+  * Last updated: March 25, 2026
+*/
+
 import { loginUser, signupUser } from "./api.js";
 import { saveSession } from "./storage.js";
 
 export function bindAuthHandlers({ elements, render, setView, setTab }) {
+  /**
+   * Bind event handlers for the authentication forms, including switching between
+   * login and signup tabs, handling form submissions, and managing session data.
+   * In charge of user authentication and session management.
+   */
   elements.tabLogin.addEventListener("click", () => setTab("login"));
   elements.tabSignup.addEventListener("click", () => setTab("signup"));
 
-  elements.formSignup.addEventListener("submit", async (e) => {
+  elements.formSignup.addEventListener("submit", async (e) => { // Handle user registration
     e.preventDefault();
     const username = elements.formSignup.signupUser.value.trim();
     const password = elements.formSignup.signupPass.value;
@@ -27,7 +41,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
     }
   });
 
-  elements.formLogin.addEventListener("submit", async (e) => {
+  elements.formLogin.addEventListener("submit", async (e) => { // Handle user login
     e.preventDefault();
     const username = elements.formLogin.loginUser.value.trim();
     const password = elements.formLogin.loginPass.value;
@@ -57,7 +71,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab }) {
     }
   });
 
-  elements.btnDemoSignup.addEventListener("click", async () => {
+  elements.btnDemoSignup.addEventListener("click", async () => { // Handle demo account signup/login
     try {
       const { ok } = await signupUser("demo", "demo123");
 
