@@ -17,4 +17,9 @@ Last Modified: February 14, 2026
     <string id="menu_label_2">Test public HTTPS</string>
     <string id="menu_label_3">Send sleep summary</string>
     <string id="menu_label_8">Alarm at (now + 5 sec)</string>
+
+    <string id="RateThisSong">Rate This Song</string>
+    <string id="RatingHint">START to confirm</string>
+    <string id="NowPlaying">Now Playing</string>
+    <string id="VolumeControl">Volume</string>
 </strings>

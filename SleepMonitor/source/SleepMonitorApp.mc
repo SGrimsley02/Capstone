@@ -32,7 +32,7 @@ class SleepMonitorApp extends Application.AppBase {
         //DELETE THIS LATER (ONLY FOR TESTING)
         // Storage.deleteValue("hasOnboarded");
         //System.println("Storage cleared for test.");
-        
+
         // One-time onboarding: prompt user to open a web page on their phone.
         var onboarding = new SleepMonitorOnboarding();
         var didOnboard = onboarding.runIfFirstTime("http://127.0.0.1:5000/");

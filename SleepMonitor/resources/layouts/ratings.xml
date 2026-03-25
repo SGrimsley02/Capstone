@@ -1,0 +1,25 @@
+<!--
+Name: resources/layouts/ratings.xml
+Description: Defines the visual layout structure for the song rating screen.
+             Positions the "Rate This Song" title label and the hint label;
+             the five interactive star drawables are rendered programmatically
+             in RatingView.onUpdate so their tint can be updated dynamically.
+Authors: Kiara Rose
+Created: March 14, 2026
+Last Modified: March 14, 2026
+-->
+
+<layout id="RatingsLayout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <label id="ratingTitle"
+           x="center" y="20%"
+           font="Graphics.FONT_MEDIUM"
+           text="@Strings.RateThisSong"
+           color="Graphics.COLOR_WHITE"
+           justification="Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER" />
+    <label id="ratingHint"
+           x="center" y="76%"
+           font="Graphics.FONT_XTINY"
+           text="@Strings.RatingHint"
+           color="Graphics.COLOR_LT_GRAY"
+           justification="Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER" />
+</layout>

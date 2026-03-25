@@ -65,6 +65,35 @@ class SleepMonitorHttpClient {
         makeRequest(url, null, options);
     }
 
+    function sendPostTestRequest() as Void {
+        // POST request that sends simulated sleep data to the backend.
+        // TODO: replace URL, remove ngrok header
+        var url = BASE_URL + "upload";
+        var userId = getUserId();
+        if (userId == null) {
+            System.println("No user ID found in storage. Cannot send sleep summary.");
+            return;
+        }
+        var params = SleepAnalyzer.buildSleepPayload(userId);
+
+        var options = {
+            :method => Communications.HTTP_REQUEST_METHOD_POST,
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_TEXT_PLAIN,
+            :context => "SLEEP_POST",
+            :headers => {
+                // With a Dictionary params + POST, the SDK sends a form-urlencoded body.
+                // TODO: if backend expects JSON, change Content-Type and send JSON string instead.
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED,
+                "Accept" => "text/plain",
+                //remove once backend is set up
+                "ngrok-skip-browser-warning" => "true"
+            }
+        };
+
+        System.println("POST payload: " + params.toString());
+        makeRequest(url, params, options);
+    }
+
     function sendSleepSummaryRequest() as Void {
         // POST request that sends a nightly summary for the last sleep window.
         var url = BASE_URL + "sleep-summary";
@@ -213,6 +242,8 @@ class SleepMonitorHttpClient {
         }
 
         _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
+    }
+
     static function setWakeStart(wakeStartTime as String) as Void {
         Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
     }
