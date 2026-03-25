@@ -24,12 +24,11 @@ import Toybox.SensorHistory;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.WatchUi;
+import StorageKeys;
 
 // URL to AWS API Gateway endpoint
 const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
-const USER_ID_KEY = "username";
-const WAKE_START_KEY = "wakeStart";
-const WAKE_END_KEY = "wakeEnd";
+
 
 class SleepMonitorHttpClient {
 
@@ -179,9 +178,9 @@ class SleepMonitorHttpClient {
         WatchUi.requestUpdate();
     }
 
-    static function setUserId(userId as String) as Void { Application.Storage.setValue(USER_ID_KEY, userId); }
+    static function setUserId(userId as String) as Void { Application.Storage.setValue(StorageKeys.USER_ID_KEY, userId); }
 
-    private function getUserId() as String or Null { return Application.Storage.getValue(USER_ID_KEY) as String ? ; }
+    private function getUserId() as String or Null { return Application.Storage.getValue(StorageKeys.USER_ID_KEY) as String ? ; }
 
     function scheduleAlarmFromSleepPayload(payload as Dictionary?) as Void {
         if (payload == null) {
@@ -210,18 +209,18 @@ class SleepMonitorHttpClient {
         _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
     }
     static function setWakeStart(wakeStartTime as String) as Void {
-        Application.Storage.setValue(WAKE_START_KEY, wakeStartTime);
+        Application.Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStartTime);
     }
 
     static function getWakeStart() as String or Null {
-        return Application.Storage.getValue(WAKE_START_KEY) as String?;
+        return Application.Storage.getValue(StorageKeys.WAKE_START_KEY) as String?;
     }
 
     static function setWakeEnd(wakeEndTime as String) as Void {
-        Application.Storage.setValue(WAKE_END_KEY, wakeEndTime);
+        Application.Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEndTime);
     }
 
     static function getWakeEnd() as String or Null {
-        return Application.Storage.getValue(WAKE_END_KEY) as String?;
+        return Application.Storage.getValue(StorageKeys.WAKE_END_KEY) as String?;
     }
 }

@@ -15,6 +15,7 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
+import StorageKeys;
 
 class RatingView extends WatchUi.View {
 
@@ -37,7 +38,7 @@ class RatingView extends WatchUi.View {
 
     function initialize(song as String) {
         View.initialize();
-        _userId = Storage.getValue("user_id");
+        _userId = Storage.getValue(StorageKeys.USER_ID_KEY);
         if (_userId == null) {
             _userId = "unknown";
         }

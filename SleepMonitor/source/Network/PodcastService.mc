@@ -1,6 +1,6 @@
 /*
 Name: source/Network/PodcastService.mc
-Description: Implements the PodcastProvider class responsible for communicating with 
+Description: Implements the PodcastProvider class responsible for communicating with
              the AWS Lambda backend to check podcast status and trigger playback.
              This modular design keeps the API logic separate from the alarm management.
 Authors: Audrey Pan
@@ -12,14 +12,15 @@ import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.Application;
+import StorageKeys;
 
 class PodcastProvider {
     private var _username;
     private var _notifyBaseUrl = "https://fopzwr25foju62tnwa3hqyk6su0utwkh.lambda-url.us-east-2.on.aws/";
     private var _statusCallback;
 
-    function initialize() { 
-        var stored = Application.Storage.getValue("user_id");
+    function initialize() {
+        var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
         _username = stored != null ? stored.toString() : "test_user42"; //Fall back to defaul username if not yet set
         System.println("PodcastProvider user_id: " + _username);
     }

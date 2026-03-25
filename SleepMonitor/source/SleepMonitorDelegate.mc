@@ -17,6 +17,7 @@ import Toybox.System;
 import Toybox.Timer;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
+import StorageKeys;
 
 // TODO: add podcast_url to storage in PodcastService.mc
 // Hold threshold for back-button exit (milliseconds)
@@ -67,7 +68,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         if (dxL * dxL + dyL * dyL <= btnR * btnR) {
             System.println("SleepMonitorDelegate: podcast button tapped");
             try {
-                var podcast_url = Storage.getValue("podcast_url");
+                var podcast_url = Storage.getValue(StorageKeys.PODCAST_URL_KEY);
                 if (podcast_url != null) {
                     Communications.openWebPage(podcast_url, null, null);
                 }
@@ -106,7 +107,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         } else if (key == WatchUi.KEY_DOWN) {
             System.println("SleepMonitorDelegate: opening podcast deeplink");
             try {
-                var podcast_url = Storage.getValue("podcast_url");
+                var podcast_url = Storage.getValue(StorageKeys.PODCAST_URL_KEY);
                 if (podcast_url != null) {
                     Communications.openWebPage(podcast_url, null, null);
                 }

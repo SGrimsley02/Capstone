@@ -13,6 +13,7 @@ import Toybox.System;
 import Toybox.Lang;
 import Toybox.Timer;
 import Toybox.Math;
+import StorageKeys;
 
 class SleepMonitorOnboarding {
 
@@ -23,7 +24,7 @@ class SleepMonitorOnboarding {
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
-        var key = "hasOnboarded";
+        var key = StorageKeys.HAS_ONBOARDED_KEY;
 
         System.println("Onboarding check started...");
 
@@ -80,11 +81,11 @@ class SleepMonitorOnboarding {
 
             var preferences = data["preferences"];
             SleepMonitorHttpClient.setUserId(data["username"]);
-            Storage.setValue("hasOnboarded", true);
+            Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
             if (preferences != null) {
-                Storage.setValue("wakeStart", preferences["wakeStart"]);
-                Storage.setValue("wakeEnd",   preferences["wakeEnd"]);
+                Storage.setValue(StorageKeys.WAKE_START_KEY, preferences["wakeStart"]);
+                Storage.setValue(StorageKeys.WAKE_END_KEY,   preferences["wakeEnd"]);
             }
 
             System.println("Onboarding complete for: " + data["username"]);
@@ -96,7 +97,7 @@ class SleepMonitorOnboarding {
         } else {
             // Something went wrong — stop polling
             _timer.stop();
-            Storage.setValue("hasOnboarded", false);
+            Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             System.println("Poll failed: " + responseCode);
         }
     }

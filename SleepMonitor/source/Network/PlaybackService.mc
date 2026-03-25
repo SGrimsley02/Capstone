@@ -14,6 +14,7 @@ import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.Application;
+import StorageKeys;
 
 class PlaybackProvider {
     private var _userId;
@@ -22,7 +23,7 @@ class PlaybackProvider {
 
 
     function initialize() {
-        var stored = Application.Storage.getValue("user_id");
+        var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
         _userId = stored != null ? stored.toString() : "unknown"; //Fall back to default username if not yet set
         _userId = "playbacktest"; // Hardcode for testing purposes
         System.println("PlaybackProvider user_id: " + _userId);
