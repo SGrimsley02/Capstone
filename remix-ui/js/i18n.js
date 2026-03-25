@@ -40,19 +40,28 @@ async function loadLocale(language) {
   return res.json();
 }
 
+async function loadUniversal() {
+  const universalPath = new URL(`../locales/universal.json`, import.meta.url);
+  const res = await fetch(universalPath);
+  if (!res.ok) throw new Error("Failed to load universal locale");
+  return res.json();
+}
+
 export async function initI18n() {
   const saved = localStorage.getItem(LANGUAGE_KEY);
   const browser = (navigator.language || DEFAULT_LANGUAGE).split("-")[0];
   const preferred = saved || browser;
   const language = SUPPORTED_LANGUAGES.includes(preferred) ? preferred : DEFAULT_LANGUAGE;
 
-  const [defaultStrings, selectedStrings] = await Promise.all([
+  const [universal, defaultStrings, selectedStrings] = await Promise.all([
+    loadUniversal(),
     loadLocale(DEFAULT_LANGUAGE),
     language === DEFAULT_LANGUAGE ? Promise.resolve(null) : loadLocale(language)
   ]);
 
+  const merged = deepMerge(universal, defaultStrings);
   currentLanguage = language;
-  translations = selectedStrings == null ? defaultStrings : deepMerge(defaultStrings, selectedStrings);
+  translations = selectedStrings == null ? merged : deepMerge(merged, selectedStrings);
   localStorage.setItem(LANGUAGE_KEY, currentLanguage);
   document.documentElement.lang = currentLanguage;
 
@@ -62,13 +71,15 @@ export async function initI18n() {
 export async function setLanguage(language) {
   if (!SUPPORTED_LANGUAGES.includes(language)) return currentLanguage;
 
-  const [defaultStrings, selectedStrings] = await Promise.all([
+  const [universal, defaultStrings, selectedStrings] = await Promise.all([
+    loadUniversal(),
     loadLocale(DEFAULT_LANGUAGE),
     language === DEFAULT_LANGUAGE ? Promise.resolve(null) : loadLocale(language)
   ]);
 
+  const merged = deepMerge(universal, defaultStrings);
   currentLanguage = language;
-  translations = selectedStrings == null ? defaultStrings : deepMerge(defaultStrings, selectedStrings);
+  translations = selectedStrings == null ? merged : deepMerge(merged, selectedStrings);
   localStorage.setItem(LANGUAGE_KEY, currentLanguage);
   document.documentElement.lang = currentLanguage;
 

@@ -10,10 +10,6 @@
     "signedOut": "Signed out",
     "signedIn": "Signed in: {{username}}"
   },
-  "language": {
-    "en": "English",
-    "es": "Español"
-  },
   "hero": {
     "title": "What REMix does for you",
     "subtitle": "REMix is a smart alarm and morning assistant that blends sleep science with personalization so your wake-up feels timely, useful, and low-friction.",
@@ -82,16 +78,6 @@
     "selectNewsRequired": "Please select at least one news source.",
     "saved": "Saved ✓",
     "saveFailed": "Save failed"
-  },
-  "newsSources": {
-    "nytimes": "NY Times",
-    "bbc": "BBC News",
-    "guardian": "The Guardian",
-    "aljazeera": "Al Jazeera",
-    "techradar": "TechRadar",
-    "time": "Time Magazine",
-    "yahoo": "Yahoo Sports",
-    "notboring": "Not Boring"
   },
   "zodiac": {
     "aries": "Aries",

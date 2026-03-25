@@ -1,0 +1,17 @@
+{
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "wo": "Wolof"
+  },
+  "newsSources": {
+    "nytimes": "NY Times",
+    "bbc": "BBC News",
+    "guardian": "The Guardian",
+    "aljazeera": "Al Jazeera",
+    "techradar": "TechRadar",
+    "time": "Time Magazine",
+    "yahoo": "Yahoo Sports",
+    "notboring": "Not Boring"
+  }
+}
