@@ -14,94 +14,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REMix – Website Skeleton</title>
-  <style>
-    :root { --bg:#0b1020; --card:#121a33; --text:#e8ecff; --muted:#aab3d6; --accent:#7c5cff; --border:#23305a; }
-    * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    body { margin: 0; background: radial-gradient(1200px 600px at 20% 10%, #18224a, var(--bg)); color: var(--text); }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 40px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 18px; }
-    .brand { display:flex; align-items:center; gap:10px; }
-    .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), #37d3ff); }
-    h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
-    .pill { font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; }
-
-    .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 900px) { .grid { grid-template-columns: 1.25fr 0.75fr; } }
-
-    .card { background: color-mix(in oklab, var(--card) 92%, black); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .card h2 { margin: 0 0 6px; font-size: 16px; }
-    .card p { margin: 0 0 12px; color: var(--muted); line-height: 1.4; font-size: 13.5px; }
-
-    .tabs { display:flex; gap:10px; margin: 10px 0 14px; }
-    .tab { padding: 8px 10px; border-radius: 999px; border:1px solid var(--border); background:#0e1530; color:var(--muted); font-size:12.5px; cursor:pointer; }
-    .tab.active { color: var(--text); border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); }
-
-    label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #0e1530;
-      color: var(--text);
-      outline: none;
-    }
-    input:focus, select:focus { border-color: color-mix(in oklab, var(--accent) 60%, var(--border)); box-shadow: 0 0 0 3px rgba(124,92,255,.18); }
-
-    .row { display:grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
-
-    .btns { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; }
-    button {
-      cursor:pointer;
-      border: 1px solid var(--border);
-      background: #0e1530;
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-    button.primary { background: var(--accent); border-color: color-mix(in oklab, var(--accent) 70%, white); }
-    button.ghost { background: transparent; }
-    button:disabled { opacity: .55; cursor: not-allowed; }
-
-    .status {
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding: 10px 12px; border-radius: 14px;
-      background: #0e1530; border: 1px dashed var(--border);
-      margin-top: 10px;
-    }
-    .ok { color: #9af2c7; font-weight: 800; }
-    .warn { color: #ffd37a; font-weight: 800; }
-    .mini { font-size: 12px; color: var(--muted); }
-    .divider { height:1px; background: var(--border); margin: 14px 0; opacity: .8; }
-    .hide { display:none !important; }
-    .toast { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
-    .kbd { border:1px solid var(--border); padding:2px 6px; border-radius:8px; font-size: 11px; color: var(--muted); }
-
-    .checkbox-label{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .checkbox-label input[type="checkbox"]{
-      width:18px;
-      height:18px;
-      accent-color: var(--accent);
-    }
-    .toggle-grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    @media (min-width: 560px){
-      .toggle-grid{ grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+  <title>REMix — Smart Alarm</title>
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
@@ -110,20 +24,45 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>REMix • Onboarding Skeleton</h1>
-          <div class="mini">Local auth + Google + Spotify (UI-only demo)</div>
+          <h1>REMix • Smart Alarm</h1>
+          <div class="mini">Wake in your optimal sleep stage with music and your daily briefing.</div>
         </div>
       </div>
       <div class="pill" id="pillState">Signed out</div>
     </header>
 
     <div class="grid">
+      <section class="card hero-card" aria-label="About REMix">
+        <h2>What REMix does for you</h2>
+        <p class="hero-subtitle">
+          REMix is a smart alarm and morning assistant that blends sleep science with personalization so your wake-up feels timely, useful, and low-friction.
+        </p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <strong>Wake timing by sleep stage</strong>
+            <span>Triggers your alarm in an optimal window to reduce grogginess and help you start your day clearer.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Sleep-aware music playback</strong>
+            <span>Adapts your wake soundtrack based on sleep quality and your selected podcast tone preferences.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Daily podcast-style briefing</strong>
+            <span>Combines schedule, weather, news, and optional horoscope into a concise morning summary.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Connected routine</strong>
+            <span>Integrates with Google Calendar and Spotify so your morning context and media are ready immediately.</span>
+          </div>
+        </div>
+      </section>
+
       <!-- MAIN -->
       <section class="card">
         <!-- AUTH VIEW -->
         <div id="viewAuth">
           <h2>Sign in</h2>
-          <p>Create an account for REMix, then connect your services. (Skeleton only: stored in localStorage.)</p>
+          <p>Create your REMix account, then connect services and personalize your wake experience.</p>
 
           <div class="tabs" role="tablist">
             <button class="tab active" id="tabLogin" type="button">Log in</button>
@@ -143,7 +82,6 @@
             </div>
             <div class="btns">
               <button class="primary" type="submit">Log in</button>
-              <button class="ghost" type="button" id="btnDemoLogin">Demo login</button>
             </div>
             <div class="toast" id="authMsg"></div>
           </form>
@@ -193,18 +131,14 @@
           <div class="btns">
             <button id="btnToPrefs" type="button" disabled>Continue to preferences</button>
             <button id="btnLogout" type="button" class="ghost">Log out</button>
-            <button id="btnResetAll" type="button" class="ghost">Reset demo data</button>
+            <button id="btnResetAll" type="button" class="ghost">Reset session</button>
           </div>
 
-          <div class="toast">
-            Later: <span class="kbd">Connect Google</span> → <span class="kbd">/auth/google</span>,
-            <span class="kbd">Connect Spotify</span> → <span class="kbd">/auth/spotify</span>.
-          </div>
         </div>
         <!-- PREFS VIEW -->
         <div id="viewPrefs" class="hide">
           <h2>Wake & music preferences</h2>
-          <p>TEMPORARY PREFERENCES (SWITCH LATER), These persist for the logged-in user (localStorage demo)</p>
+          <p>Set your wake window, podcast style, and morning briefing content.</p>
 
           <form id="prefsForm">
             <div class="row">
@@ -337,508 +271,9 @@
         </div>
       </section>
 
-      <!-- SIDEBAR -->
-      <aside class="card">
-        <h2>Current state</h2>
-        <p>This is for demos/testing.</p>
-
-        <div class="status">
-          <div>
-            <div class="mini">Signed in as</div>
-            <div id="dbgUser" class="warn">—</div>
-          </div>
-          <div class="mini" id="dbgAuth">Signed out</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Google</div>
-            <div id="dbgGoogle" class="warn">Not connected</div>
-          </div>
-          <div class="mini" id="dbgGoogleAcct">—</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Spotify</div>
-            <div id="dbgSpotify" class="warn">Not connected</div>
-          </div>
-          <div class="mini" id="dbgSpotifyAcct">—</div>
-        </div>
-
-        <div class="status" style="margin-top:10px;">
-          <div>
-            <div class="mini">Preferences</div>
-            <div id="dbgPrefs" class="warn">Not set</div>
-          </div>
-          <div class="mini" id="dbgPrefsSummary">—</div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="mini">
-          Skeleton notes:
-          <ul>
-            <li>This is UI-only (localStorage).</li>
-            <li>Real OAuth will be backend routes + redirect URIs.</li>
-            <li>Real passwords must be hashed + never stored client-side.</li>
-          </ul>
-        </div>
-      </aside>
     </div>
   </div>
 
-<script>
-  // --- Backend API integration ---
-  const LS_SESSION = "remix_session_v1";
-  let currentUser = null;
-
-  const API_BASE = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev";
-  const FRONTEND_BASE = `${window.location.origin}/remix-ui/`;
-
-  const el = (id) => document.getElementById(id);
-
-  const viewAuth = el("viewAuth");
-  const viewSetup = el("viewSetup");
-  const viewPrefs = el("viewPrefs");
-
-  const pillState = el("pillState");
-
-  const tabLogin = el("tabLogin");
-  const tabSignup = el("tabSignup");
-  const formLogin = el("formLogin");
-  const formSignup = el("formSignup");
-
-  const authMsg = el("authMsg");
-  const signupMsg = el("signupMsg");
-
-  const btnDemoLogin = el("btnDemoLogin");
-  const btnDemoSignup = el("btnDemoSignup");
-
-  const googleStatus = el("googleStatus");
-  const spotifyStatus = el("spotifyStatus");
-  const btnGoogle = el("btnGoogle");
-  const btnSpotify = el("btnSpotify");
-  const btnToPrefs = el("btnToPrefs");
-  const btnLogout = el("btnLogout");
-  const btnResetAll = el("btnResetAll");
-
-  const prefsForm = el("prefsForm");
-  const prefsMsg = el("prefsMsg");
-  const btnBackToSetup = el("btnBackToSetup");
-
-  const podNews = el("pod_news");
-  const podWeather = el("pod_weather");
-  const podSchedule = el("pod_schedule");
-  const podHoroscope = el("pod_horoscope");
-
-  const zodiacOptions = el("zodiacOptions");
-  const zodiacSelect = el("zodiac");
-
-  const newsOptions = el("newsOptions");
-
-  const newsNYTimes = el("news_nytimes");
-  const newsBBC = el("news_bbc");
-  const newsGuardian = el("news_guardian");
-  const newsAlJazeera = el("news_aljazeera");
-  const newsTechRadar = el("news_techradar");
-  const newsTime = el("news_time");
-  const newsYahoo = el("news_yahoo");
-  const newsNotBoring = el("news_notboring");
-
-  const ALL_NEWS_SOURCES = [
-    "NY Times",
-    "BBC News",
-    "The Guardian",
-    "Al Jazeera",
-    "TechRadar",
-    "Time Magazine",
-    "Yahoo Sports",
-    "Not Boring"
-  ];
-  
-  const newsSourceInputs = {
-    "NY Times": newsNYTimes,
-    "BBC News": newsBBC,
-    "The Guardian": newsGuardian,
-    "Al Jazeera": newsAlJazeera,
-    "TechRadar": newsTechRadar,
-    "Time Magazine": newsTime,
-    "Yahoo Sports": newsYahoo,
-    "Not Boring": newsNotBoring
-  };
-
-  podHoroscope.addEventListener("change", () => {
-    zodiacOptions.classList.toggle("hide", !podHoroscope.checked);
-  });
-
-  podNews.addEventListener("change", () => {
-    newsOptions.classList.toggle("hide", !podNews.checked);
-  });
-
-  const dbgUser = el("dbgUser");
-  const dbgAuth = el("dbgAuth");
-  const dbgGoogle = el("dbgGoogle");
-  const dbgGoogleAcct = el("dbgGoogleAcct");
-  const dbgSpotify = el("dbgSpotify");
-  const dbgSpotifyAcct = el("dbgSpotifyAcct");
-  const dbgPrefs = el("dbgPrefs");
-  const dbgPrefsSummary = el("dbgPrefsSummary");
-
-  function loadSession() {
-    try { return JSON.parse(localStorage.getItem(LS_SESSION)) || {}; } catch { return {}; }
-  }
-  function saveSession(sess) {
-    localStorage.setItem(LS_SESSION, JSON.stringify(sess));
-  }
-
-  function setView(which) {
-    viewAuth.classList.toggle("hide", which !== "auth");
-    viewSetup.classList.toggle("hide", which !== "setup");
-    viewPrefs.classList.toggle("hide", which !== "prefs");
-  }
-
-  function setTab(which) {
-    const login = which === "login";
-    tabLogin.classList.toggle("active", login);
-    tabSignup.classList.toggle("active", !login);
-    formLogin.classList.toggle("hide", !login);
-    formSignup.classList.toggle("hide", login);
-    authMsg.textContent = "";
-    signupMsg.textContent = "";
-  }
-
-  async function getCurrentUser() {
-    const sess = loadSession();
-    if (!sess.username) return null;
-    try {
-      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/user?username=${sess.username}`);
-      if (res.ok) return res.json();
-    } catch (e) {
-      console.error("Error fetching user data:", e);
-    }
-  }
-
-  async function render() {
-    const sess = loadSession();
-    const signedIn = !!sess.username;
-
-    pillState.textContent = signedIn ? `Signed in: ${loadSession().username}` : "Signed out";
-
-    if (!signedIn) {
-      setView("auth");
-      dbgUser.textContent = "—";
-      dbgUser.className = "warn";
-      dbgAuth.textContent = "Signed out";
-      dbgGoogle.textContent = "Not connected";
-      dbgSpotify.textContent = "Not connected";
-      dbgPrefs.textContent = "Not set";
-      dbgGoogleAcct.textContent = "—";
-      dbgSpotifyAcct.textContent = "—";
-      dbgPrefsSummary.textContent = "—";
-      return;
-    }
-
-    currentUser = await getCurrentUser();
-    if (!currentUser) {
-    // We still have a session, but user fetch failed; keep setup view and show message
-    setView("setup");
-    authMsg.textContent = "Signed in, but couldn’t load profile from API. Refresh in a second.";
-    return;
-  }
-
-    // setup status (placeholder for OAuth integration)
-    const gOK = (currentUser.googleConnected  === true) || (currentUser.googleEmail != null);
-    const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
-
-    googleStatus.textContent = gOK ? "Connected ✅" : "Not connected";
-    googleStatus.className = gOK ? "ok" : "warn";
-    spotifyStatus.textContent = sOK ? "Connected ✅" : "Not connected";
-    spotifyStatus.className = sOK ? "ok" : "warn";
-
-    btnToPrefs.disabled = !(gOK && sOK);
-
-    // sidebar
-    dbgUser.textContent = currentUser.username;
-    dbgUser.className = "ok";
-    dbgAuth.textContent = "Signed in";
-
-    dbgGoogle.textContent = gOK ? "Connected ✅" : "Not connected";
-    dbgGoogle.className = gOK ? "ok" : "warn";
-    dbgGoogleAcct.textContent = gOK ? (currentUser.googleEmail || "google_user@gmail.com") : "—";
-
-    dbgSpotify.textContent = sOK ? "Connected ✅" : "Not connected";
-    dbgSpotify.className = sOK ? "ok" : "warn";
-    dbgSpotifyAcct.textContent = sOK ? (currentUser.spotifyName || "@spotify_user") : "—";
-
-    const pOK = !!currentUser.preferences?.wakeEnd;
-    dbgPrefs.textContent = pOK ? "Saved ✅" : "Not set";
-    dbgPrefs.className = pOK ? "ok" : "warn";
-    dbgPrefsSummary.textContent = pOK
-      ? `${currentUser.preferences?.wakeStart || "07:00"}–${currentUser.preferences?.wakeEnd || "07:30"} • ${currentUser.preferences?.tone || "tone1"}`
-      : "—";
-
-    if (!viewSetup.classList.contains("hide") || !viewPrefs.classList.contains("hide")) return;
-    setView("setup");
-  }
-
-  // Tabs
-  tabLogin.addEventListener("click", () => setTab("login"));
-  tabSignup.addEventListener("click", () => setTab("signup"));
-
-  // Signup
-  formSignup.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const u = formSignup.signupUser.value.trim();
-    const p = formSignup.signupPass.value;
-
-    if (!u || !p) return;
-
-    try {
-      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: u, password: p })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        signupMsg.textContent = "Account created ✓";
-        setTab("login");
-        formSignup.reset();
-      } else {
-        signupMsg.textContent = data.message || "Registration failed";
-      }
-    } catch (e) {
-      signupMsg.textContent = "Error: " + e.message;
-    }
-  });
-
-  // Login
-  formLogin.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const u = formLogin.loginUser.value.trim();
-    const p = formLogin.loginPass.value;
-
-    try {
-      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: u, password: p })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        authMsg.textContent = "Logged in ✓";
-        formLogin.reset();
-        saveSession({ username: u });
-        const sessionId = new URLSearchParams(window.location.search).get("sessionId");
-        if (sessionId != null) {
-          await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/session/store', {
-              method: 'PUT',
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({sessionId: sessionId, username: u })
-          });
-        }
-        await render();
-        setView("setup");
-      } else {
-        authMsg.textContent = data.message || "Login failed";
-      }
-    } catch (e) {
-      authMsg.textContent = "Error: " + e.message;
-    }
-  });
-
-  // Demo buttons (create demo users in DynamoDB)
-  btnDemoLogin.addEventListener("click", async () => {
-    try {
-      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: "demo", password: "demo123" })
-      });
-
-      if (!res.ok) {
-        // Create demo user if doesn't exist
-        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: "demo", password: "demo123" })
-        });
-
-        // Now login
-        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: "demo", password: "demo123" })
-        });
-      }
-      saveSession({ username: "demo" });
-      await render();
-      setView("setup");
-    } catch (e) {
-      console.error("Demo login error:", e);
-    }
-  });
-
-  btnDemoSignup.addEventListener("click", async () => {
-    try {
-      const res = await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: "demo", password: "demo123" })
-      });
-
-      if (res.ok) {
-        // Login with demo account
-        await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: "demo", password: "demo123" })
-        });
-      }
-
-      saveSession({ username: "demo" });
-      await render();
-      setView("setup");
-    } catch (e) {
-      console.error("Demo signup error:", e);
-    }
-  });
-
-  btnGoogle.addEventListener("click", () => {
-    const userID = currentUser.username;
-    window.location.href =
-      `${API_BASE}/auth/google/login?username=${encodeURIComponent(userID)}&returnTo=${encodeURIComponent(FRONTEND_BASE)}`;
-  });
-
-btnSpotify.addEventListener("click", () => {
-  const userID = currentUser.username;
-  window.location.href =
-    `${API_BASE}/auth/spotify/login?username=${encodeURIComponent(userID)}&returnTo=${encodeURIComponent(FRONTEND_BASE)}`;
-});
-
-  // Continue to prefs
-  btnToPrefs.addEventListener("click", () => {
-    setView("prefs");
-    prefsMsg.textContent = "";
-
-    if (currentUser?.preferences) {
-      prefsForm.wakeStart.value = currentUser.preferences.wakeStart || "07:00";
-      prefsForm.wakeEnd.value = currentUser.preferences.wakeEnd || "07:30";
-      prefsForm.tone.value = currentUser.preferences.tone || "tone1";
-      prefsForm.explicit.value = currentUser.preferences.explicit || "filter";
-    }
-
-    const podcast = (currentUser && currentUser.preferences && currentUser.preferences.podcast) || {
-      news: true,
-      weather: true,
-      schedule: true,
-      horoscope: false
-    };
-
-    podNews.checked = !!podcast.news;
-    newsOptions.classList.toggle("hide", !podNews.checked);
-    podWeather.checked = !!podcast.weather;
-    podSchedule.checked = !!podcast.schedule;
-    podHoroscope.checked = !!podcast.horoscope;
-
-    zodiacOptions.classList.toggle("hide", !podHoroscope.checked);
-
-    if (currentUser.preferences?.podcast?.zodiac) {
-      zodiacSelect.value = currentUser.preferences.podcast.zodiac;
-    }
-
-    const savedSources = currentUser?.preferences?.news?.sources;
-    const effectiveSources = savedSources == null ? ALL_NEWS_SOURCES : savedSources;
-
-    Object.entries(newsSourceInputs).forEach(([sourceName, checkbox]) => {
-      checkbox.checked = effectiveSources.includes(sourceName);
-    });
-  });
-
-  // Save prefs
-  prefsForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    try {
-          const selectedNewsSources = Object.entries(newsSourceInputs)
-            .filter(([, checkbox]) => checkbox.checked)
-            .map(([sourceName]) => sourceName);
-
-            if (podNews.checked && selectedNewsSources.length === 0) {
-              prefsMsg.textContent = "Please select at least one news source.";
-              return;
-            };
-
-          const prefs = {
-            wakeStart: prefsForm.wakeStart.value,
-            wakeEnd: prefsForm.wakeEnd.value,
-            tone: prefsForm.tone.value,
-            explicit: prefsForm.explicit.value,
-            podcast: {
-              news: podNews.checked,
-              weather: podWeather.checked,
-              schedule: podSchedule.checked,
-              horoscope: podHoroscope.checked,
-              zodiac: podHoroscope.checked ? zodiacSelect.value : null
-            },
-            news: {
-              sources: selectedNewsSources
-            }
-          };
-      const userID = currentUser.username;
-
-      const res = await fetch(`https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/preferences?username=${userID}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prefs)
-      });
-
-      if (res.ok) {
-        prefsMsg.textContent = "Saved ✓";
-        await render();
-      } else {
-        const data = await res.json();
-        prefsMsg.textContent = data.message || "Save failed";
-      }
-    } catch (e) {
-      prefsMsg.textContent = "Error: " + e.message;
-    }
-  });
-
-  btnBackToSetup.addEventListener("click", () => {
-    setView("setup");
-    prefsMsg.textContent = "";
-    render();
-  });
-
-  // Logout + reset
-  btnLogout.addEventListener("click", () => {
-    localStorage.removeItem(LS_SESSION);
-    setView("auth");
-    render();
-  });
-
-  btnResetAll.addEventListener("click", () => {
-    localStorage.removeItem(LS_SESSION);
-    setView("auth");
-    setTab("login");
-  });
-
-  // Init
-  // If user came back from Spotify or Google OAuth, go straight to setup view
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("spotify") === "connected" || params.get("google") === "connected") {
-  // Clean the URL so refresh doesn’t keep the param forever
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
-
-  setTab("login");
-  render();
-  // setView("prefs");   // TEMP: jump straight to preferences
-</script>
+<script type="module" src="./js/app.js"></script>
 </body>
 </html>
