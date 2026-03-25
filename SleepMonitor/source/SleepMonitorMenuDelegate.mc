@@ -15,6 +15,7 @@ Notes:
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
+import Toybox.Communications;
 
 class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
     private var _httpClient as SleepMonitorHttpClient;
@@ -28,18 +29,33 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
     function onMenuItem(item as Symbol) as Void {
         // Handle menu item selections and trigger the corresponding HTTP client methods.
         // (Item symbols map to menu.xml entries)
-        if (item == :item_1) {
+        if (item == :httpLocal) {
             System.println("Running local HTTP test on http://127.0.0.1:5000/");
             _httpClient.sendLocalHttpRequest();
-        } else if (item == :item_2) {
+        } else if (item == :httpPublic) {
             System.println("Running public HTTPS test.");
             _httpClient.sendPublicHttpsRequest("https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/");
-        } else if (item == :item_3) {
+        } else if (item == :httpPost) {
             System.println("Sending sleep summary.");
             _httpClient.sendSleepSummaryRequest();
-        } else if (item == :item_8) {
+        } else if (item == :scheduleAlarm) {
             System.println("Scheduling alarm for 5 seconds from now.");
             getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
+        } else if (item == :testReview) {
+            System.println("Navigating to the song rating screen.");
+            var song = "fakeSongUri";
+            var ratingView = new RatingView(song);
+            var ratingDelegate = new RatingDelegate(ratingView);
+            WatchUi.pushView(ratingView, ratingDelegate, WatchUi.SLIDE_UP);
+        } else if (item == :openWebsite) {
+            System.println("Opening website.");
+            try {
+                System.println("Attempting openWebPage...");
+                Communications.openWebPage("https://www.google.com", null, null); // TODO: replace with real URL, need to replace elsewhere too
+                System.println("openWebPage call completed.");
+            } catch (ex) {
+                System.println("openWebPage FAILED: " + ex.toString());
+            }
         }
     }
 }

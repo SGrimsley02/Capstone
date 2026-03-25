@@ -1,0 +1,13 @@
+<!--
+Name: resources/layouts/volume.xml
+Description: Layout container for the volume control screen.
+             All UI elements (bar, arrows, label) are rendered programmatically
+             in VolumeView.onUpdate so this intentionally contains no elements.
+Authors: Kiara Rose
+Created: March 15, 2026
+Last Modified: March 15, 2026
+-->
+
+<layout id="VolumeLayout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <!-- Drawn programmatically in VolumeView.onUpdate -->
+</layout>
