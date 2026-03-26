@@ -14,7 +14,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REMix — Smart Alarm</title>
+  <title data-i18n="meta.title">REMix — Smart Alarm</title>
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
@@ -24,35 +24,56 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>REMix • Smart Alarm</h1>
-          <div class="mini">Wake in your optimal sleep stage with music and your daily briefing.</div>
+          <h1 data-i18n="header.title">REMix • Smart Alarm</h1>
+          <div class="mini" data-i18n="header.subtitle">Wake in your optimal sleep stage with music and your daily briefing.</div>
         </div>
       </div>
-      <div class="pill" id="pillState">Signed out</div>
+      <div class="header-actions">
+        <label for="languageSelect" class="mini" data-i18n="header.language">Language</label>
+        <select id="languageSelect" class="language-select" aria-label="Language selector" data-i18n-aria-label="header.languageSelector">
+          <option value="en" data-i18n="language.en">English</option>
+          <option value="es" data-i18n="language.es">Español</option>
+          <option value="fr" data-i18n="language.fr">Français</option>
+          <option value="de" data-i18n="language.de">Deutsch</option>
+          <option value="it" data-i18n="language.it">Italiano</option>
+          <option value="ja" data-i18n="language.ja">日本語</option>
+          <option value="ko" data-i18n="language.ko">한국어</option>
+          <option value="nl" data-i18n="language.nl">Nederlands</option>
+          <option value="pt" data-i18n="language.pt">Português</option>
+          <option value="ru" data-i18n="language.ru">Русский</option>
+          <option value="th" data-i18n="language.th">ไทย</option>
+          <option value="wo" data-i18n="language.wo">Wolof</option>
+          <option value="zh" data-i18n="language.zh">中文</option>
+          <option value="ar" data-i18n="language.ar">العربية</option>
+          <option value="hi" data-i18n="language.hi">हिन्दी</option>
+          <option value="vi" data-i18n="language.vi">Tiếng Việt</option>
+        </select>
+        <div class="pill" id="pillState" data-i18n="header.signedOut">Signed out</div>
+      </div>
     </header>
 
     <div class="grid">
-      <section class="card hero-card" aria-label="About REMix">
-        <h2>What REMix does for you</h2>
-        <p class="hero-subtitle">
+      <section class="card hero-card" aria-label="About REMix" data-i18n-aria-label="hero.title">
+        <h2 data-i18n="hero.title">What REMix does for you</h2>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
           REMix is a smart alarm and morning assistant that blends sleep science with personalization so your wake-up feels timely, useful, and low-friction.
         </p>
         <div class="feature-list">
           <div class="feature-item">
-            <strong>Wake timing by sleep stage</strong>
-            <span>Triggers your alarm in an optimal window to reduce grogginess and help you start your day clearer.</span>
+            <strong data-i18n="hero.f1t">Wake timing by sleep stage</strong>
+            <span data-i18n="hero.f1d">Triggers your alarm in an optimal window to reduce grogginess and help you start your day clearer.</span>
           </div>
           <div class="feature-item">
-            <strong>Sleep-aware music playback</strong>
-            <span>Adapts your wake soundtrack based on sleep quality and your selected podcast tone preferences.</span>
+            <strong data-i18n="hero.f2t">Sleep-aware music playback</strong>
+            <span data-i18n="hero.f2d">Adapts your wake soundtrack based on sleep quality and your selected podcast tone preferences.</span>
           </div>
           <div class="feature-item">
-            <strong>Daily podcast-style briefing</strong>
-            <span>Combines schedule, weather, news, and optional horoscope into a concise morning summary.</span>
+            <strong data-i18n="hero.f3t">Daily podcast-style briefing</strong>
+            <span data-i18n="hero.f3d">Combines schedule, weather, news, and optional horoscope into a concise morning summary.</span>
           </div>
           <div class="feature-item">
-            <strong>Connected routine</strong>
-            <span>Integrates with Google Calendar and Spotify so your morning context and media are ready immediately.</span>
+            <strong data-i18n="hero.f4t">Connected routine</strong>
+            <span data-i18n="hero.f4d">Integrates with Google Calendar and Spotify so your morning context and media are ready immediately.</span>
           </div>
         </div>
       </section>
@@ -61,27 +82,27 @@
       <section class="card">
         <!-- AUTH VIEW -->
         <div id="viewAuth">
-          <h2>Sign in</h2>
-          <p>Create your REMix account, then connect services and personalize your wake experience.</p>
+          <h2 data-i18n="auth.title">Sign in</h2>
+          <p data-i18n="auth.subtitle">Create your REMix account, then connect services and personalize your wake experience.</p>
 
           <div class="tabs" role="tablist">
-            <button class="tab active" id="tabLogin" type="button">Log in</button>
-            <button class="tab" id="tabSignup" type="button">Sign up</button>
+            <button class="tab active" id="tabLogin" type="button" data-i18n="auth.tabLogin">Log in</button>
+            <button class="tab" id="tabSignup" type="button" data-i18n="auth.tabSignup">Sign up</button>
           </div>
 
           <form id="formLogin">
             <div class="row">
               <div>
-                <label for="loginUser">Username</label>
+                <label for="loginUser" data-i18n="auth.username">Username</label>
                 <input id="loginUser" name="loginUser" autocomplete="username" required />
               </div>
               <div>
-                <label for="loginPass">Password</label>
+                <label for="loginPass" data-i18n="auth.password">Password</label>
                 <input id="loginPass" name="loginPass" type="password" autocomplete="current-password" required />
               </div>
             </div>
             <div class="btns">
-              <button class="primary" type="submit">Log in</button>
+              <button class="primary" type="submit" data-i18n="auth.login">Log in</button>
             </div>
             <div class="toast" id="authMsg"></div>
           </form>
@@ -89,17 +110,17 @@
           <form id="formSignup" class="hide">
             <div class="row">
               <div>
-                <label for="signupUser">Username</label>
+                <label for="signupUser" data-i18n="auth.username">Username</label>
                 <input id="signupUser" name="signupUser" autocomplete="username" required />
               </div>
               <div>
-                <label for="signupPass">Password</label>
+                <label for="signupPass" data-i18n="auth.password">Password</label>
                 <input id="signupPass" name="signupPass" type="password" autocomplete="new-password" required />
               </div>
             </div>
             <div class="btns">
-              <button class="primary" type="submit">Create account</button>
-              <button class="ghost" type="button" id="btnDemoSignup">Demo signup</button>
+              <button class="primary" type="submit" data-i18n="auth.createAccount">Create account</button>
+              <button class="ghost" type="button" id="btnDemoSignup" data-i18n="auth.demoSignup">Demo signup</button>
             </div>
             <div class="toast" id="signupMsg"></div>
           </form>
@@ -107,163 +128,163 @@
 
         <!-- SETUP VIEW -->
         <div id="viewSetup" class="hide">
-          <h2>Connect your services</h2>
-          <p>Connect Google Calendar and Spotify, then set your wake/music preferences.</p>
+          <h2 data-i18n="setup.title">Connect your services</h2>
+          <p data-i18n="setup.subtitle">Connect Google Calendar and Spotify, then set your wake/music preferences.</p>
 
           <div class="status">
             <div>
-              <div class="mini">Google Account</div>
-              <div id="googleStatus" class="warn">Not connected</div>
+               <div class="mini" data-i18n="setup.googleAccount">Google Account</div>
+               <div id="googleStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
-            <button id="btnGoogle" class="primary" type="button">Connect Google</button>
+             <button id="btnGoogle" class="primary" type="button" data-i18n="setup.connectGoogle">Connect Google</button>
           </div>
 
           <div class="status">
             <div>
-              <div class="mini">Spotify Account</div>
-              <div id="spotifyStatus" class="warn">Not connected</div>
+               <div class="mini" data-i18n="setup.spotifyAccount">Spotify Account</div>
+               <div id="spotifyStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
-            <button id="btnSpotify" class="primary" type="button">Connect Spotify</button>
+             <button id="btnSpotify" class="primary" type="button" data-i18n="setup.connectSpotify">Connect Spotify</button>
           </div>
 
           <div class="divider"></div>
 
           <div class="btns">
-            <button id="btnToPrefs" type="button" disabled>Continue to preferences</button>
-            <button id="btnLogout" type="button" class="ghost">Log out</button>
-            <button id="btnResetAll" type="button" class="ghost">Reset session</button>
+             <button id="btnToPrefs" type="button" disabled data-i18n="setup.continue">Continue to preferences</button>
+             <button id="btnLogout" type="button" class="ghost" data-i18n="setup.logout">Log out</button>
+             <button id="btnResetAll" type="button" class="ghost" data-i18n="setup.reset">Reset session</button>
           </div>
 
         </div>
         <!-- PREFS VIEW -->
         <div id="viewPrefs" class="hide">
-          <h2>Wake & music preferences</h2>
-          <p>Set your wake window, podcast style, and morning briefing content.</p>
+          <h2 data-i18n="prefs.title">Wake & music preferences</h2>
+          <p data-i18n="prefs.subtitle">Set your wake window, podcast style, and morning briefing content.</p>
 
           <form id="prefsForm">
             <div class="row">
               <div>
-                <label for="wakeStart">Earliest wake time</label>
+                <label for="wakeStart" data-i18n="prefs.earliestWake">Earliest wake time</label>
                 <input type="time" id="wakeStart" name="wakeStart" value="07:00" required />
               </div>
               <div>
-                <label for="wakeEnd">Latest wake time</label>
+                <label for="wakeEnd" data-i18n="prefs.latestWake">Latest wake time</label>
                 <input type="time" id="wakeEnd" name="wakeEnd" value="07:30" required />
               </div>
             </div>
 
             <div class="row" style="margin-top:10px;">
               <div>
-                <label for="tone">Podcast Tone</label>
-                <select id="tone" name="tone" required>
-                  <option value="tone1">Very Peppy</option>
-                  <option value="tone2">Slightly Peppy</option>
-                  <option value="tone3">Neutral</option>
-                </select>
-              </div>
-              <div>
-                <label for="explicit">Explicit content</label>
-                <select id="explicit" name="explicit" required>
-                  <option value="filter">Filter explicit</option>
-                  <option value="allow">Allow explicit</option>
-                </select>
-              </div>
-            </div>
+                 <label for="tone" data-i18n="prefs.podcastTone">Podcast Tone</label>
+                 <select id="tone" name="tone" required>
+                   <option value="tone1" data-i18n="prefs.tone1">Very Peppy</option>
+                   <option value="tone2" data-i18n="prefs.tone2">Slightly Peppy</option>
+                   <option value="tone3" data-i18n="prefs.tone3">Neutral</option>
+                 </select>
+               </div>
+               <div>
+                 <label for="explicit" data-i18n="prefs.explicit">Explicit content</label>
+                 <select id="explicit" name="explicit" required>
+                   <option value="filter" data-i18n="prefs.filterExplicit">Filter explicit</option>
+                   <option value="allow" data-i18n="prefs.allowExplicit">Allow explicit</option>
+                 </select>
+               </div>
+             </div>
             <div class="divider" style="margin-top:14px;"></div>
 
-            <h3 style="margin:0 0 6px; font-size:14px;">Podcast includes</h3>
-            <p style="margin:0 0 10px; color: var(--muted); font-size:13px;">
-              Choose what REMix should include in your morning podcast.
-            </p>
+             <h3 style="margin:0 0 6px; font-size:14px;" data-i18n="prefs.podcastIncludes">Podcast includes</h3>
+             <p style="margin:0 0 10px; color: var(--muted); font-size:13px;" data-i18n="prefs.podcastIncludesHelp">
+               Choose what REMix should include in your morning podcast.
+             </p>
 
             <div class="toggle-grid">
               <label class="checkbox-label">
                 <input type="checkbox" id="pod_schedule" />
-                <span>Schedule</span>
+                 <span data-i18n="prefs.schedule">Schedule</span>
               </label>
 
               <label class="checkbox-label">
                 <input type="checkbox" id="pod_weather" />
-                <span>Weather</span>
+                 <span data-i18n="prefs.weather">Weather</span>
               </label>
 
               <label class="checkbox-label">
                 <input type="checkbox" id="pod_news" />
-                <span>News</span>
+                 <span data-i18n="prefs.news">News</span>
               </label>
 
               <label class="checkbox-label">
                 <input type="checkbox" id="pod_horoscope" />
-                <span>Horoscope</span>
+                 <span data-i18n="prefs.horoscope">Horoscope</span>
               </label>
             </div>
 
             <div id="newsOptions" class="hide" style="margin-top:12px;">
-              <label style="margin-bottom:8px;">Preferred News Outlets</label>
+               <label style="margin-bottom:8px;" data-i18n="prefs.preferredNews">Preferred News Outlets</label>
               <div class="toggle-grid">
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_nytimes" />
-                  <span>NY Times</span>
+                   <span data-i18n="newsSources.nytimes">NY Times</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_bbc" />
-                  <span>BBC News</span>
+                   <span data-i18n="newsSources.bbc">BBC News</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_guardian" />
-                  <span>The Guardian</span>
+                   <span data-i18n="newsSources.guardian">The Guardian</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_aljazeera" />
-                  <span>Al Jazeera</span>
+                   <span data-i18n="newsSources.aljazeera">Al Jazeera</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_techradar" />
-                  <span>TechRadar</span>
+                   <span data-i18n="newsSources.techradar">TechRadar</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_time" />
-                  <span>Time Magazine</span>
+                   <span data-i18n="newsSources.time">Time Magazine</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_yahoo" />
-                  <span>Yahoo Sports</span>
+                   <span data-i18n="newsSources.yahoo">Yahoo Sports</span>
                 </label>
 
                 <label class="checkbox-label">
                   <input type="checkbox" id="news_notboring" />
-                  <span>Not Boring</span>
+                   <span data-i18n="newsSources.notboring">Not Boring</span>
                 </label>
               </div>
             </div>
 
             <div id="zodiacOptions" class="hide" style="margin-top:12px;">
-              <label for="zodiac">Zodiac Sign</label>
-              <select id="zodiac">
-                <option value="aries">Aries</option>
-                <option value="taurus">Taurus</option>
-                <option value="gemini">Gemini</option>
-                <option value="cancer">Cancer</option>
-                <option value="leo">Leo</option>
-                <option value="virgo">Virgo</option>
-                <option value="libra">Libra</option>
-                <option value="scorpio">Scorpio</option>
-                <option value="sagittarius">Sagittarius</option>
-                <option value="capricorn">Capricorn</option>
-                <option value="aquarius">Aquarius</option>
-                <option value="pisces">Pisces</option>
-              </select>
-            </div>
+               <label for="zodiac" data-i18n="prefs.zodiac">Zodiac Sign</label>
+               <select id="zodiac">
+                 <option value="aries" data-i18n="zodiac.aries">Aries</option>
+                 <option value="taurus" data-i18n="zodiac.taurus">Taurus</option>
+                 <option value="gemini" data-i18n="zodiac.gemini">Gemini</option>
+                 <option value="cancer" data-i18n="zodiac.cancer">Cancer</option>
+                 <option value="leo" data-i18n="zodiac.leo">Leo</option>
+                 <option value="virgo" data-i18n="zodiac.virgo">Virgo</option>
+                 <option value="libra" data-i18n="zodiac.libra">Libra</option>
+                 <option value="scorpio" data-i18n="zodiac.scorpio">Scorpio</option>
+                 <option value="sagittarius" data-i18n="zodiac.sagittarius">Sagittarius</option>
+                 <option value="capricorn" data-i18n="zodiac.capricorn">Capricorn</option>
+                 <option value="aquarius" data-i18n="zodiac.aquarius">Aquarius</option>
+                 <option value="pisces" data-i18n="zodiac.pisces">Pisces</option>
+               </select>
+             </div>
 
             <div class="btns">
-              <button type="submit" class="primary">Save preferences</button>
-              <button type="button" id="btnBackToSetup" class="ghost">Back</button>
+               <button type="submit" class="primary" data-i18n="prefs.save">Save preferences</button>
+               <button type="button" id="btnBackToSetup" class="ghost" data-i18n="prefs.back">Back</button>
             </div>
 
             <div class="toast" id="prefsMsg"></div>
