@@ -14,7 +14,7 @@ import Toybox.System;
 
 class AlarmView extends WatchUi.View {
 
-    var _statusText = "WAKE UP!";      // Current UI state shown in the center area
+    var _statusText = WatchUi.loadResource(Rez.Strings.WakeUp);      // Current UI state shown in the center area
     var _isDismissed = false;          // True once the alarm has been handled
     var _snoozeTimeRemaining = 0;      // Snooze countdown in seconds (0 means not snoozing)
     var _manager;                      // Reference to the alarm manager
@@ -201,16 +201,16 @@ class AlarmView extends WatchUi.View {
 
             if (showDismissAction) {
                 outlineColor = Colors.PURPLE_LITE;
-                footerText = "CLICK TO DISMISS";
+                footerText = WatchUi.loadResource(Rez.Strings.DismissAlarm);
                 textColor = Graphics.COLOR_WHITE;
                 _dismissPillHitbox = [cx - (pillW / 2), pillY - (pillH / 2), pillW, pillH];
             } else if (_isDismissed) {
                 if (_podcastReady) {
                     outlineColor = Colors.PURPLE_LITE;
-                    footerText = "PODCAST READY";
+                    footerText = WatchUi.loadResource(Rez.Strings.PodcastReady);
                 } else {
                     outlineColor = Colors.GRAY_MID;
-                    footerText = "PODCAST LOADING";
+                    footerText = WatchUi.loadResource(Rez.Strings.PodcastLoading);
                 }
 
                 _dismissPillHitbox = [0, 0, 0, 0];

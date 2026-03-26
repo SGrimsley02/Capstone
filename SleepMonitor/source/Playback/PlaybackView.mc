@@ -112,7 +112,7 @@ class PlaybackView extends WatchUi.View {
 
         // "Now Playing" title
         dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_TINY, "Now Playing",
+        dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.NowPlaying),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Song name

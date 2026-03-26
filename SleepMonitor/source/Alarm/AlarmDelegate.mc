@@ -123,7 +123,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         // Update UI state
         if (_view has :setDismissed) { _view.setDismissed(false); }
-        if (_view has :setStatusText) { _view.setStatusText("SNOOZING..."); }
+        if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.Snoozing)); }
 
         // Start 1-second repeating timer
         _snoozeTimer = new Timer.Timer();
@@ -135,7 +135,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         _stopAllAlarmActions();
 
         if (_view has :setDismissed) { _view.setDismissed(true); }
-        if (_view has :setStatusText) { _view.setStatusText("ALARM OFF"); }
+        if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.AlarmOff)); }
     }
 
     // Stops alarm and transitions to podcast mode
@@ -157,7 +157,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         _stopAllAlarmActions();
 
         if (_view has :setDismissed) { _view.setDismissed(true); }
-        if (_view has :setStatusText) { _view.setStatusText("LINK SENT..."); }
+        if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.LinkSent)); }
 
         // Optional: send link to phone if implemented
         if (_manager != null && (_manager has :sendPodcastLinkToPhone)) {
@@ -169,7 +169,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         _stopAllAlarmActions();
 
         if (_view has :setDismissed) { _view.setDismissed(true); }
-        if (_view has :setStatusText) { _view.setStatusText("PLAYING MUSIC"); }
+        if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.PlayingMusic)); }
 
         var pbView = new PlaybackView();
         WatchUi.pushView(pbView, new PlaybackDelegate(pbView), WatchUi.SLIDE_UP);
@@ -180,7 +180,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_secondsLeft <= 0) {
             _stopAllAlarmActions();
             if (_view has :setDismissed) { _view.setDismissed(false); }
-            if (_view has :setStatusText) { _view.setStatusText("WAKE UP!"); }
+            if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.WakeUp)); }
             _manager.scheduleAlarmInSeconds(0);
         } else if (_view has :setSnoozeTime) {
             _view.setSnoozeTime(_secondsLeft);

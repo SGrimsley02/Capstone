@@ -15,7 +15,7 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 
-class SleepMonitorView extends WatchUi.View { 
+class SleepMonitorView extends WatchUi.View {
 
     private var _musicIcon;
     private var _podcastIcon;
@@ -130,10 +130,10 @@ class SleepMonitorView extends WatchUi.View {
     // Returns a human-readable string for the next scheduled alarm.
     private function _getAlarmString() as String {
         var manager = getApp().getWakeAlarmManager();
-        if (manager == null) { return "No alarm set"; }
+        if (manager == null) { return WatchUi.loadResource(Rez.Strings.NoAlarmSet); }
 
         var epoch = manager.getWakeEpoch();
-        if (epoch == null) { return "No alarm set"; }
+        if (epoch == null) { return WatchUi.loadResource(Rez.Strings.NoAlarmSet); }
 
         var info = Gregorian.info(new Time.Moment(epoch), Time.FORMAT_SHORT);
         var h    = info.hour;
@@ -147,7 +147,7 @@ class SleepMonitorView extends WatchUi.View {
             else              { h -= 12; suf = " PM"; }
         }
 
-        return Lang.format("Alarm  $1$:$2$$3$", [h.format("%d"), m.format("%02d"), suf]);
+        return Lang.format("$1$  $1$:$2$$3$", [WatchUi.loadResource(Rez.Strings.AlarmSet), h.format("%d"), m.format("%02d"), suf]);
     }
 
     function onHide() as Void { }

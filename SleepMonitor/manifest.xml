@@ -38,7 +38,20 @@
             palette to edit your compatible language list.
         -->
         <iq:languages>
+            <iq:language>ara</iq:language>
+            <iq:language>deu</iq:language>
+            <iq:language>dut</iq:language>
             <iq:language>eng</iq:language>
+            <iq:language>fre</iq:language>
+            <iq:language>ita</iq:language>
+            <iq:language>jpn</iq:language>
+            <iq:language>kor</iq:language>
+            <iq:language>por</iq:language>
+            <iq:language>rus</iq:language>
+            <iq:language>spa</iq:language>
+            <iq:language>tha</iq:language>
+            <iq:language>vie</iq:language>
+            <iq:language>zhs</iq:language>
         </iq:languages>
         <!--
             Use "Monkey C: Configure Monkey Barrel" from the Visual Studio Code
