@@ -59,6 +59,7 @@ export function getElements() {
     podHoroscope,
     zodiacOptions: el("zodiacOptions"),
     zodiacSelect: el("zodiac"),
+    weatherLocationOptions: el("weatherLocationOptions"),
     newsOptions: el("newsOptions"),
     newsSourceInputs
   };
