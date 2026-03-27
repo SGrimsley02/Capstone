@@ -18,7 +18,11 @@ export async function getCurrentUser(username) {
 
   try {
     const res = await fetch(`${API_BASE}/user?username=${encodeURIComponent(username)}`);
-    if (res.ok) return res.json();
+    if (res.ok) {
+      const userData = await res.json();
+      console.log("Raw API response from /user endpoint:", userData);
+      return userData;
+    }
   } catch (e) {
     console.error("Error fetching user data:", e);
   }
@@ -51,6 +55,16 @@ export async function updatePreferences(username, prefs) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(prefs)
+  });
+
+  return parseResponse(res);
+}
+
+export async function updateLanguage(username, language) {
+  const res = await fetch(`${API_BASE}/language?username=${encodeURIComponent(username)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ language })
   });
 
   return parseResponse(res);

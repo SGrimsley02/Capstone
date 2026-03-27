@@ -47,8 +47,8 @@ async function loadUniversal() {
   return res.json();
 }
 
-export async function initI18n() {
-  const saved = localStorage.getItem(LANGUAGE_KEY);
+export async function initI18n(savedLanguage) {
+  const saved = savedLanguage || localStorage.getItem(LANGUAGE_KEY);
   const browser = (navigator.language || DEFAULT_LANGUAGE).split("-")[0];
   const preferred = saved || browser;
   const language = SUPPORTED_LANGUAGES.includes(preferred) ? preferred : DEFAULT_LANGUAGE;
