@@ -20,7 +20,30 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
   elements.tabLogin.addEventListener("click", () => setTab("login"));
   elements.tabSignup.addEventListener("click", () => setTab("signup"));
 
-  elements.formSignup.addEventListener("submit", async (e) => { // Handle user registration
+  // Store the last error state for each form to re-render on language change
+  let lastAuthError = null;
+  let lastSignupError = null;
+
+  const updateAuthMessage = () => {
+    if (lastAuthError) {
+      elements.authMsg.textContent = lastAuthError.translate();
+    }
+  };
+
+  const updateSignupMessage = () => {
+    if (lastSignupError) {
+      elements.signupMsg.textContent = lastSignupError.translate();
+    }
+  };
+
+  // Listen for language changes and update error messages
+  window.addEventListener("languageChanged", () => {
+    updateAuthMessage();
+    updateSignupMessage();
+  });
+
+
+  elements.formSignup.addEventListener("submit", async (e) => { // Handle user signup
     e.preventDefault();
     const username = elements.formSignup.signupUser.value.trim();
     const password = elements.formSignup.signupPass.value;
@@ -31,15 +54,26 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
       const { ok, data } = await signupUser(username, password);
 
       if (ok) {
+        lastSignupError = null;
         elements.signupMsg.textContent = t("auth.accountCreated", "Account created ✓");
         setTab("login");
         elements.formSignup.reset();
       } else {
-        elements.signupMsg.textContent = t("auth.registrationFailed", "Registration failed") + (t(data.translation) ? `: ${t(data.translation)}` : "");
+        lastSignupError = {
+          type: "registrationFailed",
+          translation: data.translation,
+          translate: () => t("auth.registrationFailed", "Registration failed") + (t(data.translation) ? `: ${t(data.translation)}` : "")
+        };
+        elements.signupMsg.textContent = lastSignupError.translate();
         console.log("Signup failed with response:", data.message);
       }
     } catch (e2) {
-      elements.signupMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
+      lastSignupError = {
+        type: "error",
+        message: e2.message,
+        translate: () => t("auth.errorPrefix", "Error: ") + e2.message
+      };
+      elements.signupMsg.textContent = lastSignupError.translate();
     }
   });
 
@@ -52,6 +86,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
       const { ok, data } = await loginUser(username, password);
 
       if (ok) {
+        lastAuthError = null;
         elements.authMsg.textContent = t("auth.loggedIn", "Logged in ✓");
         elements.formLogin.reset();
         saveSession({ username });
@@ -78,11 +113,21 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         await render();
         setView("setup");
       } else {
-        elements.authMsg.textContent = t("auth.loginFailed", "Login failed") + (t(data.translation) ? `: ${t(data.translation)}` : "");
+        lastAuthError = {
+          type: "loginFailed",
+          translation: data.translation,
+          translate: () => t("auth.loginFailed", "Login failed") + (t(data.translation) ? `: ${t(data.translation)}` : "")
+        };
+        elements.authMsg.textContent = lastAuthError.translate();
         console.log("Login failed with response:", data.message);
       }
     } catch (e2) {
-      elements.authMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
+      lastAuthError = {
+        type: "error",
+        message: e2.message,
+        translate: () => t("auth.errorPrefix", "Error: ") + e2.message
+      };
+      elements.authMsg.textContent = lastAuthError.translate();
     }
   });
 
@@ -102,11 +147,18 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         }
       }
 
+      lastAuthError = null;
+      lastSignupError = null;
       saveSession({ username: "demo" });
       await render();
       setView("setup");
     } catch (e2) {
-      elements.signupMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
+      lastSignupError = {
+        type: "error",
+        message: e2.message,
+        translate: () => t("auth.errorPrefix", "Error: ") + e2.message
+      };
+      elements.signupMsg.textContent = lastSignupError.translate();
     }
   });
 }

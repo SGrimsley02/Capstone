@@ -83,6 +83,9 @@ export async function setLanguage(language) {
   localStorage.setItem(LANGUAGE_KEY, currentLanguage);
   document.documentElement.lang = currentLanguage;
 
+  // Dispatch custom event to notify components of language change
+  window.dispatchEvent(new CustomEvent("languageChanged", { detail: { language } }));
+
   return currentLanguage;
 }
 
