@@ -38,7 +38,9 @@
     "loginFailed": "Error de inicio de sesión",
     "profileLoadFailed": "Sesión iniciada, pero no se pudo cargar el perfil desde la API. Actualiza en un momento.",
     "sessionExpired": "Tu sesión expiró. Inicia sesión nuevamente.",
-    "errorPrefix": "Error: "
+    "errorPrefix": "Error: ",
+    "tooShort": "La contraseña debe tener al menos 6 caracteres",
+    "alreadyExists": "El nombre de usuario ya existe"
   },
   "setup": {
     "title": "Conecta tus servicios",
