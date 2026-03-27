@@ -147,7 +147,7 @@ class SleepMonitorView extends WatchUi.View {
             else              { h -= 12; suf = " PM"; }
         }
 
-        return Lang.format("$1$  $1$:$2$$3$", [WatchUi.loadResource(Rez.Strings.AlarmSet), h.format("%d"), m.format("%02d"), suf]);
+        return Lang.format("$1$  $2$:$3$$4$", [WatchUi.loadResource(Rez.Strings.AlarmSet), h.format("%d"), m.format("%02d"), suf]);
     }
 
     function onHide() as Void { }
