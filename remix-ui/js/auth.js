@@ -9,6 +9,7 @@
 
 import { loginUser, signupUser } from "./api.js";
 import { saveSession } from "./storage.js";
+import { setLanguage, applyTranslations } from "./i18n.js";
 
 export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
   /**
@@ -53,6 +54,18 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         elements.authMsg.textContent = t("auth.loggedIn", "Logged in ✓");
         elements.formLogin.reset();
         saveSession({ username });
+        
+        // Apply language from login response immediately
+        if (data.language) {
+          console.log(`Setting language from login response: ${data.language}`);
+          await setLanguage(data.language);
+          applyTranslations();
+          document.title = t("meta.title", document.title);
+          
+          // Update the language dropdown to reflect the loaded language
+          elements.languageSelect.value = data.language;
+        }
+        
         const sessionId = new URLSearchParams(window.location.search).get("sessionId");
         if (sessionId != null) {
           await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/session/store', {
@@ -76,7 +89,15 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
       const { ok } = await signupUser("demo", "demo123");
 
       if (ok) {
-        await loginUser("demo", "demo123");
+        const { data } = await loginUser("demo", "demo123");
+        
+        // Apply language from login response if available
+        if (data && data.language) {
+          console.log(`Setting language from demo login: ${data.language}`);
+          await setLanguage(data.language);
+          applyTranslations();
+          elements.languageSelect.value = data.language;
+        }
       }
 
       saveSession({ username: "demo" });
