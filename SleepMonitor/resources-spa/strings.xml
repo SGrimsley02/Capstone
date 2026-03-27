@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">Calificar Canción</string>
+    <string id="RatingHint">INICIO conf.</string>
+    <string id="NowPlaying">Reproduciendo</string>
+    <string id="VolumeControl">Volumen</string>
+    <string id="DismissAlarm">Cerrar</string>
+    <string id="PodcastReady">Podcast Listo</string>
+    <string id="PodcastLoading">Cargando Podcast...</string>
+    <string id="NoAlarmSet">Sin alarma</string>
+    <string id="AlarmSet">Alarma</string>
+    <string id="WakeUp">¡Despierta!</string>
+    <string id="Snoozing">Posponer...</string>
+    <string id="AlarmOff">Alarma Apagada</string>
+    <string id="LinkSent">Enlace Enviado...</string>
+    <string id="PlayingMusic">Reproduciendo</string>
+    <string id="AM">AM</string>
+    <string id="PM">PM</string>
+    <string id="Volume">Volumen</string>
+</strings>

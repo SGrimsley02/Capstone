@@ -1,6 +1,7 @@
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
+import Toybox.WatchUi;
 
 module UIHelpers {
 
@@ -12,7 +13,7 @@ module UIHelpers {
             dc.drawBitmap2(cx - logoW / 2, (H * 0.04).toNumber(), logo, {:tintColor => 0xB39DDB}); // PURPLE_LITE
         } else {
             dc.setColor(0xB39DDB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, (H * 0.10).toNumber(), Graphics.FONT_TINY, "REMix", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(cx, (H * 0.10).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.AppName), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
     }
 
@@ -24,10 +25,10 @@ module UIHelpers {
         var use12h = !System.getDeviceSettings().is24Hour;
 
         if (use12h) {
-            if      (hour == 0)  { hour = 12; amPm = "AM"; }
-            else if (hour < 12)  { amPm = "AM"; }
-            else if (hour == 12) { amPm = "PM"; }
-            else                 { hour -= 12; amPm = "PM"; }
+            if      (hour == 0)  { hour = 12; amPm = WatchUi.loadResource(Rez.Strings.AM); }
+            else if (hour < 12)  { amPm = WatchUi.loadResource(Rez.Strings.AM); }
+            else if (hour == 12) { amPm = WatchUi.loadResource(Rez.Strings.PM); }
+            else                 { hour -= 12; amPm = WatchUi.loadResource(Rez.Strings.PM); }
         }
 
         var timeStr = Lang.format("$1$:$2$", [hour.format("%d"), ct.min.format("%02d")]);
@@ -38,7 +39,7 @@ module UIHelpers {
         if (use12h && amPm.length() > 0) {
             dc.setColor(0x9E9E9E, Graphics.COLOR_TRANSPARENT); // GRAY_MID
             dc.drawText(
-                (cx + dc.getWidth() * 0.23).toNumber(), 
+                (cx + dc.getWidth() * 0.23).toNumber(),
                 (y - dc.getHeight() * 0.03).toNumber(),
                 Graphics.FONT_XTINY,
                 amPm,

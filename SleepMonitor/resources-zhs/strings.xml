@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">评价歌曲</string>
+    <string id="RatingHint">START确认</string>
+    <string id="NowPlaying">正在播放</string>
+    <string id="VolumeControl">音量</string>
+    <string id="DismissAlarm">关闭</string>
+    <string id="PodcastReady">播客就绪</string>
+    <string id="PodcastLoading">加载播客...</string>
+    <string id="NoAlarmSet">未设置闹钟</string>
+    <string id="AlarmSet">闹钟</string>
+    <string id="WakeUp">醒来！</string>
+    <string id="Snoozing">暂停...</string>
+    <string id="AlarmOff">闹钟关闭</string>
+    <string id="LinkSent">已发送链接...</string>
+    <string id="PlayingMusic">音乐</string>
+    <string id="AM">AM</string>
+    <string id="PM">PM</string>
+    <string id="Volume">音量</string>
+</strings>
