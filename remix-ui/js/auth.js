@@ -35,7 +35,8 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         setTab("login");
         elements.formSignup.reset();
       } else {
-        elements.signupMsg.textContent = data.message || t("auth.registrationFailed", "Registration failed");
+        elements.signupMsg.textContent = t("auth.registrationFailed", "Registration failed") + (t(data.translation) ? `: ${t(data.translation)}` : "");
+        console.log("Signup failed with response:", data.message);
       }
     } catch (e2) {
       elements.signupMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
@@ -54,18 +55,18 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         elements.authMsg.textContent = t("auth.loggedIn", "Logged in ✓");
         elements.formLogin.reset();
         saveSession({ username });
-        
+
         // Apply language from login response immediately
         if (data.language) {
           console.log(`Setting language from login response: ${data.language}`);
           await setLanguage(data.language);
           applyTranslations();
           document.title = t("meta.title", document.title);
-          
+
           // Update the language dropdown to reflect the loaded language
           elements.languageSelect.value = data.language;
         }
-        
+
         const sessionId = new URLSearchParams(window.location.search).get("sessionId");
         if (sessionId != null) {
           await fetch('https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/session/store', {
@@ -77,7 +78,8 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
         await render();
         setView("setup");
       } else {
-        elements.authMsg.textContent = data.message || t("auth.loginFailed", "Login failed");
+        elements.authMsg.textContent = t("auth.loginFailed", "Login failed") + (t(data.translation) ? `: ${t(data.translation)}` : "");
+        console.log("Login failed with response:", data.message);
       }
     } catch (e2) {
       elements.authMsg.textContent = t("auth.errorPrefix", "Error: ") + e2.message;
@@ -90,7 +92,7 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
 
       if (ok) {
         const { data } = await loginUser("demo", "demo123");
-        
+
         // Apply language from login response if available
         if (data && data.language) {
           console.log(`Setting language from demo login: ${data.language}`);
