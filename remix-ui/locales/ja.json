@@ -38,7 +38,9 @@
     "loginFailed": "ログインに失敗しました",
     "profileLoadFailed": "ログインしましたが、APIからプロフィールを読み込めませんでした。もう一度更新してください。",
     "sessionExpired": "セッションの有効期限が切れました。もう一度ログインしてください。",
-    "errorPrefix": "エラー："
+    "errorPrefix": "エラー：",
+    "tooShort": "パスワードは6文字以上である必要があります",
+    "alreadyExists": "ユーザー名は既に存在します"
   },
   "setup": {
     "title": "サービスを接続する",

@@ -38,7 +38,9 @@
     "loginFailed": "Anmeldung fehlgeschlagen",
     "profileLoadFailed": "Angemeldet, konnte Profil aber nicht von der API laden. Aktualisieren Sie die Seite in einer Sekunde.",
     "sessionExpired": "Sitzung abgelaufen. Bitte melden Sie sich erneut an.",
-    "errorPrefix": "Fehler: "
+    "errorPrefix": "Fehler: ",
+    "tooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "alreadyExists": "Benutzername existiert bereits"
   },
   "setup": {
     "title": "Verbinden Sie Ihre Dienste",

@@ -38,7 +38,9 @@
     "loginFailed": "Login failed",
     "profileLoadFailed": "Signed in, but couldn’t load profile from API. Refresh in a second.",
     "sessionExpired": "Session expired. Please log in again.",
-    "errorPrefix": "Error: "
+    "errorPrefix": "Error: ",
+    "tooShort": "Password must be at least 6 characters",
+    "alreadyExists": "Username already exists"
   },
   "setup": {
     "title": "Connect your services",

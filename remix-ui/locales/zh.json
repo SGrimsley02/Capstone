@@ -38,7 +38,9 @@
     "loginFailed": "登录失败",
     "profileLoadFailed": "已登录，但无法从 API 加载个人资料。请稍后刷新。",
     "sessionExpired": "会话已过期。请重新登录。",
-    "errorPrefix": "错误："
+    "errorPrefix": "错误：",
+    "tooShort": "密码长度必须至少为6个字符",
+    "alreadyExists": "用户名已存在"
   },
   "setup": {
     "title": "连接您的服务",

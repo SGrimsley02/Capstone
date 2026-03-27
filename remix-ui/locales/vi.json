@@ -38,7 +38,9 @@
     "loginFailed": "Đăng nhập không thành công",
     "profileLoadFailed": "Đã đăng nhập, nhưng không thể tải hồ sơ từ API. Làm mới lại sau một giây.",
     "sessionExpired": "Phiên đã hết hạn. Vui lòng đăng nhập lại.",
-    "errorPrefix": "Lỗi: "
+    "errorPrefix": "Lỗi: ",
+    "tooShort": "Mật khẩu phải chứa ít nhất 6 ký tự",
+    "alreadyExists": "Tên người dùng đã tồn tại"
   },
   "setup": {
     "title": "Kết nối các dịch vụ của bạn",

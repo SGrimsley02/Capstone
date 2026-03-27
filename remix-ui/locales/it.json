@@ -38,7 +38,9 @@
     "loginFailed": "Accesso non riuscito",
     "profileLoadFailed": "Accesso effettuato, ma impossibile caricare il profilo dall'API. Aggiorna tra un momento.",
     "sessionExpired": "Sessione scaduta. Accedi di nuovo.",
-    "errorPrefix": "Errore: "
+    "errorPrefix": "Errore: ",
+    "tooShort": "La password deve contenere almeno 6 caratteri",
+    "alreadyExists": "Il nome utente esiste già"
   },
   "setup": {
     "title": "Collega i tuoi servizi",
