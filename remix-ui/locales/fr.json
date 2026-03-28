@@ -38,7 +38,9 @@
     "loginFailed": "La connexion a échoué",
     "profileLoadFailed": "Connecté, mais impossible de charger le profil depuis l'API. Actualisez dans une seconde.",
     "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
-    "errorPrefix": "Erreur : "
+    "errorPrefix": "Erreur : ",
+    "tooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "alreadyExists": "Le nom d'utilisateur existe déjà"
   },
   "setup": {
     "title": "Connectez vos services",

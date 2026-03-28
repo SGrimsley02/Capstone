@@ -38,7 +38,9 @@
     "loginFailed": "Aanmelding mislukt",
     "profileLoadFailed": "Aangemeld, maar kon profiel niet van API laden. Ververs de pagina in een moment.",
     "sessionExpired": "Sessie verlopen. Meld u alstublieft opnieuw aan.",
-    "errorPrefix": "Fout: "
+    "errorPrefix": "Fout: ",
+    "tooShort": "Wachtwoord moet minimaal 6 tekens lang zijn",
+    "alreadyExists": "Gebruikersnaam bestaat al"
   },
   "setup": {
     "title": "Verbind uw services",

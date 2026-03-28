@@ -9,7 +9,7 @@
 
 import { API_BASE, FRONTEND_BASE } from "./config.js";
 import { clearSession, loadSession } from "./storage.js";
-import { getCurrentUser } from "./api.js";
+import { getCurrentUser, updateLanguage } from "./api.js";
 import { bindAuthHandlers } from "./auth.js";
 import { bindPreferencesHandlers, bindPreferenceToggles } from "./prefs.js";
 import { applyTranslations, getLanguage, initI18n, setLanguage, t } from "./i18n.js";
@@ -56,9 +56,25 @@ async function render() { // Main render function to initialize the app state an
     setView("setup");
     elements.authMsg.textContent = t(
       "auth.profileLoadFailed",
-      "Signed in, but couldn’t load profile from API. Refresh in a second."
+      "Signed in, but couldn't load profile from API. Refresh in a second."
     );
     return;
+  }
+
+  // DEBUG: Log the entire user object to see what backend returns
+  console.log("User data from backend:", state.currentUser);
+  console.log("Language field in user object:", state.currentUser.language);
+  console.log("Current UI language:", getLanguage());
+
+  // Load user's saved language preference if available from backend
+  if (state.currentUser.language && state.currentUser.language !== getLanguage()) {
+    console.log(`Restoring user language from backend: ${state.currentUser.language}`);
+    await setLanguage(state.currentUser.language);
+    elements.languageSelect.value = state.currentUser.language;
+    applyTranslations();
+    document.title = t("meta.title", document.title);
+  } else {
+    console.log("Language not restored - either missing from backend or matches current language");
   }
 
   const { gOK, sOK } = renderConnectedState(elements, state.currentUser, t);
@@ -107,10 +123,31 @@ async function bootstrap() {
 
   elements.languageSelect.value = getLanguage();
   elements.languageSelect.addEventListener("change", async (e) => {
-    await setLanguage(e.target.value);
+    const newLanguage = e.target.value;
+    
+    // Update language immediately in UI
+    await setLanguage(newLanguage);
     applyTranslations();
     document.title = t("meta.title", document.title);
-    await render();
+    
+    // Save language preference to backend if user is logged in
+    const session = loadSession();
+    if (session.username) {
+      try {
+        const response = await updateLanguage(session.username, newLanguage);
+        if (!response.ok) {
+          console.error("Failed to save language preference to backend:", response.data);
+        } else {
+          console.log(`Language preference saved to backend: ${newLanguage}`);
+          // Update local state to reflect what's on the backend
+          if (state.currentUser) {
+            state.currentUser.language = newLanguage;
+          }
+        }
+      } catch (error) {
+        console.error("Error saving language preference:", error);
+      }
+    }
   });
 
   setTab("login");

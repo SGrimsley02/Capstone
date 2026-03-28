@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">Đánh giá bài hát</string>
+    <string id="RatingHint">START xác nhận</string>
+    <string id="NowPlaying">Đang phát</string>
+    <string id="VolumeControl">Âm lượng</string>
+    <string id="DismissAlarm">Đóng</string>
+    <string id="PodcastReady">Podcast sẵn sàng</string>
+    <string id="PodcastLoading">Đang tải...</string>
+    <string id="NoAlarmSet">Không có báo thức</string>
+    <string id="AlarmSet">Báo thức</string>
+    <string id="WakeUp">Thức dậy!</string>
+    <string id="Snoozing">Tạm dừng...</string>
+    <string id="AlarmOff">Báo thức tắt</string>
+    <string id="LinkSent">Đã gửi liên kết...</string>
+    <string id="PlayingMusic">Nhạc</string>
+    <string id="AM">AM</string>
+    <string id="PM">PM</string>
+    <string id="Volume">Âm lượng</string>
+</strings>

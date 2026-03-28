@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">Оценить трек</string>
+    <string id="RatingHint">START подтв.</string>
+    <string id="NowPlaying">Играет</string>
+    <string id="VolumeControl">Громкость</string>
+    <string id="DismissAlarm">Закрыть</string>
+    <string id="PodcastReady">Подкаст готов</string>
+    <string id="PodcastLoading">Загрузка подкаста...</string>
+    <string id="NoAlarmSet">Нет будильника</string>
+    <string id="AlarmSet">Будильник</string>
+    <string id="WakeUp">Проснись!</string>
+    <string id="Snoozing">Пауза...</string>
+    <string id="AlarmOff">Будильник выкл</string>
+    <string id="LinkSent">Ссылка отправлена...</string>
+    <string id="PlayingMusic">Музыка</string>
+    <string id="AM">AM</string>
+    <string id="PM">PM</string>
+    <string id="Volume">Громкость</string>
+</strings>

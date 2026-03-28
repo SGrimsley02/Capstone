@@ -47,8 +47,8 @@ async function loadUniversal() {
   return res.json();
 }
 
-export async function initI18n() {
-  const saved = localStorage.getItem(LANGUAGE_KEY);
+export async function initI18n(savedLanguage) {
+  const saved = savedLanguage || localStorage.getItem(LANGUAGE_KEY);
   const browser = (navigator.language || DEFAULT_LANGUAGE).split("-")[0];
   const preferred = saved || browser;
   const language = SUPPORTED_LANGUAGES.includes(preferred) ? preferred : DEFAULT_LANGUAGE;
@@ -82,6 +82,9 @@ export async function setLanguage(language) {
   translations = selectedStrings == null ? merged : deepMerge(merged, selectedStrings);
   localStorage.setItem(LANGUAGE_KEY, currentLanguage);
   document.documentElement.lang = currentLanguage;
+
+  // Dispatch custom event to notify components of language change
+  window.dispatchEvent(new CustomEvent("languageChanged", { detail: { language } }));
 
   return currentLanguage;
 }

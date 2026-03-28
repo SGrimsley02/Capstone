@@ -38,7 +38,9 @@
     "loginFailed": "Falha na conexão",
     "profileLoadFailed": "Conectado, mas não conseguiu carregar o perfil da API. Atualize em um momento.",
     "sessionExpired": "Sessão expirada. Faça login novamente.",
-    "errorPrefix": "Erro: "
+    "errorPrefix": "Erro: ",
+    "tooShort": "A senha deve ter pelo menos 6 caracteres",
+    "alreadyExists": "O nome de usuário já existe"
   },
   "setup": {
     "title": "Conecte seus serviços",

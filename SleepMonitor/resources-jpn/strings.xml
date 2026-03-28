@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">曲を評価</string>
+    <string id="RatingHint">STARTで確認</string>
+    <string id="NowPlaying">再生中</string>
+    <string id="VolumeControl">音量</string>
+    <string id="DismissAlarm">閉じる</string>
+    <string id="PodcastReady">ポッドキャスト準備完了</string>
+    <string id="PodcastLoading">ポッドキャスト読込中...</string>
+    <string id="NoAlarmSet">アラーム未設定</string>
+    <string id="AlarmSet">アラーム</string>
+    <string id="WakeUp">起床！</string>
+    <string id="Snoozing">スヌーズ中...</string>
+    <string id="AlarmOff">アラーム終了</string>
+    <string id="LinkSent">リンク送信済...</string>
+    <string id="PlayingMusic">音楽</string>
+    <string id="AM">AM</string>
+    <string id="PM">PM</string>
+    <string id="Volume">音量</string>
+</strings>

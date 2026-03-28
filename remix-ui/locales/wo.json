@@ -38,7 +38,9 @@
     "loginFailed": "Duggale fadiat",
     "profileLoadFailed": "Duggale, koo ma lay tere profil bi ci API ji. Joxaasi ba kaakaa.",
     "sessionExpired": "Koneksyoon yi dafay dël. Duggale dekkul.",
-    "errorPrefix": "Njuumte: "
+    "errorPrefix": "Njuumte: ",
+    "tooShort": "Baaxal-suutur must jottal niyelli 6 xarajaat",
+    "alreadyExists": "Ngir-jawtukaay bu duma injëm"
   },
   "setup": {
     "title": "Konekt serbis yi",

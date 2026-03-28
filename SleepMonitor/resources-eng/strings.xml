@@ -1,26 +1,4 @@
-<!--
-Name: resources/strings/strings.xml
-Description: Contains user-facing text resources for the SleepMonitor watch app.
-             Strings defined here are referenced in menu.xml and UI components
-             to keep display text centralized and maintainable.
-Authors: Kiara Rose, Audrey Pan
-Created: February 7, 2026
-Last Modified: February 14, 2026
--->
-
 <strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
-    <!-- Non-translated Strings -->
-    <string id="AppName">REMix</string>
-
-    <string id="prompt">Open menu to send sleep summary</string>
-
-    <string id="menu_test_local_http">Test local HTTP</string>
-    <string id="menu_test_public_https">Test public HTTPS</string>
-    <string id="menu_test_sleep_summary">Send sleep summary</string>
-    <string id="menu_test_alarm">Alarm at (now + 5 sec)</string>
-    <string id="menu_test_review">Test Review Screen</string>
-
-    <!-- Translatable Strings -->
     <string id="RateThisSong">Rate This Song</string>
     <string id="RatingHint">START to Confirm</string>
     <string id="NowPlaying">Now Playing</string>

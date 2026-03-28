@@ -57,7 +57,7 @@ class VolumeView extends WatchUi.View {
 
         // "Volume" title
         dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (H * 0.10).toNumber(), Graphics.FONT_TINY, "Volume",
+        dc.drawText(cx, (H * 0.10).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.Volume),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Up arrow (tap to increase)

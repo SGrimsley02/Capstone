@@ -1,0 +1,19 @@
+<strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <string id="RateThisSong">قيّم الأغنية</string>
+    <string id="RatingHint">ابدأ للتأكيد</string>
+    <string id="NowPlaying">يشغل الآن</string>
+    <string id="VolumeControl">مستوى الصوت</string>
+    <string id="DismissAlarm">إغلاق</string>
+    <string id="PodcastReady">بودكاست جاهز</string>
+    <string id="PodcastLoading">جاري التحميل...</string>
+    <string id="NoAlarmSet">لا توجد منبه</string>
+    <string id="AlarmSet">منبه</string>
+    <string id="WakeUp">استيقظ!</string>
+    <string id="Snoozing">الإيقاف المؤقت...</string>
+    <string id="AlarmOff">منبه مغلق</string>
+    <string id="LinkSent">تم إرسال الرابط...</string>
+    <string id="PlayingMusic">موسيقى</string>
+    <string id="AM">ص</string>
+    <string id="PM">م</string>
+    <string id="Volume">مستوى الصوت</string>
+</strings>
