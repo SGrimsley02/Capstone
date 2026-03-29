@@ -75,9 +75,6 @@ class SleepMonitorHttpClient {
         }
 
         var params = SleepAnalyzer.buildSleepPayload(userId);
-        if (params != null && _wakeAlarmManager != null) {
-            _wakeAlarmManager.scheduleAlarmFromSleepPayload(params);
-        }
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
@@ -180,7 +177,7 @@ class SleepMonitorHttpClient {
 
     static function setUserId(userId as String) as Void { Application.Storage.setValue(StorageKeys.USER_ID_KEY, userId); }
 
-    private function getUserId() as String or Null { return Application.Storage.getValue(StorageKeys.USER_ID_KEY) as String ? ; }
+    static function getUserId() as String or Null { return Application.Storage.getValue(StorageKeys.USER_ID_KEY) as String ? ; }
 
     function scheduleAlarmFromSleepPayload(payload as Dictionary?) as Void {
         if (payload == null) {

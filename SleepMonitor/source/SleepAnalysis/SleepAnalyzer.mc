@@ -40,7 +40,7 @@ module SleepAnalyzer {
         var stressSummary = summarizeSamples(stressSamples);
 
         var restWindow = estimateRestWindow(stressSamples, hrSamples, bbSamples);
-        var isSleeping = isLikelySleeping(hrSummary, stressSummary, bbSummary);
+        var isSleeping = hasLikelySlept(hrSummary, bbSummary);
 
         var sleepQuality = estimateSleepQuality(hrSummary, stressSummary, bbSummary, restWindow);
 
@@ -63,7 +63,7 @@ module SleepAnalyzer {
         payload["bodyBatteryEnd"] = bbSummary["last"];
         payload["bodyBatteryRecovery"] = bbSummary["last"] - bbSummary["first"];
 
-        if (isSleeping && restWindow != null && restWindow["isFallback"] != true) {
+        if (isSleeping && restWindow != null) {
             var stage = estimateSleepStage(restWindow);
             var handoffEpoch = estimateHandoffEpoch(restWindow);
 
@@ -188,21 +188,46 @@ module SleepAnalyzer {
     function estimateRestWindow(
         stressSamples as Array<Dictionary> or Null,
         hrSamples as Array<Dictionary> or Null,
-        bbSamples as Array<Dictionary>
+        bbSamples as Array<Dictionary> or Null
     ) as Dictionary or Null {
 
-        // Primary path: use longest low-stress block
-        if (stressSamples != null && stressSamples.size() > 0) {
+        // Primary path: detect when body battery starts increasing
+        if (bbSamples != null && bbSamples.size() > 1) {
+            for (var i = 1; i < bbSamples.size(); i += 1) {
+                var prevValue = bbSamples[i - 1]["value"];
+                var currValue = bbSamples[i]["value"];
+
+                if (currValue > prevValue) {
+                    var startMs = bbSamples[i - 1]["epochMs"];
+                    var endMs = bbSamples[bbSamples.size() - 1]["epochMs"];
+                    var durationMinutes = (endMs - startMs) / 60000.0;
+
+                    if (durationMinutes >= MIN_REST_BLOCK_MINUTES) {
+                        return {
+                            "startMs" => startMs,
+                            "endMs" => endMs,
+                            "durationMinutes" => durationMinutes
+                        };
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Secondary path: use longest low heart rate block
+        if (hrSamples != null && hrSamples.size() > 0) {
+            var firstHr = hrSamples[0]["value"];
+            var hrThreshold = firstHr * 0.85;
             var bestStartMs = null;
             var bestEndMs = null;
             var currentStartMs = null;
             var currentEndMs = null;
 
-            for (var i = 0; i < stressSamples.size(); i += 1) {
-                var stressValue = stressSamples[i]["value"];
-                var epochMs = stressSamples[i]["epochMs"];
+            for (var i = 0; i < hrSamples.size(); i += 1) {
+                var hrValue = hrSamples[i]["value"];
+                var epochMs = hrSamples[i]["epochMs"];
 
-                if (stressValue <= STRESS_SLEEP_THRESHOLD) {
+                if (hrValue <= hrThreshold) {
                     if (currentStartMs == null) {
                         currentStartMs = epochMs;
                     }
@@ -231,19 +256,19 @@ module SleepAnalyzer {
                         "durationMinutes" => durationMinutes
                     };
                 }
+
+                // Use the last 90 mins of data as a fallback rest window.
+                else {
+                    var fallbackEndMs = hrSamples[hrSamples.size() - 1]["epochMs"];
+                    var fallbackStartMs = fallbackEndMs - (DEFAULT_CYCLE_MINUTES * 60 * 1000);
+
+                    return {
+                        "startMs" => fallbackStartMs,
+                        "endMs" => fallbackEndMs,
+                        "durationMinutes" => DEFAULT_CYCLE_MINUTES
+                    };
+                }
             }
-        }
-
-        // Fallback path: if no stress block, use the last ~90 minutes ending at latest body battery sample
-        if (bbSamples.size() > 0) {
-            var fallbackEndMs = bbSamples[bbSamples.size() - 1]["epochMs"];
-            var fallbackStartMs = fallbackEndMs - (DEFAULT_CYCLE_MINUTES * 60 * 1000);
-
-            return {
-                "startMs" => fallbackStartMs,
-                "endMs" => fallbackEndMs,
-                "durationMinutes" => DEFAULT_CYCLE_MINUTES
-            };
         }
 
         return null;
@@ -298,7 +323,7 @@ module SleepAnalyzer {
         bbSummary as Dictionary,
         restWindow as Dictionary or Null
     ) as Number {
-        var bbRecovery = bbSummary["last"] - bbSummary["first"];
+        var bbRecovery = bbSummary["last"] - bbSummary["min"];
         var bbScore = clamp((bbRecovery + 20) * 2, 0, 100);
 
         var stressScore = 50;
@@ -329,24 +354,26 @@ module SleepAnalyzer {
         }
         return value;
     }
-    function isLikelySleeping(
-        hrSummary as Dictionary or Null,
-        stressSummary as Dictionary or Null,
-        bbSummary as Dictionary
-    ) as Boolean {
 
-        if (stressSummary == null || hrSummary == null) {
+    // Note: keeping body battery as nullable because there are devices that don't support it. Requiring heart rate data at least as a fallback.
+    function hasLikelySlept(hrSummary as Dictionary, bbSummary as Dictionary or Null) as Boolean {
+
+        if (bbSummary != null) {
+            var bbRecovery = bbSummary["last"] - bbSummary["min"];
+
+            if (bbRecovery >= 0) {
+                return true;
+            }
             return false;
         }
 
-        var stressAvg = stressSummary["avg"];
-        var hrAvg = hrSummary["avg"];
-        var bbRecovery = bbSummary["last"] - bbSummary["first"];
-
-        if (stressAvg <= 25 && hrAvg <= 80 && bbRecovery >= -20) {
-            return true;
+        else {
+            // Heart rate typically drops by ~20% during sleep, so we'll use 15% less than the first hr sample as a rough baseline.
+            var estAwakeThreshold = hrSummary["first"] * 0.85;
+            if (hrSummary["min"] < estAwakeThreshold) {
+                return true;
+            }
+            return false;
         }
-
-        return false;
     }
 }

@@ -35,6 +35,67 @@ class WakeAlarmManager {
         _podcastProvider = new PodcastProvider();
     }
 
+    // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
+    function scheduleAlarmFromWakeWindow(wakeStartTime as String, endWakeTime as String) as Void {
+        var wakeStartEpoch = getNextDayEpoch(wakeStartTime);
+        var nowEpoch = Time.now().value();
+        var secondsUntil = wakeStartEpoch - nowEpoch;
+
+        if (_alarmTimer != null) {
+            _alarmTimer.stop();
+            _alarmTimer = null;
+        }
+
+        // Schedule timer to compute and set alarm when wakeStartTime arrives
+        _alarmTimer = new Timer.Timer();
+        _alarmTimer.start(method(:_onWakeWindowTimer), secondsUntil * 1000, false);
+    }
+
+    function _onWakeWindowTimer() as Void {
+
+        var endWakeTime = SleepMonitorHttpClient.getWakeEnd();
+        if (endWakeTime == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to 08:00");
+            endWakeTime = "08:00";
+        }
+
+        if (_alarmTimer != null) {
+            _alarmTimer.stop();
+            _alarmTimer = null;
+        }
+
+        var endWakeTimeEpoch = getNextDayEpoch(endWakeTime);
+        // Get userId from storage
+        var userId = SleepMonitorHttpClient.getUserId();
+        if (userId == null) {
+            System.println("WakeAlarmManager: no user ID found, falling back to endWakeTime");
+            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+            return;
+        }
+
+        // Build sleep payload to analyze sleep data and get handoff epoch
+        var payload = SleepAnalyzer.buildSleepPayload(userId);
+        if (payload == null) {
+            System.println("WakeAlarmManager: could not build sleep payload, falling back to endWakeTime");
+            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+            return;
+        }
+
+        // Extract handoff epoch (recommended or fallback)
+        var recommended = payload.get("recommendedHandoffEpochSec");
+        var fallback = payload.get("fallbackHandoffEpochSec");
+
+        // If both recommended and fallback are missing, fall back to endWakeTime
+        var handoffEpoch = (recommended != null) ? recommended : ((fallback != null) ? fallback : endWakeTimeEpoch);
+
+        // Use handoff epoch only if it's before endWakeTime, otherwise use endWakeTime
+        if (handoffEpoch < endWakeTimeEpoch) {
+            scheduleAlarmAtEpoch(handoffEpoch);
+        } else {
+            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+        }
+    }
+
     function scheduleAlarmAtEpoch(wakeEpoch) {
         if (_alarmTimer != null) {
             _alarmTimer.stop();
@@ -72,13 +133,19 @@ class WakeAlarmManager {
         _fireAlarmUiAndRing();
         getApp().updateUserInfo();
 
-        var wakeTime = SleepMonitorHttpClient.getWakeStart();
-        if (wakeTime == null) {
+        var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
+        if (wakeStartTime == null) {
             System.println("WakeAlarmManager: no stored wake start time, defaulting to 07:00");
-            wakeTime = "07:00";
+            wakeStartTime = "07:00";
+        }
+        var wakeEndTime = SleepMonitorHttpClient.getWakeEnd();
+        if (wakeEndTime == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to 08:00");
+            wakeEndTime = "08:00";
         }
   
-        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime));
+        getApp().sendSleepSummary();
+        scheduleAlarmFromWakeWindow(wakeStartTime, wakeEndTime);
         return;
 
     }
@@ -230,31 +297,5 @@ class WakeAlarmManager {
         var tzOffset = System.getClockTime().timeZoneOffset;
 
         return moment.value() - tzOffset;
-    }
-
-    function scheduleAlarmFromSleepPayload(payload as Dictionary) as Void {
-        if (payload == null) {
-            System.println("WakeAlarmManager: no sleep payload provided");
-            return;
-        }
-
-        var wakeEpoch = null;
-        var recommended = payload.get("recommendedHandoffEpochSec");
-        var fallback = payload.get("fallbackHandoffEpochSec");
-
-        if (recommended != null) {
-            wakeEpoch = recommended;
-            System.println("WakeAlarmManager: using recommended handoff epoch " + wakeEpoch);
-        } else if (fallback != null) {
-            wakeEpoch = fallback;
-            System.println("WakeAlarmManager: using fallback handoff epoch " + wakeEpoch);
-        }
-
-        if (wakeEpoch == null) {
-            System.println("WakeAlarmManager: no handoff epoch found in payload");
-            return;
-        }
-
-        scheduleAlarmAtEpoch(wakeEpoch);
     }
 }

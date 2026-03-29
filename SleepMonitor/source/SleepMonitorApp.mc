@@ -37,11 +37,14 @@ class SleepMonitorApp extends Application.AppBase {
             setHttpStatus("Open phone link to continue");
             var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
             if (wakeStartTime == null) {
-                wakeStartTime = "00:00";
+                wakeStartTime = "07:00";
             }
-            var wakeStartEpoch = WakeAlarmManager.getNextDayEpoch(wakeStartTime);
-            getWakeAlarmManager().scheduleAlarmAtEpoch(wakeStartEpoch);
-            System.println("Wake alarm scheduled for epoch: " + wakeStartEpoch);
+            var wakeEndTime = SleepMonitorHttpClient.getWakeEnd();
+            if (wakeEndTime == null) {
+                wakeEndTime = "09:00";
+            }
+            getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStartTime, wakeEndTime);
+            System.println("Wake alarm scheduled from wake window: " + wakeStartTime + " to " + wakeEndTime);
             WatchUi.requestUpdate();
         }
     }
@@ -66,6 +69,10 @@ class SleepMonitorApp extends Application.AppBase {
     }
     function updateUserInfo() as Void {
         _httpClient.getUserInfo();
+    }
+
+    function sendSleepSummary() as Void {
+        _httpClient.sendSleepSummaryRequest();
     }
 }
 
