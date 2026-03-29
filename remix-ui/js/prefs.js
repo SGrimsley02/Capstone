@@ -29,6 +29,16 @@ export function bindPreferenceToggles(elements) {
   elements.podWeather.addEventListener("change", () => {
     elements.weatherLocationOptions.classList.toggle("hide", !elements.podWeather.checked);
   });
+  // Toggle state field based on country selection
+  elements.countrySelect?.addEventListener("change", () => {
+    const isUS = elements.countrySelect.value === "US";
+
+    elements.stateContainer.classList.toggle("hide", !isUS);
+
+    if (!isUS) {
+      elements.stateSelect.value = "";
+    }
+  });
 }
 
 export function bindPreferencesHandlers({ elements, state, render, setView, t }) {
@@ -49,6 +59,9 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
       elements.prefsForm.city.value = state.currentUser.preferences.location?.city || "Lawrence";
       elements.prefsForm.state.value = state.currentUser.preferences.location?.state || "Kansas";
       elements.prefsForm.country.value = state.currentUser.preferences.location?.country || "US";
+      // Ensure state field visibility matches loaded country
+      const isUS = elements.prefsForm.country.value === "US";
+      elements.stateContainer.classList.toggle("hide", !isUS);
     }
 
     const podcast = state.currentUser?.preferences?.podcast || {
