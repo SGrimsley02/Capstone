@@ -3,9 +3,9 @@
   * This file contains functions to handle user preferences, including
   * binding event handlers for the preferences form and saving preferences
   * to the backend API.
-  * Authors: Kiara Rose
+  * Authors: Kiara Rose, Audrey Pan
   * Created: March 24, 2026
-  * Last updated: March 25, 2026
+  * Last updated: March 26, 2026
 */
 
 import { DEFAULT_NEWS_SOURCES } from "./config.js";
@@ -25,6 +25,20 @@ export function bindPreferenceToggles(elements) {
   elements.podNews.addEventListener("change", () => {
     elements.newsOptions.classList.toggle("hide", !elements.podNews.checked);
   });
+
+  elements.podWeather.addEventListener("change", () => {
+    elements.weatherLocationOptions.classList.toggle("hide", !elements.podWeather.checked);
+  });
+  // Toggle state field based on country selection
+  elements.countrySelect?.addEventListener("change", () => {
+    const isUS = elements.countrySelect.value === "US";
+
+    elements.stateContainer.classList.toggle("hide", !isUS);
+
+    if (!isUS) {
+      elements.stateSelect.value = "";
+    }
+  });
 }
 
 export function bindPreferencesHandlers({ elements, state, render, setView, t }) {
@@ -42,6 +56,12 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
       elements.prefsForm.wakeEnd.value = state.currentUser.preferences.wakeEnd || "07:30";
       elements.prefsForm.tone.value = state.currentUser.preferences.tone || "tone1";
       elements.prefsForm.explicit.value = state.currentUser.preferences.explicit || "filter";
+      elements.prefsForm.city.value = state.currentUser.preferences.location?.city || "Lawrence";
+      elements.prefsForm.state.value = state.currentUser.preferences.location?.state || "Kansas";
+      elements.prefsForm.country.value = state.currentUser.preferences.location?.country || "US";
+      // Ensure state field visibility matches loaded country
+      const isUS = elements.prefsForm.country.value === "US";
+      elements.stateContainer.classList.toggle("hide", !isUS);
     }
 
     const podcast = state.currentUser?.preferences?.podcast || {
@@ -57,6 +77,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
     elements.podSchedule.checked = !!podcast.schedule;
     elements.podHoroscope.checked = !!podcast.horoscope;
 
+    elements.weatherLocationOptions.classList.toggle("hide", !elements.podWeather.checked);
     elements.zodiacOptions.classList.toggle("hide", !elements.podHoroscope.checked);
 
     if (state.currentUser?.preferences?.podcast?.zodiac) {
@@ -84,6 +105,29 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
         return;
       }
 
+      //LOCATION VALIDATION
+      const city = elements.prefsForm.city.value.trim();
+      const stateValue = elements.prefsForm.state.value.trim();
+      const country = elements.prefsForm.country.value.trim();
+
+      if (elements.podWeather.checked) {
+        if (!city || !country) {
+          elements.prefsMsg.textContent = t(
+            "prefs.locationRequired",
+            "Please enter your city and country to enable weather."
+          );
+          return;
+        }
+
+        if (country === "US" && !stateValue) {
+          elements.prefsMsg.textContent = t(
+            "prefs.stateRequired",
+            "Please select your state to enable weather in the U.S."
+          );
+          return;
+        }
+      }
+
       const prefs = {
         wakeStart: elements.prefsForm.wakeStart.value,
         wakeEnd: elements.prefsForm.wakeEnd.value,
@@ -98,6 +142,11 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
         },
         news: {
           sources: selectedNewsSources
+        },
+        location: {
+          city,
+          state: stateValue || null,
+          country
         }
       };
 
