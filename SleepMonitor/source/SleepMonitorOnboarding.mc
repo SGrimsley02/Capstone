@@ -86,7 +86,7 @@ class SleepMonitorOnboarding {
             SleepMonitorHttpClient.setUserId(data["username"]);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
-            if (preferences != null) {
+            if (preferences.size() > 0) {
                 var wakeStart = preferences["wakeStart"] as String;
                 var wakeEnd = preferences["wakeEnd"] as String;
                 Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
