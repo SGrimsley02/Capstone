@@ -43,8 +43,6 @@ class SleepMonitorApp extends Application.AppBase {
             if (wakeEndTime == null) {
                 wakeEndTime = "09:00";
             }
-            getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStartTime, wakeEndTime);
-            System.println("Wake alarm scheduled from wake window: " + wakeStartTime + " to " + wakeEndTime);
             WatchUi.requestUpdate();
         }
     }

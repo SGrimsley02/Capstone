@@ -36,6 +36,9 @@ class SleepMonitorOnboarding {
             return false;
         }
 
+        Storage.setValue(StorageKeys.WAKE_START_KEY, null);
+        Storage.setValue(StorageKeys.WAKE_END_KEY, null);
+
         // Generate a unique session ID
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
@@ -84,8 +87,15 @@ class SleepMonitorOnboarding {
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
             if (preferences != null) {
-                Storage.setValue(StorageKeys.WAKE_START_KEY, preferences["wakeStart"]);
-                Storage.setValue(StorageKeys.WAKE_END_KEY,   preferences["wakeEnd"]);
+                var wakeStart = preferences["wakeStart"] as String;
+                var wakeEnd = preferences["wakeEnd"] as String;
+                Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
+                Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEnd);
+
+                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
+            } else {
+                System.println("No preferences found in response, using defaults.");
+                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow("07:00", "09:00");
             }
 
             System.println("Onboarding complete for: " + data["username"]);
@@ -98,7 +108,7 @@ class SleepMonitorOnboarding {
             // Something went wrong — stop polling
             _timer.stop();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
-            System.println("Poll failed: " + responseCode);
+            System.println("Username poll failed: " + responseCode);
         }
     }
 }
