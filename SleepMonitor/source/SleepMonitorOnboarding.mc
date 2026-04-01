@@ -14,6 +14,7 @@ import Toybox.Lang;
 import Toybox.Timer;
 import Toybox.Math;
 import StorageKeys;
+import Defaults;
 
 class SleepMonitorOnboarding {
 
@@ -28,7 +29,7 @@ class SleepMonitorOnboarding {
 
         System.println("Onboarding check started...");
 
-        var hasOnboarded = Storage.getValue(key);
+        var hasOnboarded = false;
         System.println("Stored value: " + hasOnboarded);
 
         if (hasOnboarded == true) {
@@ -51,14 +52,14 @@ class SleepMonitorOnboarding {
             System.println("openWebPage FAILED: " + ex.toString());
         }
 
-        // Start polling every 5 seconds
+        // Start polling every 20 seconds
         _timer = new Timer.Timer();
-        _timer.start(method(:pollForResult), 20000, true);
+        _timer.start(method(:pollForUsername), 20000, true);
 
         return true;
     }
 
-    function pollForResult() as Void {
+    function pollForUsername() as Void {
         _pollCount++;
 
         if (_pollCount > MAX_POLLS) {
@@ -82,20 +83,28 @@ class SleepMonitorOnboarding {
             // Got the result — stop polling
             _timer.stop();
 
-            var preferences = data["preferences"];
+            var preferences = data["preferences"] as Dictionary?;
             SleepMonitorHttpClient.setUserId(data["username"]);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
-            if (preferences.size() > 0) {
-                var wakeStart = preferences["wakeStart"] as String;
-                var wakeEnd = preferences["wakeEnd"] as String;
+            if (preferences != null && preferences.size() > 0) {
+                var wakeStart = preferences["wakeStart"];
+                if (wakeStart == null) {
+                    System.println("wakeStart not found in preferences, using default of " + Defaults.DEFAULT_WAKE_START);
+                    wakeStart = Defaults.DEFAULT_WAKE_START;
+                }
+                var wakeEnd = preferences["wakeEnd"];
+                if (wakeEnd == null) {
+                    System.println("wakeEnd not found in preferences, using default of " + Defaults.DEFAULT_WAKE_END);
+                    wakeEnd = Defaults.DEFAULT_WAKE_END;
+                }
                 Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
                 Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEnd);
 
                 getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
             } else {
                 System.println("No preferences found in response, using defaults.");
-                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow("07:00", "09:00");
+                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(Defaults.DEFAULT_WAKE_START, Defaults.DEFAULT_WAKE_END);
             }
 
             System.println("Onboarding complete for: " + data["username"]);

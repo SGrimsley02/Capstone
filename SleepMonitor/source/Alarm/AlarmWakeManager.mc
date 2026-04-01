@@ -17,7 +17,7 @@ import Toybox.Time.Gregorian;
 
 class WakeAlarmManager {
 
-    var _wakeEpoch = null;
+    var _alarmEpoch = null;
     var _alarmTimer = null;
     var _ringTimer = null;
     var _isRinging = false;
@@ -27,6 +27,8 @@ class WakeAlarmManager {
     var _alarmDelegate = null;
     var _podcastReady = false;
     var _podcastPollTimer = null;
+    var _wakeStartEpoch = null;
+    var _wakeEndEpoch = null;
 
     // Instance of the network provider
     private var _podcastProvider;
@@ -37,9 +39,17 @@ class WakeAlarmManager {
 
     // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
     function scheduleAlarmFromWakeWindow(wakeStartTime as String, endWakeTime as String) as Void {
-        var wakeStartEpoch = getNextDayEpoch(wakeStartTime);
+        _wakeStartEpoch = timeStrToEpoch(wakeStartTime);
+        _wakeEndEpoch = timeStrToEpoch(endWakeTime);
+
         var nowEpoch = Time.now().value();
-        var secondsUntil = wakeStartEpoch - nowEpoch;
+        if (_wakeStartEpoch < nowEpoch) {
+            System.println("WakeAlarmManager: Scheduling alarm for tomorrow");
+            _wakeStartEpoch += 24 * 60 * 60;
+            _wakeEndEpoch += 24 * 60 * 60;
+        }
+        _alarmEpoch = _wakeStartEpoch;
+        var secondsUntil = _wakeStartEpoch - nowEpoch;
 
         if (_alarmTimer != null) {
             _alarmTimer.stop();
@@ -52,11 +62,9 @@ class WakeAlarmManager {
     }
 
     function _onWakeWindowTimer() as Void {
-
-        var endWakeTime = SleepMonitorHttpClient.getWakeEnd();
-        if (endWakeTime == null) {
-            System.println("WakeAlarmManager: no stored wake end time, defaulting to 08:00");
-            endWakeTime = "08:00";
+        if (_wakeEndEpoch == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
+            _wakeEndEpoch = Defaults.DEFAULT_WAKE_END;
         }
 
         if (_alarmTimer != null) {
@@ -64,12 +72,12 @@ class WakeAlarmManager {
             _alarmTimer = null;
         }
 
-        var endWakeTimeEpoch = getNextDayEpoch(endWakeTime);
         // Get userId from storage
         var userId = SleepMonitorHttpClient.getUserId();
         if (userId == null) {
             System.println("WakeAlarmManager: no user ID found, falling back to endWakeTime");
-            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+            _alarmEpoch = _wakeEndEpoch;
+            scheduleAlarmAtEpoch(_alarmEpoch);
             return;
         }
 
@@ -77,7 +85,8 @@ class WakeAlarmManager {
         var payload = SleepAnalyzer.buildSleepPayload(userId);
         if (payload == null) {
             System.println("WakeAlarmManager: could not build sleep payload, falling back to endWakeTime");
-            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+            _alarmEpoch = _wakeEndEpoch;
+            scheduleAlarmAtEpoch(_alarmEpoch);
             return;
         }
 
@@ -86,14 +95,15 @@ class WakeAlarmManager {
         var fallback = payload.get("fallbackHandoffEpochSec");
 
         // If both recommended and fallback are missing, fall back to endWakeTime
-        var handoffEpoch = (recommended != null) ? recommended : ((fallback != null) ? fallback : endWakeTimeEpoch);
+        var handoffEpoch = (recommended != null) ? recommended : ((fallback != null) ? fallback : _wakeEndEpoch);
 
         // Use handoff epoch only if it's before endWakeTime, otherwise use endWakeTime
-        if (handoffEpoch < endWakeTimeEpoch) {
-            scheduleAlarmAtEpoch(handoffEpoch);
+        if (handoffEpoch < _wakeEndEpoch) {
+            _alarmEpoch = handoffEpoch;
         } else {
-            scheduleAlarmAtEpoch(endWakeTimeEpoch);
+            _alarmEpoch = _wakeEndEpoch;
         }
+        scheduleAlarmAtEpoch(_alarmEpoch);
     }
 
     function scheduleAlarmAtEpoch(wakeEpoch) {
@@ -102,12 +112,10 @@ class WakeAlarmManager {
             _alarmTimer = null;
         }
 
-        _wakeEpoch = wakeEpoch;
+        _alarmEpoch = wakeEpoch;
         var nowEpoch = Time.now().value();
         var secondsUntil = wakeEpoch - nowEpoch;
 
-        System.println("WakeAlarmManager: scheduling alarm for epoch " + wakeEpoch);
-        System.println("WakeAlarmManager: current epoch " + nowEpoch);
         System.println("WakeAlarmManager: seconds until alarm " + secondsUntil);
 
         if (secondsUntil <= 0) {
@@ -135,13 +143,13 @@ class WakeAlarmManager {
 
         var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
         if (wakeStartTime == null) {
-            System.println("WakeAlarmManager: no stored wake start time, defaulting to 07:00");
-            wakeStartTime = "07:00";
+            System.println("WakeAlarmManager: no stored wake start time, defaulting to " + Defaults.DEFAULT_WAKE_START);
+            wakeStartTime = Defaults.DEFAULT_WAKE_START;
         }
         var wakeEndTime = SleepMonitorHttpClient.getWakeEnd();
         if (wakeEndTime == null) {
-            System.println("WakeAlarmManager: no stored wake end time, defaulting to 08:00");
-            wakeEndTime = "08:00";
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
+            wakeEndTime = Defaults.DEFAULT_WAKE_END;
         }
   
         getApp().sendSleepSummary();
@@ -203,7 +211,7 @@ class WakeAlarmManager {
         }
 
         stopPodcastPolling();
-        _wakeEpoch = null;
+        _alarmEpoch = null;
     }
 
     function isRinging() {
@@ -212,7 +220,7 @@ class WakeAlarmManager {
 
     // Returns the scheduled wake epoch (seconds since epoch), or null if not set.
     function getWakeEpoch() {
-        return _wakeEpoch;
+        return _alarmEpoch;
     }
 
     function _onRingTick() as Void {
@@ -277,35 +285,24 @@ class WakeAlarmManager {
             }
         }
     }
-    static function getNextDayEpoch(timeStr as String) as Lang.Number {
-        if (timeStr == null || timeStr.length() < 5) {
-            System.println("WakeAlarmManager: invalid time string, defaulting to 07:00");
-            timeStr = "07:00";
-        }
 
+    static function timeStrToEpoch(timeStr as String) as Lang.Number {
+        if (timeStr == null || timeStr.length() < 5) {
+            System.println("WakeAlarmManager: invalid time string, defaulting to " + Defaults.DEFAULT_WAKE_START);
+            timeStr = Defaults.DEFAULT_WAKE_START;
+        }
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();
 
-        var nowMoment = Time.now();
-        var nowInfo = Gregorian.info(nowMoment, Time.FORMAT_SHORT);
-
         var options = {
-            :year   => nowInfo.year,
-            :month  => nowInfo.month,
-            :day    => nowInfo.day,
             :hour   => hours,
-            :minute => minutes,
-            :second => 0
+            :minute => minutes
         };
 
-        var alarmMoment = Gregorian.moment(options);
-        var alarmEpoch = alarmMoment.value();
+        var moment = Gregorian.moment(options);
+        var tzOffset = System.getClockTime().timeZoneOffset;
+        var epoch = moment.value() - tzOffset;
 
-        // If today's alarm time already passed, move it to tomorrow
-        if (alarmEpoch <= nowMoment.value()) {
-            alarmEpoch += 24 * 60 * 60;
-        }
-
-        return alarmEpoch;
+        return epoch;
     }
 }

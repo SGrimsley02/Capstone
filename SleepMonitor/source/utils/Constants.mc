@@ -12,3 +12,8 @@ module StorageKeys {
     const HAS_ONBOARDED_KEY = "hasOnboarded";
     const PODCAST_URL_KEY = "podcast_url";
 }
+
+module Defaults {
+    const DEFAULT_WAKE_START = "07:00";
+    const DEFAULT_WAKE_END = "09:00";
+}

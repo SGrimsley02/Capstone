@@ -35,14 +35,6 @@ class SleepMonitorApp extends Application.AppBase {
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
-            var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
-            if (wakeStartTime == null) {
-                wakeStartTime = "07:00";
-            }
-            var wakeEndTime = SleepMonitorHttpClient.getWakeEnd();
-            if (wakeEndTime == null) {
-                wakeEndTime = "09:00";
-            }
             WatchUi.requestUpdate();
         }
     }
