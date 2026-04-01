@@ -29,7 +29,7 @@ class SleepMonitorOnboarding {
 
         System.println("Onboarding check started...");
 
-        var hasOnboarded = false;
+        var hasOnboarded = Storage.getValue(key);
         System.println("Stored value: " + hasOnboarded);
 
         if (hasOnboarded == true) {
