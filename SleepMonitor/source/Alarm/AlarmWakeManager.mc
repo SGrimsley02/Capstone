@@ -277,25 +277,35 @@ class WakeAlarmManager {
             }
         }
     }
-
     static function getNextDayEpoch(timeStr as String) as Lang.Number {
+        if (timeStr == null || timeStr.length() < 5) {
+            System.println("WakeAlarmManager: invalid time string, defaulting to 07:00");
+            timeStr = "07:00";
+        }
+
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();
 
-        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        var nowMoment = Time.now();
+        var nowInfo = Gregorian.info(nowMoment, Time.FORMAT_SHORT);
 
         var options = {
-            :year   => now.year,
-            :month  => now.month,
-            :day    => now.day + 1,
+            :year   => nowInfo.year,
+            :month  => nowInfo.month,
+            :day    => nowInfo.day,
             :hour   => hours,
             :minute => minutes,
             :second => 0
         };
 
-        var moment = Gregorian.moment(options);
-        var tzOffset = System.getClockTime().timeZoneOffset;
+        var alarmMoment = Gregorian.moment(options);
+        var alarmEpoch = alarmMoment.value();
 
-        return moment.value() - tzOffset;
+        // If today's alarm time already passed, move it to tomorrow
+        if (alarmEpoch <= nowMoment.value()) {
+            alarmEpoch += 24 * 60 * 60;
+        }
+
+        return alarmEpoch;
     }
 }
