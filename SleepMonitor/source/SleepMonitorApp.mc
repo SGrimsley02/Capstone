@@ -13,17 +13,20 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
 import Toybox.Communications;
+import Toybox.Timer;
 
 (:background_exluded)
 class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
     private var _wakeAlarmManager;
     private var _httpClient;
+    var timer as Timer.Timer;
 
     function initialize() {
         AppBase.initialize();
         _wakeAlarmManager = new WakeAlarmManager();
         _httpClient = new SleepMonitorHttpClient();
+        timer = new Timer.Timer();
     }
 
     // onStart() is called on application start up

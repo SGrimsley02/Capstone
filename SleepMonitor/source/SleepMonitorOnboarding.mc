@@ -19,8 +19,10 @@ import Defaults;
 class SleepMonitorOnboarding {
 
     var _sessionId as String = "";
-    var _timer as Timer.Timer?;
+    var _timer = getApp().timer; // Use the main app timer for onboarding polling tasks
     var _pollCount as Number = 0;
+    var _wakeStart as String? = null;
+    var _wakeEnd as String? = null;
     const MAX_POLLS = 15;  // stop after 5 minutes (15 x 20s)
 
     function runIfFirstTime(targetUrl as String) as Boolean {
@@ -53,7 +55,6 @@ class SleepMonitorOnboarding {
         }
 
         // Start polling every 20 seconds
-        _timer = new Timer.Timer();
         _timer.start(method(:pollForUsername), 20000, true);
 
         return true;
@@ -65,6 +66,9 @@ class SleepMonitorOnboarding {
         if (_pollCount > MAX_POLLS) {
             System.println("Polling timed out.");
             _timer.stop();
+            // TODO: Display error message with instructions to retry onboarding + warning that they should login within 5 mins next time
+            Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            System.println("Onboarding failed: user did not log in within time limit.");
             return;
         }
         Communications.makeWebRequest(
@@ -84,31 +88,27 @@ class SleepMonitorOnboarding {
             _timer.stop();
 
             var preferences = data["preferences"] as Dictionary?;
-            SleepMonitorHttpClient.setUserId(data["username"]);
+            Storage.setValue(StorageKeys.USER_ID_KEY, data["username"]);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
             if (preferences != null && preferences.size() > 0) {
-                var wakeStart = preferences["wakeStart"];
-                if (wakeStart == null) {
-                    System.println("wakeStart not found in preferences, using default of " + Defaults.DEFAULT_WAKE_START);
-                    wakeStart = Defaults.DEFAULT_WAKE_START;
+                _wakeStart = preferences["wakeStart"] as String?;
+                if (_wakeStart != null) {
+                    Storage.setValue(StorageKeys.WAKE_START_KEY, _wakeStart);
+                    System.println("Wake start time: " + _wakeStart);
                 }
-                var wakeEnd = preferences["wakeEnd"];
-                if (wakeEnd == null) {
-                    System.println("wakeEnd not found in preferences, using default of " + Defaults.DEFAULT_WAKE_END);
-                    wakeEnd = Defaults.DEFAULT_WAKE_END;
+                _wakeEnd = preferences["wakeEnd"] as String?;
+                if (_wakeEnd != null) {
+                    Storage.setValue(StorageKeys.WAKE_END_KEY, _wakeEnd);
+                    System.println("Wake end time: " + _wakeEnd);
                 }
-                Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
-                Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEnd);
+            } 
 
-                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
-            } else {
-                System.println("No preferences found in response, using defaults.");
-                getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(Defaults.DEFAULT_WAKE_START, Defaults.DEFAULT_WAKE_END);
-            }
+            getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(_wakeStart, _wakeEnd);
 
             System.println("Onboarding complete for: " + data["username"]);
 
+            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false); // repull for preferences after 5 minutes
         } else if (responseCode == 404) {
             // Not ready yet — keep polling
             System.println("Waiting for user to log in... (" + _pollCount + ")");
@@ -119,5 +119,12 @@ class SleepMonitorOnboarding {
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             System.println("Username poll failed: " + responseCode);
         }
+    }
+
+    function pollForPreferences() as Void {
+        getApp().updateUserInfo();
+        _timer.stop();
+        var callback = new Method(getApp(), :updateUserInfo);
+        _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
     }
 }

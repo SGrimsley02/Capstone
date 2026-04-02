@@ -32,10 +32,7 @@ const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
 
 class SleepMonitorHttpClient {
 
-    private var _wakeAlarmManager; // Reference to the alarm manager for potential future use (e.g., triggering podcast status checks)
-
     function initialize() {
-        _wakeAlarmManager = new WakeAlarmManager();
         // Purpose: Construct the HTTP client (no state needed currently).
     }
 
@@ -105,7 +102,7 @@ class SleepMonitorHttpClient {
         var url = BASE_URL + "user";
         var username = getUserId();
         if (username == null) {
-            System.println("No user ID found in storage.");
+            System.println("No username found in storage.");
             return;
         }
         var params = { "username" => username };
@@ -128,7 +125,6 @@ class SleepMonitorHttpClient {
             options[:contentType] = Communications.REQUEST_CONTENT_TYPE_JSON;
             setStatus("Sending " + options[:context].toString());
             System.println("Sending request: " + options[:context] + " -> " + url);
-            System.println("About to call makeWebRequest");
             Communications.makeWebRequest(url, params, options, method(:onReceive));
         } catch (ex) {
             // catch setup errors before request completes
@@ -149,13 +145,21 @@ class SleepMonitorHttpClient {
             //response body may come back as Dictionary, String, Iterator, null
             if (data instanceof Dictionary) {
                 System.println(label + " success. JSON response: " + data.toString());
-                var preferences = data["preferences"];
-                var wakeStart = preferences["wakeStart"] as String?;
-                var wakeEnd = preferences["wakeEnd"] as String?;
-                if (wakeStart != null && wakeEnd != null) {
-                    setWakeStart(wakeStart);
-                    setWakeEnd(wakeEnd);
-                    System.println("Updated wake times from response: " + wakeStart + " - " + wakeEnd);
+                var preferences = data["preferences"] as Dictionary?;
+                if (preferences != null) {
+                    var wakeStart = preferences["wakeStart"] as String?;
+                    if (wakeStart != null && !wakeStart.equals(Storage.getValue(StorageKeys.WAKE_START_KEY))) {
+                        setWakeStart(wakeStart);
+                        System.println("Updated wake start time: " + wakeStart);
+                    }
+                    var wakeEnd = preferences["wakeEnd"] as String?;
+                    if (wakeEnd != null && !wakeEnd.equals(Storage.getValue(StorageKeys.WAKE_END_KEY))) {
+                        setWakeEnd(wakeEnd);
+                        System.println("Updated wake end time: " + wakeEnd);
+                    }
+                    if (wakeStart != null && wakeEnd != null) {
+                        getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
+                    }
                 }
 
             } else if (data != null) {

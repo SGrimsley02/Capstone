@@ -14,6 +14,8 @@ import Toybox.Attention;
 import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.Time.Gregorian;
+import Toybox.Application.Storage;
+import StorageKeys;
 
 class WakeAlarmManager {
 
@@ -38,18 +40,31 @@ class WakeAlarmManager {
     }
 
     // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
-    function scheduleAlarmFromWakeWindow(wakeStartTime as String, endWakeTime as String) as Void {
+    function scheduleAlarmFromWakeWindow(wakeStartTime as String?, endWakeTime as String?) as Void {
+        if (wakeStartTime == null) {
+            System.println("WakeAlarmManager: no stored wake start time, defaulting to " + Defaults.DEFAULT_WAKE_START);
+            wakeStartTime = Defaults.DEFAULT_WAKE_START;
+        }
         _wakeStartEpoch = timeStrToEpoch(wakeStartTime);
+
+        if (endWakeTime == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
+            endWakeTime = Defaults.DEFAULT_WAKE_END;
+        }
         _wakeEndEpoch = timeStrToEpoch(endWakeTime);
 
         var nowEpoch = Time.now().value();
         if (_wakeStartEpoch < nowEpoch) {
-            System.println("WakeAlarmManager: Scheduling alarm for tomorrow");
             _wakeStartEpoch += 24 * 60 * 60;
             _wakeEndEpoch += 24 * 60 * 60;
+        } 
+        if (_wakeEndEpoch < _wakeStartEpoch) {
+            _wakeEndEpoch += 24 * 60 * 60; // Handle case where end time is past midnight (e.g., wakeStart=23:00, wakeEnd=06:00)
         }
         _alarmEpoch = _wakeStartEpoch;
+        WatchUi.requestUpdate();
         var secondsUntil = _wakeStartEpoch - nowEpoch;
+        System.println("Scheduling analysis for epoch " + _wakeStartEpoch + " in " + secondsUntil + " seconds");
 
         if (_alarmTimer != null) {
             _alarmTimer.stop();
@@ -72,12 +87,13 @@ class WakeAlarmManager {
             _alarmTimer = null;
         }
 
+        getApp().timer.stop(); // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
+
         // Get userId from storage
-        var userId = SleepMonitorHttpClient.getUserId();
+        var userId = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
         if (userId == null) {
             System.println("WakeAlarmManager: no user ID found, falling back to endWakeTime");
-            _alarmEpoch = _wakeEndEpoch;
-            scheduleAlarmAtEpoch(_alarmEpoch);
+            scheduleAlarmAtEpoch(_wakeEndEpoch);
             return;
         }
 
@@ -85,8 +101,7 @@ class WakeAlarmManager {
         var payload = SleepAnalyzer.buildSleepPayload(userId);
         if (payload == null) {
             System.println("WakeAlarmManager: could not build sleep payload, falling back to endWakeTime");
-            _alarmEpoch = _wakeEndEpoch;
-            scheduleAlarmAtEpoch(_alarmEpoch);
+            scheduleAlarmAtEpoch(_wakeEndEpoch);
             return;
         }
 
@@ -113,6 +128,7 @@ class WakeAlarmManager {
         }
 
         _alarmEpoch = wakeEpoch;
+        WatchUi.requestUpdate();
         var nowEpoch = Time.now().value();
         var secondsUntil = wakeEpoch - nowEpoch;
 
@@ -139,21 +155,7 @@ class WakeAlarmManager {
         }
 
         _fireAlarmUiAndRing();
-        getApp().updateUserInfo();
-
-        var wakeStartTime = SleepMonitorHttpClient.getWakeStart();
-        if (wakeStartTime == null) {
-            System.println("WakeAlarmManager: no stored wake start time, defaulting to " + Defaults.DEFAULT_WAKE_START);
-            wakeStartTime = Defaults.DEFAULT_WAKE_START;
-        }
-        var wakeEndTime = SleepMonitorHttpClient.getWakeEnd();
-        if (wakeEndTime == null) {
-            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
-            wakeEndTime = Defaults.DEFAULT_WAKE_END;
-        }
-  
         getApp().sendSleepSummary();
-        scheduleAlarmFromWakeWindow(wakeStartTime, wakeEndTime);
         return;
 
     }
@@ -212,6 +214,10 @@ class WakeAlarmManager {
 
         stopPodcastPolling();
         _alarmEpoch = null;
+        getApp().updateUserInfo();
+        scheduleAlarmFromWakeWindow(Storage.getValue(StorageKeys.WAKE_START_KEY) as String?, Storage.getValue(StorageKeys.WAKE_END_KEY) as String?);
+        var callback = new Method(getApp(), :updateUserInfo);
+        getApp().timer.start(callback, Defaults.LONG_PREF_INT, true); // resume regular preference polling after alarm dismissed
     }
 
     function isRinging() {
