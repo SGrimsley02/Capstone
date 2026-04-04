@@ -11,6 +11,7 @@ module StorageKeys {
     const WAKE_END_KEY = "wakeEnd";
     const HAS_ONBOARDED_KEY = "hasOnboarded";
     const PODCAST_URL_KEY = "podcast_url";
+    const UI_THEME_KEY = "ui_theme";
 }
 
 module Defaults {

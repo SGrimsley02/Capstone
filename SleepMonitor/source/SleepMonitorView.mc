@@ -45,7 +45,8 @@ class SleepMonitorView extends WatchUi.View {
         var cy = H / 2;
 
         // ── Background ─────────────────────────────────────────────
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        var bgColor = ThemeHelpers.getColor("background");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
 
@@ -60,7 +61,7 @@ class SleepMonitorView extends WatchUi.View {
         var info    = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var dateStr = Lang.format("$1$, $2$ $3$", [info.day_of_week, info.month, info.day]);
 
-        dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("secondaryText"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx, (H * 0.45).toNumber(),
             Graphics.FONT_XTINY,

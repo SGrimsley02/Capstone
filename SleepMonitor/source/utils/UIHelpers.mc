@@ -1,3 +1,11 @@
+/*
+Name: source/utils/UIHelpers.mc
+Description: UI helper functions for the SleepMonitor Connect IQ app.
+Authors: Kiara Rose, Audrey Pan
+Created: March 24, 2026
+Last Modified: March 24, 2026
+*/
+
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
@@ -47,4 +55,5 @@ module UIHelpers {
             );
         }
     }
+    
 }

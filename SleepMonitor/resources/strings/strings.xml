@@ -20,6 +20,14 @@ Last Modified: February 14, 2026
     <string id="menu_test_alarm">Alarm at (now + 5 sec)</string>
     <string id="menu_test_review">Test Review Screen</string>
 
+    <!-- User Menu Strings -->
+    <string id="menu_relink_website">Relink Website</string>
+    <string id="menu_ui_customization">UI Customization</string>
+    <string id="menu_theme_dark">Dark Theme</string>
+    <string id="menu_theme_light">Light Theme</string>
+
+    <string id="menu_debug">Debug Menu</string>
+
     <!-- Translatable Strings -->
     <string id="RateThisSong">Rate This Song</string>
     <string id="RatingHint">START to Confirm</string>
