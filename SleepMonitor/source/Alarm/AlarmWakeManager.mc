@@ -14,10 +14,12 @@ import Toybox.Attention;
 import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.Time.Gregorian;
+import Toybox.Application.Storage;
+import StorageKeys;
 
 class WakeAlarmManager {
 
-    var _wakeEpoch = null;
+    var _alarmEpoch = null;
     var _alarmTimer = null;
     var _ringTimer = null;
     var _isRinging = false;
@@ -27,6 +29,9 @@ class WakeAlarmManager {
     var _alarmDelegate = null;
     var _podcastReady = false;
     var _podcastPollTimer = null;
+    var _wakeStartEpoch = null;
+    var _wakeEndEpoch = null;
+    var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
 
     // Instance of the network provider
     private var _podcastProvider;
@@ -35,18 +40,89 @@ class WakeAlarmManager {
         _podcastProvider = new PodcastProvider();
     }
 
-    function scheduleAlarmAtEpoch(wakeEpoch) {
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
+    // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
+    function scheduleAlarmFromWakeWindow(wakeStartTime as String?, endWakeTime as String?) as Void {
+        if (wakeStartTime == null) {
+            System.println("WakeAlarmManager: no stored wake start time, defaulting to " + Defaults.DEFAULT_WAKE_START);
+            wakeStartTime = Defaults.DEFAULT_WAKE_START;
+        }
+        _wakeStartEpoch = timeStrToEpoch(wakeStartTime);
+
+        if (endWakeTime == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
+            endWakeTime = Defaults.DEFAULT_WAKE_END;
+        }
+        _wakeEndEpoch = timeStrToEpoch(endWakeTime);
+
+        var nowEpoch = Time.now().value();
+        if (_wakeStartEpoch < nowEpoch) {
+            _wakeStartEpoch += 24 * 60 * 60;
+            _wakeEndEpoch += 24 * 60 * 60;
+        } 
+        if (_wakeEndEpoch < _wakeStartEpoch) {
+            _wakeEndEpoch += 24 * 60 * 60; // Handle case where end time is past midnight (e.g., wakeStart=23:00, wakeEnd=06:00)
+        }
+        _alarmEpoch = _wakeStartEpoch;
+        WatchUi.requestUpdate();
+        var secondsUntil = _wakeStartEpoch - nowEpoch;
+        System.println("Scheduling analysis for epoch " + _wakeStartEpoch + " in " + secondsUntil + " seconds");
+        _clearAlarmTimer();
+
+        // Schedule timer to compute and set alarm when wakeStartTime arrives
+        _alarmTimer = new Timer.Timer();
+        _alarmTimer.start(method(:_onWakeWindowTimer), secondsUntil * 1000, false);
+    }
+
+    function _onWakeWindowTimer() as Void {
+        if (_wakeEndEpoch == null) {
+            System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
+            _wakeEndEpoch = timeStrToEpoch(Defaults.DEFAULT_WAKE_END);
         }
 
-        _wakeEpoch = wakeEpoch;
+        _clearAlarmTimer();
+
+        getApp().userInfoTimer.stop(); // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
+
+        // Get userId from storage
+        var userId = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
+        if (userId == null) {
+            System.println("WakeAlarmManager: no user ID found, falling back to endWakeTime");
+            scheduleAlarmAtEpoch(_wakeEndEpoch);
+            return;
+        }
+
+        // Build sleep payload to analyze sleep data and get handoff epoch
+        var payload = SleepAnalyzer.buildSleepPayload(userId);
+        if (payload == null) {
+            System.println("WakeAlarmManager: could not build sleep payload, falling back to endWakeTime");
+            scheduleAlarmAtEpoch(_wakeEndEpoch);
+            return;
+        }
+
+        // Extract handoff epoch (recommended or fallback)
+        var recommended = payload.get("recommendedHandoffEpochSec");
+        var fallback = payload.get("fallbackHandoffEpochSec");
+
+        // If both recommended and fallback are missing, fall back to endWakeTime
+        var handoffEpoch = (recommended != null) ? recommended : ((fallback != null) ? fallback : _wakeEndEpoch);
+
+        // Use handoff epoch only if it's before endWakeTime, otherwise use endWakeTime
+        if (handoffEpoch < _wakeEndEpoch) {
+            _alarmEpoch = handoffEpoch;
+        } else {
+            _alarmEpoch = _wakeEndEpoch;
+        }
+        scheduleAlarmAtEpoch(_alarmEpoch);
+    }
+
+    function scheduleAlarmAtEpoch(wakeEpoch) {
+        _clearAlarmTimer();
+
+        _alarmEpoch = wakeEpoch;
+        WatchUi.requestUpdate();
         var nowEpoch = Time.now().value();
         var secondsUntil = wakeEpoch - nowEpoch;
 
-        System.println("WakeAlarmManager: scheduling alarm for epoch " + wakeEpoch);
-        System.println("WakeAlarmManager: current epoch " + nowEpoch);
         System.println("WakeAlarmManager: seconds until alarm " + secondsUntil);
 
         if (secondsUntil <= 0) {
@@ -58,27 +134,17 @@ class WakeAlarmManager {
         _alarmTimer.start(method(:_onAlarmTimer), secondsUntil * 1000, false);
     }
 
+    // TODO: delete once alarm is fully tested
     function scheduleAlarmInSeconds(seconds) {
         var nowEpoch = Time.now().value();
         scheduleAlarmAtEpoch(nowEpoch + seconds);
     }
 
     function _onAlarmTimer() as Void {
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
-        }
+        _clearAlarmTimer();
 
         _fireAlarmUiAndRing();
-        getApp().updateUserInfo();
-
-        var wakeTime = SleepMonitorHttpClient.getWakeStart();
-        if (wakeTime == null) {
-            System.println("WakeAlarmManager: no stored wake start time, defaulting to 07:00");
-            wakeTime = "07:00";
-        }
-  
-        scheduleAlarmAtEpoch(getNextDayEpoch(wakeTime));
+        getApp().sendSleepSummary();
         return;
 
     }
@@ -136,7 +202,10 @@ class WakeAlarmManager {
         }
 
         stopPodcastPolling();
-        _wakeEpoch = null;
+        _alarmEpoch = null;
+        _resetAlarm = true; // Even if the alarm time hasn't changed, we still need to reset the alarm for the next day here.
+        getApp().updateUserInfo(method(:onReceive));
+        getApp().userInfoTimer.start(method(:pollPreferences), Defaults.LONG_PREF_INT, true); // resume regular preference polling after alarm dismissed
     }
 
     function isRinging() {
@@ -145,7 +214,7 @@ class WakeAlarmManager {
 
     // Returns the scheduled wake epoch (seconds since epoch), or null if not set.
     function getWakeEpoch() {
-        return _wakeEpoch;
+        return _alarmEpoch;
     }
 
     function _onRingTick() as Void {
@@ -211,50 +280,77 @@ class WakeAlarmManager {
         }
     }
 
-    static function getNextDayEpoch(timeStr as String) as Lang.Number {
+    function pollPreferences() as Void {
+        getApp().updateUserInfo(method(:onReceive));
+    }
+
+    function onReceive(
+        responseCode as Number,
+        data as Dictionary?,
+        context as Object
+    ) as Void {
+        //handle HTTP/web responses and update the on-screen status.
+        var label = context.toString();
+        if (responseCode == 200 or responseCode == 201) {
+            getApp().setHttpStatus(label + " ok");
+            //response body may come back as Dictionary or null
+            if (data instanceof Dictionary) {
+                System.println(label + " success. JSON response: " + data.toString());
+                var preferences = data["preferences"] as Dictionary?;
+                if (preferences != null) {
+                    var oldWakeStart = Storage.getValue(StorageKeys.WAKE_START_KEY) as String?;
+                    var oldWakeEnd = Storage.getValue(StorageKeys.WAKE_END_KEY) as String?;
+
+                    var wakeStart = preferences["wakeStart"] as String?;
+                    if (wakeStart != null && !wakeStart.equals(oldWakeStart)) {
+                        Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
+                        System.println("Updated wake start time: " + wakeStart);
+                    }
+                    var wakeEnd = preferences["wakeEnd"] as String?;
+                    if (wakeEnd != null && !wakeEnd.equals(oldWakeEnd)) {
+                        Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEnd);
+                        System.println("Updated wake end time: " + wakeEnd);
+                    }
+                    
+                    if ((wakeStart != null && !wakeStart.equals(oldWakeStart)) || (wakeEnd != null && !wakeEnd.equals(oldWakeEnd)) || _resetAlarm) {
+                        scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
+                        _resetAlarm = false; // reset the flag after handling the change
+                    }
+                }
+
+            } else {
+                System.println(label + " success with empty body.");
+            }
+        } else {
+            getApp().setHttpStatus(label + " err " + responseCode.toString());
+            System.println(label + " failed. Response code: " + responseCode.toString());
+        }
+    }
+
+
+    function _clearAlarmTimer() as Void {
+        if (_alarmTimer != null) {
+            _alarmTimer.stop();
+            _alarmTimer = null;
+        }
+    }
+
+    static function timeStrToEpoch(timeStr as String) as Lang.Number {
+        if (timeStr == null || timeStr.length() < 5) {
+            throw new Lang.InvalidValueException("Time string must be in format HH:MM. Received: " + timeStr);
+        }
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();
 
-        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-
         var options = {
-            :year   => now.year,
-            :month  => now.month,
-            :day    => now.day + 1,
             :hour   => hours,
-            :minute => minutes,
-            :second => 0
+            :minute => minutes
         };
 
         var moment = Gregorian.moment(options);
         var tzOffset = System.getClockTime().timeZoneOffset;
+        var epoch = moment.value() - tzOffset;
 
-        return moment.value() - tzOffset;
-    }
-
-    function scheduleAlarmFromSleepPayload(payload as Dictionary) as Void {
-        if (payload == null) {
-            System.println("WakeAlarmManager: no sleep payload provided");
-            return;
-        }
-
-        var wakeEpoch = null;
-        var recommended = payload.get("recommendedHandoffEpochSec");
-        var fallback = payload.get("fallbackHandoffEpochSec");
-
-        if (recommended != null) {
-            wakeEpoch = recommended;
-            System.println("WakeAlarmManager: using recommended handoff epoch " + wakeEpoch);
-        } else if (fallback != null) {
-            wakeEpoch = fallback;
-            System.println("WakeAlarmManager: using fallback handoff epoch " + wakeEpoch);
-        }
-
-        if (wakeEpoch == null) {
-            System.println("WakeAlarmManager: no handoff epoch found in payload");
-            return;
-        }
-
-        scheduleAlarmAtEpoch(wakeEpoch);
+        return epoch;
     }
 }

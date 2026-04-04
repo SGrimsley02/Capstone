@@ -14,12 +14,15 @@ import Toybox.Lang;
 import Toybox.Timer;
 import Toybox.Math;
 import StorageKeys;
+import Defaults;
 
 class SleepMonitorOnboarding {
 
     var _sessionId as String = "";
-    var _timer as Timer.Timer?;
+    var _timer = getApp().userInfoTimer; // Use the main app timer for onboarding polling tasks
     var _pollCount as Number = 0;
+    var _wakeStart as String? = null;
+    var _wakeEnd as String? = null;
     const MAX_POLLS = 15;  // stop after 5 minutes (15 x 20s)
 
     function runIfFirstTime(targetUrl as String) as Boolean {
@@ -36,6 +39,9 @@ class SleepMonitorOnboarding {
             return false;
         }
 
+        Storage.setValue(StorageKeys.WAKE_START_KEY, null);
+        Storage.setValue(StorageKeys.WAKE_END_KEY, null);
+
         // Generate a unique session ID
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
@@ -48,19 +54,21 @@ class SleepMonitorOnboarding {
             System.println("openWebPage FAILED: " + ex.toString());
         }
 
-        // Start polling every 5 seconds
-        _timer = new Timer.Timer();
-        _timer.start(method(:pollForResult), 20000, true);
+        // Start polling every 20 seconds
+        _timer.start(method(:pollForUsername), 20000, true);
 
         return true;
     }
 
-    function pollForResult() as Void {
+    function pollForUsername() as Void {
         _pollCount++;
 
         if (_pollCount > MAX_POLLS) {
             System.println("Polling timed out.");
             _timer.stop();
+            // TODO: Display error message with instructions to retry onboarding + warning that they should login within 5 mins next time
+            Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            System.println("Onboarding failed: user did not log in within time limit.");
             return;
         }
         Communications.makeWebRequest(
@@ -79,17 +87,28 @@ class SleepMonitorOnboarding {
             // Got the result — stop polling
             _timer.stop();
 
-            var preferences = data["preferences"];
-            SleepMonitorHttpClient.setUserId(data["username"]);
+            var preferences = data["preferences"] as Dictionary?;
+            Storage.setValue(StorageKeys.USER_ID_KEY, data["username"]);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
-            if (preferences != null) {
-                Storage.setValue(StorageKeys.WAKE_START_KEY, preferences["wakeStart"]);
-                Storage.setValue(StorageKeys.WAKE_END_KEY,   preferences["wakeEnd"]);
-            }
+            if (preferences != null && preferences.size() > 0) {
+                _wakeStart = preferences["wakeStart"] as String?;
+                if (_wakeStart != null) {
+                    Storage.setValue(StorageKeys.WAKE_START_KEY, _wakeStart);
+                    System.println("Wake start time: " + _wakeStart);
+                }
+                _wakeEnd = preferences["wakeEnd"] as String?;
+                if (_wakeEnd != null) {
+                    Storage.setValue(StorageKeys.WAKE_END_KEY, _wakeEnd);
+                    System.println("Wake end time: " + _wakeEnd);
+                }
+            } 
+
+            getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(_wakeStart, _wakeEnd);
 
             System.println("Onboarding complete for: " + data["username"]);
 
+            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false); // repull for preferences after 5 minutes
         } else if (responseCode == 404) {
             // Not ready yet — keep polling
             System.println("Waiting for user to log in... (" + _pollCount + ")");
@@ -98,7 +117,14 @@ class SleepMonitorOnboarding {
             // Something went wrong — stop polling
             _timer.stop();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
-            System.println("Poll failed: " + responseCode);
+            System.println("Username poll failed: " + responseCode);
         }
+    }
+
+    function pollForPreferences() as Void {
+        getApp().getWakeAlarmManager().pollPreferences();
+        _timer.stop();
+        var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
+        _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
     }
 }

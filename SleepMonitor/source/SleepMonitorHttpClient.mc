@@ -32,10 +32,7 @@ const BASE_URL = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/";
 
 class SleepMonitorHttpClient {
 
-    private var _wakeAlarmManager; // Reference to the alarm manager for potential future use (e.g., triggering podcast status checks)
-
     function initialize() {
-        _wakeAlarmManager = new WakeAlarmManager();
         // Purpose: Construct the HTTP client (no state needed currently).
     }
 
@@ -49,7 +46,7 @@ class SleepMonitorHttpClient {
             :context => "LOCAL_HTTP"
         };
 
-        makeRequest(url, null, options);
+        makeRequest(url, null, options, method(:onReceive));
     }
 
     function sendPublicHttpsRequest(url as String) as Void {
@@ -61,7 +58,7 @@ class SleepMonitorHttpClient {
             :timeout => 15,
         };
 
-        makeRequest(url, null, options);
+        makeRequest(url, null, options, method(:onReceive));
     }
 
     function sendSleepSummaryRequest() as Void {
@@ -75,9 +72,6 @@ class SleepMonitorHttpClient {
         }
 
         var params = SleepAnalyzer.buildSleepPayload(userId);
-        if (params != null && _wakeAlarmManager != null) {
-            _wakeAlarmManager.scheduleAlarmFromSleepPayload(params);
-        }
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
@@ -101,14 +95,14 @@ class SleepMonitorHttpClient {
         }
 
         System.println("POST sleep summary: " + params.toString());
-        makeRequest(url, params, options);
+        makeRequest(url, params, options, method(:onReceive));
     }
 
-    function getUserInfo() {
+    function getUserInfo(onReceive as Method) as Void {
         var url = BASE_URL + "user";
         var username = getUserId();
         if (username == null) {
-            System.println("No user ID found in storage.");
+            System.println("No username found in storage.");
             return;
         }
         var params = { "username" => username };
@@ -118,21 +112,21 @@ class SleepMonitorHttpClient {
             :context => "USER_INFO",
             :timeout => 15,
         };
-        makeRequest(url, params, options);
+        makeRequest(url, params, options, onReceive);
     }
 
     private function makeRequest(
         url as String,
         params as Dictionary or Null,
-        options as Dictionary
+        options as Dictionary,
+        onReceive as Method
     ) as Void {
         // shared wrapper around Communications.makeWebRequest() that adds error handling and UI status updates.
         try {
             options[:contentType] = Communications.REQUEST_CONTENT_TYPE_JSON;
             setStatus("Sending " + options[:context].toString());
             System.println("Sending request: " + options[:context] + " -> " + url);
-            System.println("About to call makeWebRequest");
-            Communications.makeWebRequest(url, params, options, method(:onReceive));
+            Communications.makeWebRequest(url, params, options, onReceive);
         } catch (ex) {
             // catch setup errors before request completes
             setStatus("Setup failed");
@@ -152,15 +146,6 @@ class SleepMonitorHttpClient {
             //response body may come back as Dictionary, String, Iterator, null
             if (data instanceof Dictionary) {
                 System.println(label + " success. JSON response: " + data.toString());
-                var preferences = data["preferences"];
-                var wakeStart = preferences["wakeStart"] as String?;
-                var wakeEnd = preferences["wakeEnd"] as String?;
-                if (wakeStart != null && wakeEnd != null) {
-                    setWakeStart(wakeStart);
-                    setWakeEnd(wakeEnd);
-                    System.println("Updated wake times from response: " + wakeStart + " - " + wakeEnd);
-                }
-
             } else if (data != null) {
                 System.println(label + " success. Body: " + data.toString());
             } else {
@@ -180,34 +165,8 @@ class SleepMonitorHttpClient {
 
     static function setUserId(userId as String) as Void { Application.Storage.setValue(StorageKeys.USER_ID_KEY, userId); }
 
-    private function getUserId() as String or Null { return Application.Storage.getValue(StorageKeys.USER_ID_KEY) as String ? ; }
+    static function getUserId() as String or Null { return Application.Storage.getValue(StorageKeys.USER_ID_KEY) as String ? ; }
 
-    function scheduleAlarmFromSleepPayload(payload as Dictionary?) as Void {
-        if (payload == null) {
-            System.println("WakeAlarmManager: no sleep payload provided");
-            return;
-        }
-
-        var wakeEpoch = null;
-
-        var recommended = payload.get("recommendedHandoffEpochSec");
-        var fallback = payload.get("fallbackHandoffEpochSec");
-
-        if (recommended != null) {
-            wakeEpoch = recommended;
-            System.println("WakeAlarmManager: using recommended handoff epoch " + wakeEpoch);
-        } else if (fallback != null) {
-            wakeEpoch = fallback;
-            System.println("WakeAlarmManager: using fallback handoff epoch " + wakeEpoch);
-        }
-
-        if (wakeEpoch == null) {
-            System.println("WakeAlarmManager: no handoff epoch found in payload");
-            return;
-        }
-
-        _wakeAlarmManager.scheduleAlarmAtEpoch(wakeEpoch);
-    }
     static function setWakeStart(wakeStartTime as String) as Void {
         Application.Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStartTime);
     }
