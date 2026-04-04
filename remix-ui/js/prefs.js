@@ -3,9 +3,9 @@
   * This file contains functions to handle user preferences, including
   * binding event handlers for the preferences form and saving preferences
   * to the backend API.
-  * Authors: Kiara Rose, Audrey Pan
+  * Authors: Kiara Rose, Audrey Pan, Ella Nguyen
   * Created: March 24, 2026
-  * Last updated: March 26, 2026
+  * Last updated: April 4, 2026
 */
 
 import { DEFAULT_NEWS_SOURCES } from "./config.js";
