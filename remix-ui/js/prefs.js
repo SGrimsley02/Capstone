@@ -54,7 +54,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
     if (state.currentUser?.preferences) {
       elements.prefsForm.wakeStart.value = state.currentUser.preferences.wakeStart || "07:00";
       elements.prefsForm.wakeEnd.value = state.currentUser.preferences.wakeEnd || "07:30";
-      elements.prefsForm.tone.value = state.currentUser.preferences.tone || "tone1";
+      elements.prefsForm.voiceGender.value = state.currentUser.preferences?.voiceGender || "female";
       elements.prefsForm.explicit.value = state.currentUser.preferences.explicit || "filter";
       elements.prefsForm.city.value = state.currentUser.preferences.location?.city || "Lawrence";
       elements.prefsForm.state.value = state.currentUser.preferences.location?.state || "Kansas";
@@ -131,7 +131,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
       const prefs = {
         wakeStart: elements.prefsForm.wakeStart.value,
         wakeEnd: elements.prefsForm.wakeEnd.value,
-        tone: elements.prefsForm.tone.value,
+        voiceGender: elements.prefsForm.voiceGender.value,
         explicit: elements.prefsForm.explicit.value,
         podcast: {
           news: elements.podNews.checked,
