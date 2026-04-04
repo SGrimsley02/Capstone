@@ -24,8 +24,10 @@ class ThemeMenuDelegate extends WatchUi.MenuInputDelegate {
 
         if (item == :themeDark) {
             Storage.setValue(StorageKeys.UI_THEME_KEY, "dark");
+        System.println("Saved theme value: " + Storage.getValue(StorageKeys.UI_THEME_KEY));
         } else if (item == :themeLight) {
             Storage.setValue(StorageKeys.UI_THEME_KEY, "light");
+            System.println("Saved theme value: " + Storage.getValue(StorageKeys.UI_THEME_KEY));
         }
 
         WatchUi.requestUpdate();

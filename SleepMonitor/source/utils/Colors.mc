@@ -23,4 +23,13 @@ module Colors {
 
     const GOLD = 0xFFCC00; // bright yellow
     const STAR_GRAY = 0x555555; // dark gray (unfilled stars)
+
+    //LIGHT MODE THEME COLORS (should call this theme desert mist)
+    const ROSEWOOD = 0xC33C54; // rich red (separator line)
+    const ALMOND_SILK = 0xFFDDD2; // light peach (mic bubble)
+    const POWDER_BLUSH = 0xF1B9A5; // soft terracotta (music bubble)
+    const TANGERINE_DREAM = 0xE29578; // warm orange (top bezel text)
+    const STORMY_TEAL = 0x006D77; // deep teal (time text, bottom icons)
+    const ALICE_BLUE = 0xEDF6F9; // off-white (light theme background)
+    const DARK_CYAN = 0x42999B; // medium teal (light theme secondary text)
 }
