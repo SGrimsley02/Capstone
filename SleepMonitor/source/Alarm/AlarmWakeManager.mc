@@ -31,6 +31,7 @@ class WakeAlarmManager {
     var _podcastPollTimer = null;
     var _wakeStartEpoch = null;
     var _wakeEndEpoch = null;
+    var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
 
     // Instance of the network provider
     private var _podcastProvider;
@@ -65,11 +66,7 @@ class WakeAlarmManager {
         WatchUi.requestUpdate();
         var secondsUntil = _wakeStartEpoch - nowEpoch;
         System.println("Scheduling analysis for epoch " + _wakeStartEpoch + " in " + secondsUntil + " seconds");
-
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
-        }
+        _clearAlarmTimer();
 
         // Schedule timer to compute and set alarm when wakeStartTime arrives
         _alarmTimer = new Timer.Timer();
@@ -79,15 +76,12 @@ class WakeAlarmManager {
     function _onWakeWindowTimer() as Void {
         if (_wakeEndEpoch == null) {
             System.println("WakeAlarmManager: no stored wake end time, defaulting to " + Defaults.DEFAULT_WAKE_END);
-            _wakeEndEpoch = Defaults.DEFAULT_WAKE_END;
+            _wakeEndEpoch = timeStrToEpoch(Defaults.DEFAULT_WAKE_END);
         }
 
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
-        }
+        _clearAlarmTimer();
 
-        getApp().timer.stop(); // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
+        getApp().userInfoTimer.stop(); // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
 
         // Get userId from storage
         var userId = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
@@ -122,10 +116,7 @@ class WakeAlarmManager {
     }
 
     function scheduleAlarmAtEpoch(wakeEpoch) {
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
-        }
+        _clearAlarmTimer();
 
         _alarmEpoch = wakeEpoch;
         WatchUi.requestUpdate();
@@ -143,16 +134,14 @@ class WakeAlarmManager {
         _alarmTimer.start(method(:_onAlarmTimer), secondsUntil * 1000, false);
     }
 
+    // TODO: delete once alarm is fully tested
     function scheduleAlarmInSeconds(seconds) {
         var nowEpoch = Time.now().value();
         scheduleAlarmAtEpoch(nowEpoch + seconds);
     }
 
     function _onAlarmTimer() as Void {
-        if (_alarmTimer != null) {
-            _alarmTimer.stop();
-            _alarmTimer = null;
-        }
+        _clearAlarmTimer();
 
         _fireAlarmUiAndRing();
         getApp().sendSleepSummary();
@@ -214,10 +203,9 @@ class WakeAlarmManager {
 
         stopPodcastPolling();
         _alarmEpoch = null;
-        getApp().updateUserInfo();
-        scheduleAlarmFromWakeWindow(Storage.getValue(StorageKeys.WAKE_START_KEY) as String?, Storage.getValue(StorageKeys.WAKE_END_KEY) as String?);
-        var callback = new Method(getApp(), :updateUserInfo);
-        getApp().timer.start(callback, Defaults.LONG_PREF_INT, true); // resume regular preference polling after alarm dismissed
+        _resetAlarm = true; // Even if the alarm time hasn't changed, we still need to reset the alarm for the next day here.
+        getApp().updateUserInfo(method(:onReceive));
+        getApp().userInfoTimer.start(method(:pollPreferences), Defaults.LONG_PREF_INT, true); // resume regular preference polling after alarm dismissed
     }
 
     function isRinging() {
@@ -292,10 +280,64 @@ class WakeAlarmManager {
         }
     }
 
+    function pollPreferences() as Void {
+        getApp().updateUserInfo(method(:onReceive));
+    }
+
+    function onReceive(
+        responseCode as Number,
+        data as Dictionary?,
+        context as Object
+    ) as Void {
+        //handle HTTP/web responses and update the on-screen status.
+        var label = context.toString();
+        if (responseCode == 200 or responseCode == 201) {
+            getApp().setHttpStatus(label + " ok");
+            //response body may come back as Dictionary or null
+            if (data instanceof Dictionary) {
+                System.println(label + " success. JSON response: " + data.toString());
+                var preferences = data["preferences"] as Dictionary?;
+                if (preferences != null) {
+                    var oldWakeStart = Storage.getValue(StorageKeys.WAKE_START_KEY) as String?;
+                    var oldWakeEnd = Storage.getValue(StorageKeys.WAKE_END_KEY) as String?;
+
+                    var wakeStart = preferences["wakeStart"] as String?;
+                    if (wakeStart != null && !wakeStart.equals(oldWakeStart)) {
+                        Storage.setValue(StorageKeys.WAKE_START_KEY, wakeStart);
+                        System.println("Updated wake start time: " + wakeStart);
+                    }
+                    var wakeEnd = preferences["wakeEnd"] as String?;
+                    if (wakeEnd != null && !wakeEnd.equals(oldWakeEnd)) {
+                        Storage.setValue(StorageKeys.WAKE_END_KEY, wakeEnd);
+                        System.println("Updated wake end time: " + wakeEnd);
+                    }
+                    
+                    if ((wakeStart != null && !wakeStart.equals(oldWakeStart)) || (wakeEnd != null && !wakeEnd.equals(oldWakeEnd)) || _resetAlarm) {
+                        scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
+                        _resetAlarm = false; // reset the flag after handling the change
+                    }
+                }
+
+            } else {
+                System.println(label + " success with empty body.");
+            }
+        } else {
+            getApp().setHttpStatus(label + " err " + responseCode.toString());
+            System.println(label + " failed. Response code: " + responseCode.toString());
+        }
+    }
+
+
+    function _clearAlarmTimer() as Void {
+        if (_alarmTimer != null) {
+            _alarmTimer.stop();
+            _alarmTimer = null;
+        }
+    }
+
     static function timeStrToEpoch(timeStr as String) as Lang.Number {
         if (timeStr == null || timeStr.length() < 5) {
-            System.println("WakeAlarmManager: invalid time string, defaulting to " + Defaults.DEFAULT_WAKE_START);
-            timeStr = Defaults.DEFAULT_WAKE_START;
+            throw new Lang.InvalidValueException("Time string must be in format HH:MM. Received: " + timeStr);
         }
         var hours = timeStr.substring(0, 2).toNumber();
         var minutes = timeStr.substring(3, 5).toNumber();

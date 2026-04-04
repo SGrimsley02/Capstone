@@ -61,7 +61,7 @@ module SleepAnalyzer {
 
         payload["bodyBatteryStart"] = bbSummary["first"];
         payload["bodyBatteryEnd"] = bbSummary["last"];
-        payload["bodyBatteryRecovery"] = bbSummary["last"] - bbSummary["first"];
+        payload["bodyBatteryRecovery"] = bbSummary["last"] - bbSummary["min"];
 
         if (isSleeping && restWindow != null) {
             var stage = estimateSleepStage(restWindow);
@@ -136,7 +136,7 @@ module SleepAnalyzer {
                 samples.add({
                     "value" => sample.data,
                     "when" => sample.when,
-                    "epochMs" => sample.when.value()
+                    "epochSec" => sample.when.value()
                 });
             }
             sample = iter.next();
@@ -198,14 +198,14 @@ module SleepAnalyzer {
                 var currValue = bbSamples[i]["value"];
 
                 if (currValue > prevValue) {
-                    var startMs = bbSamples[i - 1]["epochMs"];
-                    var endMs = bbSamples[bbSamples.size() - 1]["epochMs"];
-                    var durationMinutes = (endMs - startMs) / 60000.0;
+                    var startSec = bbSamples[i - 1]["epochSec"];
+                    var endSec = bbSamples[bbSamples.size() - 1]["epochSec"];
+                    var durationMinutes = (endSec - startSec) / 60.0;
 
                     if (durationMinutes >= MIN_REST_BLOCK_MINUTES) {
                         return {
-                            "startMs" => startMs,
-                            "endMs" => endMs,
+                            "startSec" => startSec,
+                            "endSec" => endSec,
                             "durationMinutes" => durationMinutes
                         };
                     }
@@ -218,53 +218,53 @@ module SleepAnalyzer {
         if (hrSamples != null && hrSamples.size() > 0) {
             var firstHr = hrSamples[0]["value"];
             var hrThreshold = firstHr * 0.85;
-            var bestStartMs = null;
-            var bestEndMs = null;
-            var currentStartMs = null;
-            var currentEndMs = null;
+            var bestStart = null;
+            var bestEnd = null;
+            var currentStart = null;
+            var currentEnd = null;
 
             for (var i = 0; i < hrSamples.size(); i += 1) {
                 var hrValue = hrSamples[i]["value"];
-                var epochMs = hrSamples[i]["epochMs"];
+                var epochSec = hrSamples[i]["epochSec"];
 
                 if (hrValue <= hrThreshold) {
-                    if (currentStartMs == null) {
-                        currentStartMs = epochMs;
+                    if (currentStart == null) {
+                        currentStart = epochSec;
                     }
-                    currentEndMs = epochMs;
+                    currentEnd = epochSec;
                 } else {
-                    if (currentStartMs != null && isBetterBlock(currentStartMs, currentEndMs, bestStartMs, bestEndMs)) {
-                        bestStartMs = currentStartMs;
-                        bestEndMs = currentEndMs;
+                    if (currentStart != null && isBetterBlock(currentStart, currentEnd, bestStart, bestEnd)) {
+                        bestStart = currentStart;
+                        bestEnd = currentEnd;
                     }
-                    currentStartMs = null;
-                    currentEndMs = null;
+                    currentStart = null;
+                    currentEnd = null;
                 }
             }
 
-            if (currentStartMs != null && isBetterBlock(currentStartMs, currentEndMs, bestStartMs, bestEndMs)) {
-                bestStartMs = currentStartMs;
-                bestEndMs = currentEndMs;
+            if (currentStart != null && isBetterBlock(currentStart, currentEnd, bestStart, bestEnd)) {
+                bestStart = currentStart;
+                bestEnd = currentEnd;
             }
 
-            if (bestStartMs != null && bestEndMs != null) {
-                var durationMinutes = (bestEndMs - bestStartMs) / 60000.0;
+            if (bestStart != null && bestEnd != null) {
+                var durationMinutes = (bestEnd - bestStart) / 60.0;
                 if (durationMinutes >= MIN_REST_BLOCK_MINUTES) {
                     return {
-                        "startMs" => bestStartMs,
-                        "endMs" => bestEndMs,
+                        "startSec" => bestStart,
+                        "endSec" => bestEnd,
                         "durationMinutes" => durationMinutes
                     };
                 }
 
                 // Use the last 90 mins of data as a fallback rest window.
                 else {
-                    var fallbackEndMs = hrSamples[hrSamples.size() - 1]["epochMs"];
-                    var fallbackStartMs = fallbackEndMs - (DEFAULT_CYCLE_MINUTES * 60 * 1000);
+                    var fallbackEnd = hrSamples[hrSamples.size() - 1]["epochSec"];
+                    var fallbackStart = fallbackEnd - (DEFAULT_CYCLE_MINUTES * 60);
 
                     return {
-                        "startMs" => fallbackStartMs,
-                        "endMs" => fallbackEndMs,
+                        "startSec" => fallbackStart,
+                        "endSec" => fallbackEnd,
                         "durationMinutes" => DEFAULT_CYCLE_MINUTES
                     };
                 }
@@ -275,21 +275,21 @@ module SleepAnalyzer {
     }
 
     function isBetterBlock(
-        currentStartMs as Number or Null,
-        currentEndMs as Number or Null,
-        bestStartMs as Number or Null,
-        bestEndMs as Number or Null
+        currentStart as Number or Null,
+        currentEnd as Number or Null,
+        bestStart as Number or Null,
+        bestEnd as Number or Null
     ) as Boolean {
-        if (currentStartMs == null || currentEndMs == null) {
+        if (currentStart == null || currentEnd == null) {
             return false;
         }
 
-        if (bestStartMs == null || bestEndMs == null) {
+        if (bestStart == null || bestEnd == null) {
             return true;
         }
 
-        var currentDuration = currentEndMs - currentStartMs;
-        var bestDuration = bestEndMs - bestStartMs;
+        var currentDuration = currentEnd - currentStart;
+        var bestDuration = bestEnd - bestStart;
 
         return currentDuration > bestDuration;
     }
@@ -314,7 +314,7 @@ module SleepAnalyzer {
         var nextBoundaryMinutes = (Math.floor(cyclesCompleted) + 1) * DEFAULT_CYCLE_MINUTES;
         var deltaMinutes = nextBoundaryMinutes - elapsedMinutes;
 
-        return restWindow["endMs"] + (deltaMinutes * 60 * 1000);
+        return restWindow["endSec"] + (deltaMinutes * 60);
     }
 
     function estimateSleepQuality(
@@ -355,19 +355,21 @@ module SleepAnalyzer {
         return value;
     }
 
-    // Note: keeping body battery as nullable because there are devices that don't support it. Requiring heart rate data at least as a fallback.
-    function hasLikelySlept(hrSummary as Dictionary, bbSummary as Dictionary or Null) as Boolean {
+    function hasLikelySlept(hrSummary as Dictionary or Null, bbSummary as Dictionary or Null) as Boolean? {
 
         if (bbSummary != null) {
             var bbRecovery = bbSummary["last"] - bbSummary["min"];
 
-            if (bbRecovery >= 0) {
+            if (bbRecovery >= 5) {
                 return true;
             }
             return false;
         }
 
         else {
+            if (hrSummary == null) {
+                return null; // Without heart rate or body battery data, we can't make a guess about sleep.
+            }
             // Heart rate typically drops by ~20% during sleep, so we'll use 15% less than the first hr sample as a rough baseline.
             var estAwakeThreshold = hrSummary["first"] * 0.85;
             if (hrSummary["min"] < estAwakeThreshold) {

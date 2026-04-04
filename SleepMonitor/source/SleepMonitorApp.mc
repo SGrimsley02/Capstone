@@ -20,13 +20,13 @@ class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
     private var _wakeAlarmManager;
     private var _httpClient;
-    var timer as Timer.Timer;
+    var userInfoTimer as Timer.Timer;
 
     function initialize() {
         AppBase.initialize();
         _wakeAlarmManager = new WakeAlarmManager();
         _httpClient = new SleepMonitorHttpClient();
-        timer = new Timer.Timer();
+        userInfoTimer = new Timer.Timer();
     }
 
     // onStart() is called on application start up
@@ -60,8 +60,8 @@ class SleepMonitorApp extends Application.AppBase {
     function getWakeAlarmManager() {
         return _wakeAlarmManager;
     }
-    function updateUserInfo() as Void {
-        _httpClient.getUserInfo();
+    function updateUserInfo(onReceive as Method) as Void {
+        _httpClient.getUserInfo(onReceive);
     }
 
     function sendSleepSummary() as Void {

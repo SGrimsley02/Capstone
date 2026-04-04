@@ -46,7 +46,7 @@ class SleepMonitorHttpClient {
             :context => "LOCAL_HTTP"
         };
 
-        makeRequest(url, null, options);
+        makeRequest(url, null, options, method(:onReceive));
     }
 
     function sendPublicHttpsRequest(url as String) as Void {
@@ -58,7 +58,7 @@ class SleepMonitorHttpClient {
             :timeout => 15,
         };
 
-        makeRequest(url, null, options);
+        makeRequest(url, null, options, method(:onReceive));
     }
 
     function sendSleepSummaryRequest() as Void {
@@ -95,10 +95,10 @@ class SleepMonitorHttpClient {
         }
 
         System.println("POST sleep summary: " + params.toString());
-        makeRequest(url, params, options);
+        makeRequest(url, params, options, method(:onReceive));
     }
 
-    function getUserInfo() {
+    function getUserInfo(onReceive as Method) as Void {
         var url = BASE_URL + "user";
         var username = getUserId();
         if (username == null) {
@@ -112,20 +112,21 @@ class SleepMonitorHttpClient {
             :context => "USER_INFO",
             :timeout => 15,
         };
-        makeRequest(url, params, options);
+        makeRequest(url, params, options, onReceive);
     }
 
     private function makeRequest(
         url as String,
         params as Dictionary or Null,
-        options as Dictionary
+        options as Dictionary,
+        onReceive as Method
     ) as Void {
         // shared wrapper around Communications.makeWebRequest() that adds error handling and UI status updates.
         try {
             options[:contentType] = Communications.REQUEST_CONTENT_TYPE_JSON;
             setStatus("Sending " + options[:context].toString());
             System.println("Sending request: " + options[:context] + " -> " + url);
-            Communications.makeWebRequest(url, params, options, method(:onReceive));
+            Communications.makeWebRequest(url, params, options, onReceive);
         } catch (ex) {
             // catch setup errors before request completes
             setStatus("Setup failed");
@@ -145,23 +146,6 @@ class SleepMonitorHttpClient {
             //response body may come back as Dictionary, String, Iterator, null
             if (data instanceof Dictionary) {
                 System.println(label + " success. JSON response: " + data.toString());
-                var preferences = data["preferences"] as Dictionary?;
-                if (preferences != null) {
-                    var wakeStart = preferences["wakeStart"] as String?;
-                    if (wakeStart != null && !wakeStart.equals(Storage.getValue(StorageKeys.WAKE_START_KEY))) {
-                        setWakeStart(wakeStart);
-                        System.println("Updated wake start time: " + wakeStart);
-                    }
-                    var wakeEnd = preferences["wakeEnd"] as String?;
-                    if (wakeEnd != null && !wakeEnd.equals(Storage.getValue(StorageKeys.WAKE_END_KEY))) {
-                        setWakeEnd(wakeEnd);
-                        System.println("Updated wake end time: " + wakeEnd);
-                    }
-                    if (wakeStart != null && wakeEnd != null) {
-                        getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
-                    }
-                }
-
             } else if (data != null) {
                 System.println(label + " success. Body: " + data.toString());
             } else {

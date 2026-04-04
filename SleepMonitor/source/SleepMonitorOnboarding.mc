@@ -19,7 +19,7 @@ import Defaults;
 class SleepMonitorOnboarding {
 
     var _sessionId as String = "";
-    var _timer = getApp().timer; // Use the main app timer for onboarding polling tasks
+    var _timer = getApp().userInfoTimer; // Use the main app timer for onboarding polling tasks
     var _pollCount as Number = 0;
     var _wakeStart as String? = null;
     var _wakeEnd as String? = null;
@@ -122,9 +122,9 @@ class SleepMonitorOnboarding {
     }
 
     function pollForPreferences() as Void {
-        getApp().updateUserInfo();
+        getApp().getWakeAlarmManager().pollPreferences();
         _timer.stop();
-        var callback = new Method(getApp(), :updateUserInfo);
+        var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
         _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
     }
 }
