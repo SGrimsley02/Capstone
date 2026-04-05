@@ -2,8 +2,8 @@ import Toybox.Graphics;
 import Colors;
 
 module ThemeRegistry {
-    // DESERT MIST (Your 9-color palette)
-    const DESERT_MIST = {
+    // LIGHT_MODE
+    const LIGHT_MODE = {
         "bg"           => Colors.ALICE_BLUE,
         "logo"         => Colors.POWDER_BLUSH,
         "time"         => Colors.STORMY_TEAL,
@@ -35,7 +35,14 @@ module ThemeRegistry {
         //VOLUME VIEW
         "volume" => Colors.STORMY_TEAL,
         "volume_bg" => Colors.GRAY_DARK,
-        "volume_percentage" => Colors.ROSEWOOD
+        "volume_percentage" => Colors.ROSEWOOD,
+
+        //RATING VIEW
+        "rating_title" => Colors.STORMY_TEAL,
+        "rating_hint" => Colors.DARK_CYAN,
+        "rating_filled_star" => Colors.GOLD,
+        "rating_unfilled_star" => Colors.STAR_GRAY,
+        "rating_song_name" => Colors.TANGERINE_DREAM
     };
 
     // DARK DEFAULT
@@ -62,7 +69,7 @@ module ThemeRegistry {
         "is_dismissed" => Colors.PURPLE_LITE,
 
         //PLAYBACK VIEW
-        "playback_playing" => Colors.TEAL_LITE,
+        "playback_controls" => Colors.TEAL_LITE,
         "playback_song_name" => Graphics.COLOR_WHITE,
         "playback_artist_name" => Colors.GRAY_MID,
         "playback_volume" => Colors.PURPLE_MID,
@@ -72,10 +79,17 @@ module ThemeRegistry {
         "volume" => Colors.TEAL_LITE,
         "volume_bg" => Colors.GRAY_DARK,
         "volume_percentage" => Graphics.COLOR_WHITE,
+
+        //RATING VIEW
+        "rating_title" => Graphics.COLOR_WHITE,
+        "rating_hint" => Colors.GRAY_MID,
+        "rating_filled_star" => Colors.GOLD,
+        "rating_unfilled_star" => Colors.STAR_GRAY,
+        "rating_song_name" => Graphics.COLOR_WHITE
     };
 
     const THEMES = {
-        "light" => DESERT_MIST,
+        "light" => LIGHT_MODE,
         "dark"   => DARK_DEFAULT
     };
 }
