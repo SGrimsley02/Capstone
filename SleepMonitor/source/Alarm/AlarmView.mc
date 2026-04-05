@@ -123,7 +123,8 @@ class AlarmView extends WatchUi.View {
         var showPill = (showDismissAction || _isDismissed);
 
         // ── Background ───────────────────────────────────────────
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        var bgColor = ThemeHelpers.getColor("bg");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
         // ── Branding + clock ─────────────────────────────────────
@@ -132,7 +133,7 @@ class AlarmView extends WatchUi.View {
 
         // ── Center status / snooze timer ─────────────────────────
         if (isSnoozing) {
-            dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("alarm_snooze_dismiss"), Graphics.COLOR_TRANSPARENT);
 
             var mins = _snoozeTimeRemaining / 60;
             var secs = _snoozeTimeRemaining % 60;
@@ -145,7 +146,7 @@ class AlarmView extends WatchUi.View {
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
             );
         } else {
-            var statusColor = _isDismissed ? Colors.PURPLE_LITE : Colors.TEAL_LITE;
+            var statusColor = _isDismissed ? ThemeHelpers.getColor("is_dismissed") : ThemeHelpers.getColor("alarm_snooze_dismiss");
             var font = (_statusText.length() > 10) ? Graphics.FONT_XTINY : Graphics.FONT_TINY;
 
             dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
@@ -160,19 +161,19 @@ class AlarmView extends WatchUi.View {
 
         // ── Media action icons ───────────────────────────────────
         // Podcast
-        var podColor = _podcastReady ? Colors.PURPLE_LITE : Colors.GRAY_MID;
+        var podColor = _podcastReady ? ThemeHelpers.getColor("alarm_podcast_music") : Colors.GRAY_MID;
         _podcastHitbox = [topMargin, rowTopBtn, hitboxSize];
         dc.drawBitmap2(topMargin, rowTopBtn, _podcastIcon, { :tintColor => podColor });
 
         // Music
         _musicHitbox = [botMargin, rowBotBtn, hitboxSize];
-        dc.drawBitmap2(botMargin, rowBotBtn, _musicIcon, { :tintColor => Colors.PURPLE_MID });
+        dc.drawBitmap2(botMargin, rowBotBtn, _musicIcon, { :tintColor => ThemeHelpers.getColor("alarm_podcast_music") });
 
         // Dismiss icon
         var dismissW = _dismissIcon.getWidth();
         var dismissX = W - botMargin - dismissW;
         _dismissIconHitbox = [dismissX, rowBotBtn, hitboxSize];
-        dc.drawBitmap2(dismissX, rowBotBtn, _dismissIcon, { :tintColor => Colors.TEAL_LITE });
+        dc.drawBitmap2(dismissX, rowBotBtn, _dismissIcon, { :tintColor => ThemeHelpers.getColor("alarm_snooze_dismiss") });
 
         // Snooze icon only while alarm is actively ringing
         if (!_isDismissed && !isSnoozing) {
@@ -180,36 +181,36 @@ class AlarmView extends WatchUi.View {
             var snoozeX = W - topMargin - snoozeW;
 
             _snoozeHitbox = [snoozeX, rowTopBtn, hitboxSize];
-            dc.drawBitmap2(snoozeX, rowTopBtn, _snoozeIcon, { :tintColor => Colors.TEAL_LITE });
+            dc.drawBitmap2(snoozeX, rowTopBtn, _snoozeIcon, { :tintColor => ThemeHelpers.getColor("alarm_snooze_dismiss") });
         }
 
         // ── Footer bubbles ───────────────────────────────────────
-        dc.setColor(Colors.PURPLE_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("alarm_bubble1"), Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(W * 0.25, bubbleY, bubbleRadius);
 
-        dc.setColor(Colors.TEAL_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("alarm_bubble2"), Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(W * 0.75, bubbleY, bubbleRadius);
 
         // ── Dynamic footer pill ──────────────────────────────────
         var outlineColor = Graphics.COLOR_TRANSPARENT;
         var footerText = "";
-        var textColor = Graphics.COLOR_WHITE;
+        var textColor = ThemeHelpers.getColor("alarm_pill_text");
 
         if (showPill) {
-            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("alarm_pill_bg"), Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle(cx - (pillW / 2), pillY - (pillH / 2), pillW, pillH, 17);
 
             if (showDismissAction) {
-                outlineColor = Colors.PURPLE_LITE;
+                outlineColor = ThemeHelpers.getColor("alarm_pill_outline");
                 footerText = WatchUi.loadResource(Rez.Strings.DismissAlarm);
-                textColor = Graphics.COLOR_WHITE;
+                textColor = ThemeHelpers.getColor("alarm_pill_text");
                 _dismissPillHitbox = [cx - (pillW / 2), pillY - (pillH / 2), pillW, pillH];
             } else if (_isDismissed) {
                 if (_podcastReady) {
-                    outlineColor = Colors.PURPLE_LITE;
+                    outlineColor = ThemeHelpers.getColor("alarm_pill_outline");
                     footerText = WatchUi.loadResource(Rez.Strings.PodcastReady);
                 } else {
-                    outlineColor = Colors.GRAY_MID;
+                    outlineColor = ThemeHelpers.getColor("alarm_pill_outline");
                     footerText = WatchUi.loadResource(Rez.Strings.PodcastLoading);
                 }
 

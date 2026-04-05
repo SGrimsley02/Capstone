@@ -52,17 +52,18 @@ class VolumeView extends WatchUi.View {
         var cx = W / 2;
 
         // Background
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        var bgColor = ThemeHelpers.getColor("bg");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
         // "Volume" title
-        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("volume"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.10).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.Volume),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Up arrow (tap to increase)
         var arrowUpY = (H * 0.22).toNumber();
-        _drawIconCentered(dc, _upArrow, cx, arrowUpY, Colors.TEAL_LITE);
+        _drawIconCentered(dc, _upArrow, cx, arrowUpY, ThemeHelpers.getColor("volume"));
         _upBounds = _iconBounds(_upArrow, cx, arrowUpY);
 
         // ── Vertical volume bar ─────────────────────────────────────
@@ -73,27 +74,27 @@ class VolumeView extends WatchUi.View {
         var barH = barBottom - barTop;
 
         // Background track (dark gray)
-        dc.setColor(Colors.GRAY_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("volume_bg"), Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(barX, barTop, barW, barH, 6);
 
         // Filled portion grows from bottom upward
         var fillH = (barH * _volume / 100).toNumber();
         if (fillH > 6) {
-            dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("volume"), Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle(barX, barBottom - fillH, barW, fillH, 6);
         } else if (fillH > 0) {
-            dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("volume"), Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(barX, barBottom - fillH, barW, fillH);
         }
 
         // Volume percentage
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("volume_percentage"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.77).toNumber(), Graphics.FONT_XTINY, _volume.format("%d") + "%",
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Down arrow (tap to decrease)
         var arrowDnY = (H * 0.88).toNumber();
-        _drawIconCentered(dc, _downArrow, cx, arrowDnY, Colors.TEAL_LITE);
+        _drawIconCentered(dc, _downArrow, cx, arrowDnY, ThemeHelpers.getColor("volume"));
         _downBounds = _iconBounds(_downArrow, cx, arrowDnY);
     }
 

@@ -37,7 +37,13 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onMenu() as Boolean {
-        WatchUi.pushView(new Rez.Menus.MainMenu(), new SleepMonitorMenuDelegate(), WatchUi.SLIDE_UP);
+        WatchUi.pushView(new Rez.Menus.UserMenu(), new SleepMonitorMenuDelegate(), WatchUi.SLIDE_UP);
+        return true;
+    }
+
+    (:debug)
+    function onDebugMenu() as Boolean {
+        WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
         return true;
     }
 
