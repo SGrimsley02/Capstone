@@ -32,4 +32,5 @@ module Colors {
     const STORMY_TEAL = 0x006D77; // deep teal (time text, bottom icons)
     const ALICE_BLUE = 0xEDF6F9; // off-white (light theme background)
     const DARK_CYAN = 0x42999B; // medium teal (light theme secondary text)
+    const VINTAGE_BERRY = 0x80475E; //just for the alarm view podcast + music icons in light mode
 }

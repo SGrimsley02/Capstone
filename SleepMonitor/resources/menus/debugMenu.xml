@@ -12,6 +12,6 @@ Last Modified: February 14, 2026
     <menu-item id="httpLocal" label="@Strings.menu_test_local_http" />
     <menu-item id="httpPublic" label="@Strings.menu_test_public_https" />
     <menu-item id="httpPost" label="@Strings.menu_test_sleep_summary" />
-    <menu-item id="scheduleAlarm" label="@Strings.menu_test_alarm"/>
+
     <menu-item id="testReview" label="@Strings.menu_test_review"/>
 </menu>
