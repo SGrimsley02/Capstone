@@ -107,24 +107,25 @@ class PlaybackView extends WatchUi.View {
         var cx = W / 2;
 
         // Background
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        var bgColor = ThemeHelpers.getColor("bg");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
         // "Now Playing" title
-        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.NowPlaying),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Song name
         if (_songName != null) {
-            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, (H * 0.27).toNumber(), Graphics.FONT_XTINY, _songName.toString(),
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        }
+        } 
 
         // Artist name
         if (_artistName != null) {
-            dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, (H * 0.37).toNumber(), Graphics.FONT_XTINY, _artistName.toString(),
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
@@ -133,9 +134,9 @@ class PlaybackView extends WatchUi.View {
         var ctrlY = (H * 0.57).toNumber();
         var spacing = (W * 0.28).toNumber();
 
-        _drawIconCentered(dc, _rewindIcon, cx - spacing, ctrlY, Colors.TEAL_LITE);
-        _drawIconCentered(dc, _playIcon, cx, ctrlY, Colors.TEAL_LITE);
-        _drawIconCentered(dc, _skipIcon, cx + spacing, ctrlY, Colors.TEAL_LITE);
+        _drawIconCentered(dc, _rewindIcon, cx - spacing, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        _drawIconCentered(dc, _playIcon, cx, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        _drawIconCentered(dc, _skipIcon, cx + spacing, ctrlY, ThemeHelpers.getColor("playback_controls"));
 
         _rewindBounds = _iconBounds(_rewindIcon, cx - spacing, ctrlY);
         _playBounds = _iconBounds(_playIcon, cx, ctrlY);
@@ -145,8 +146,8 @@ class PlaybackView extends WatchUi.View {
         var secY = (H * 0.80).toNumber();
         var secSpacing = (W * 0.22).toNumber();
 
-        _drawIconCentered(dc, _volumeIcon, cx - secSpacing, secY, Colors.PURPLE_MID);
-        _drawIconCentered(dc, _starIcon, cx + secSpacing, secY, Colors.GOLD);
+        _drawIconCentered(dc, _volumeIcon, cx - secSpacing, secY, ThemeHelpers.getColor("playback_volume"));
+        _drawIconCentered(dc, _starIcon, cx + secSpacing, secY, ThemeHelpers.getColor("playback_star"));
 
         _volumeBounds = _iconBounds(_volumeIcon, cx - secSpacing, secY);
         _starBounds = _iconBounds(_starIcon, cx + secSpacing, secY);

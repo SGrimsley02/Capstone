@@ -23,7 +23,14 @@ module ThemeRegistry {
         "alarm_pill_text" => Colors.STORMY_TEAL,
         "alarm_bubble1" => Colors.STORMY_TEAL,
         "alarm_bubble2" => Colors.TANGERINE_DREAM,
-        "is_dismissed" => Colors.DARK_CYAN
+        "is_dismissed" => Colors.DARK_CYAN,
+
+        //PLAYBACK VIEW
+        "playback_controls" => Colors.ROSEWOOD,
+        "playback_song_name" => Colors.STORMY_TEAL,
+        "playback_artist_name" => Colors.DARK_CYAN,
+        "playback_volume" => Colors.TANGERINE_DREAM,
+        "playback_star" => Colors.GOLD
     };
 
     // DARK DEFAULT
@@ -47,7 +54,14 @@ module ThemeRegistry {
         "alarm_pill_text" => Graphics.COLOR_WHITE,
         "alarm_bubble1" => Colors.PURPLE_DARK,
         "alarm_bubble2" => Colors.TEAL_DARK,
-        "is_dismissed" => Colors.PURPLE_LITE
+        "is_dismissed" => Colors.PURPLE_LITE,
+
+        //PLAYBACK VIEW
+        "playback_playing" => Colors.TEAL_LITE,
+        "playback_song_name" => Graphics.COLOR_WHITE,
+        "playback_artist_name" => Colors.GRAY_MID,
+        "playback_volume" => Colors.PURPLE_MID,
+        "playback_star" => Colors.GOLD
     };
 
     const THEMES = {
