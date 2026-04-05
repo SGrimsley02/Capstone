@@ -127,4 +127,29 @@ class SleepMonitorOnboarding {
         var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
         _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
     }
+    
+    function runRelink(targetUrl as String) as Void {
+        System.println("Relink flow started.");
+
+        _pollCount = 0;
+        _wakeStart = null;
+        _wakeEnd = null;
+
+        Storage.setValue(StorageKeys.WAKE_START_KEY, null);
+        Storage.setValue(StorageKeys.WAKE_END_KEY, null);
+
+        _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
+
+        try {
+            System.println("Attempting openWebPage for relink...");
+            Communications.openWebPage(targetUrl, {"sessionId" => _sessionId}, null);
+            System.println("Relink openWebPage call completed.");
+        } catch (ex) {
+            System.println("Relink openWebPage FAILED: " + ex.toString());
+            return;
+        }
+
+        _timer.stop();
+        _timer.start(method(:pollForUsername), 20000, true);
+    }
 }

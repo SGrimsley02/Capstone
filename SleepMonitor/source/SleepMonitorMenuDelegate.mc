@@ -16,7 +16,6 @@ import Toybox.Communications;
 class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function initialize() {
-        // Initialize the menu delegate and construct the HTTP client for handling requests.
         MenuInputDelegate.initialize();
     }
 
@@ -25,15 +24,11 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
 
         if (item == :relinkWebsite) {
             System.println("Starting relink flow.");
-            // getApp().getOnboardingManager().runRelink("http://localhost:5000");
+            getApp().startRelinkFlow();
 
         } else if (item == :uiCustomization) {
-            System.println("UI customization selected.");
+            System.println("Opening settings menu.");
             WatchUi.pushView(new Rez.Menus.UiCustomizationMenu(), new ThemeMenuDelegate(), WatchUi.SLIDE_UP);
-        } else if (item == :scheduleAlarm) {
-            System.println("Scheduling alarm for 5 seconds from now.");
-            getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
-        } 
+        }
     }
-
 }

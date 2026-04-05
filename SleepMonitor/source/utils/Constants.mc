@@ -17,6 +17,6 @@ module StorageKeys {
 module Defaults {
     const DEFAULT_WAKE_START = "07:00";
     const DEFAULT_WAKE_END = "09:00";
-    const SHORT_PREF_INT = 5 * 60 * 1000; // 5 minutes in milliseconds
-    const LONG_PREF_INT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+    const SHORT_PREF_INT = 60 * 1000; // 5 minutes in milliseconds
+    const LONG_PREF_INT =  60 * 1000; // 2 hours in milliseconds
 }
