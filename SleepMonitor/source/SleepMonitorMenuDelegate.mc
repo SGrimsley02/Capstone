@@ -30,7 +30,10 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         } else if (item == :uiCustomization) {
             System.println("UI customization selected.");
             WatchUi.pushView(new Rez.Menus.UiCustomizationMenu(), new ThemeMenuDelegate(), WatchUi.SLIDE_UP);
-        }
+        } else if (item == :scheduleAlarm) {
+            System.println("Scheduling alarm for 5 seconds from now.");
+            getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
+        } 
     }
 
 }
