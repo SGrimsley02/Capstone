@@ -9,9 +9,9 @@ Last Modified: February 14, 2026
 -->
 
 <menu id="DebugMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
-    <menu-item id="httpLocal" label="@Strings.menu_test_local_http">(:debug)</menu-item>
-    <menu-item id="httpPublic" label="@Strings.menu_test_public_https">(:debug)</menu-item>
-    <menu-item id="httpPost" label="@Strings.menu_test_sleep_summary">(:debug)</menu-item>
-    <menu-item id="scheduleAlarm" label="@Strings.menu_test_alarm">(:debug)</menu-item>
-    <menu-item id="testReview" label="@Strings.menu_test_review">(:debug)</menu-item>
+    <menu-item id="httpLocal" label="@Strings.menu_test_local_http" />
+    <menu-item id="httpPublic" label="@Strings.menu_test_public_https" />
+    <menu-item id="httpPost" label="@Strings.menu_test_sleep_summary" />
+    <menu-item id="scheduleAlarm" label="@Strings.menu_test_alarm" />
+    <menu-item id="testReview" label="@Strings.menu_test_review" />
 </menu>

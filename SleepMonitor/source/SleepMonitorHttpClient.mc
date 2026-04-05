@@ -36,6 +36,7 @@ class SleepMonitorHttpClient {
         // Purpose: Construct the HTTP client (no state needed currently).
     }
 
+    (:debug)
     function sendLocalHttpRequest() as Void {
         // GET request to a local server (mainly useful in simulator/dev).
         // TODO: remove this path and its menu item.
@@ -49,6 +50,7 @@ class SleepMonitorHttpClient {
         makeRequest(url, null, options, method(:onReceive));
     }
 
+    (:debug)
     function sendPublicHttpsRequest(url as String) as Void {
         // GET request to the ngrok public HTTPS URL (proves HTTPS works).
         var options = {

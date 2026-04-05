@@ -8,7 +8,7 @@ Description: Input delegate for the SleepMonitor Connect IQ watch app.
              - Back hold  (lower-right) → exits the app
 Authors: Kiara Rose
 Created: February 7, 2026
-Last Modified: March 13, 2026
+Last Modified: April 4, 2026
 */
 
 import Toybox.Communications;
@@ -25,31 +25,25 @@ const HOLD_MS = 700;
 
 class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
 
-    private var _escHoldTimer  as Timer.Timer?;
-    private var _escHoldFired  as Boolean = false;
-    private var _escPressedHere as Boolean = false; // true only when THIS delegate handled the key-down
+    private var _escHoldTimer   as Timer.Timer?;
+    private var _escHoldFired   as Boolean = false;
+    private var _escPressedHere as Boolean = false;
 
     function initialize() {
         BehaviorDelegate.initialize();
-        _escHoldTimer   = null;
-        _escHoldFired   = false;
-        _escPressedHere = false;
+        _escHoldTimer    = null;
+        _escHoldFired    = false;
+        _escPressedHere  = false;
     }
 
-    function onMenu() as Boolean {
+    function openUserMenu() as Void {
         WatchUi.pushView(new Rez.Menus.UserMenu(), new SleepMonitorMenuDelegate(), WatchUi.SLIDE_UP);
-        return true;
     }
 
     (:debug)
-    function onDebugMenu() as Boolean {
+    function openDebugMenu() as Void {
         WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
-        return true;
     }
-
-
-
-
 
     // Touch tap → check if the tap landed inside a button circle.
     // Button geometry mirrors SleepMonitorView.onUpdate exactly.
@@ -68,7 +62,6 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         var rightX = (cx + W * 0.36).toNumber();
         var btnR   = (W * 0.19).toNumber();
 
-        // Hit-test: point inside circle = dx²+dy² <= r²
         var dxL = tapX - leftX;
         var dyL = tapY - btnY;
         if (dxL * dxL + dyL * dyL <= btnR * btnR) {
@@ -97,12 +90,24 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onBack() as Boolean {
-        return true; // suppress, handled elsewhere (short vs. long press)
+        return true;
     }
 
-    // ESC pressed → start hold timer; DOWN pressed → podcast immediately.
+    function onMenu() as Boolean {
+        System.println("SleepMonitorDelegate: opening user menu");
+        openUserMenu();
+        return true;
+    }
+
+
+    (:debug)
+    function openDeveloperToolsForTesting() as Void {
+        WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
+    }
+
     function onKeyPressed(evt as WatchUi.KeyEvent) as Boolean {
         var key = evt.getKey();
+
         if (key == WatchUi.KEY_ESC) {
             _escPressedHere = true;
             _escHoldFired = false;
@@ -110,6 +115,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
             _escHoldTimer = new Timer.Timer();
             _escHoldTimer.start(method(:_onEscHeld), HOLD_MS, false);
             return true;
+
         } else if (key == WatchUi.KEY_DOWN) {
             System.println("SleepMonitorDelegate: opening podcast deeplink");
             try {
@@ -122,17 +128,14 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
             }
             return true;
         }
+
         return false;
     }
 
-    // ESC released → if hold didn't fire yet, treat as short-press (music).
-    // Guard with _escPressedHere so a release that arrives after returning from
-    // a sub-view (e.g. back from the menu) doesn't spuriously trigger the deeplink.
     function onKeyReleased(evt as WatchUi.KeyEvent) as Boolean {
-
-        if (evt.getKey() == WatchUi.KEY_ESC) {
+        var key = evt.getKey();
+        if (key == WatchUi.KEY_ESC) {
             if (!_escPressedHere) {
-                // The press was handled by another delegate; ignore the orphaned release.
                 return false;
             }
             _escPressedHere = false;
@@ -148,7 +151,6 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         return false;
     }
 
-    // Fired by the hold timer — exit the app.
     function _onEscHeld() as Void {
         _escHoldFired = true;
         _cancelEscTimer();
