@@ -30,7 +30,12 @@ module ThemeRegistry {
         "playback_song_name" => Colors.STORMY_TEAL,
         "playback_artist_name" => Colors.DARK_CYAN,
         "playback_volume" => Colors.TANGERINE_DREAM,
-        "playback_star" => Colors.GOLD
+        "playback_star" => Colors.GOLD,
+
+        //VOLUME VIEW
+        "volume" => Colors.STORMY_TEAL,
+        "volume_bg" => Colors.GRAY_DARK,
+        "volume_percentage" => Colors.ROSEWOOD
     };
 
     // DARK DEFAULT
@@ -61,7 +66,12 @@ module ThemeRegistry {
         "playback_song_name" => Graphics.COLOR_WHITE,
         "playback_artist_name" => Colors.GRAY_MID,
         "playback_volume" => Colors.PURPLE_MID,
-        "playback_star" => Colors.GOLD
+        "playback_star" => Colors.GOLD,
+
+        //VOLUME VIEW
+        "volume" => Colors.TEAL_LITE,
+        "volume_bg" => Colors.GRAY_DARK,
+        "volume_percentage" => Graphics.COLOR_WHITE,
     };
 
     const THEMES = {
