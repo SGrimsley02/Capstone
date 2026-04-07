@@ -37,7 +37,9 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function openUserMenu() as Void {
-        WatchUi.pushView(new Rez.Menus.UserMenu(), new SleepMonitorMenuDelegate(), WatchUi.SLIDE_UP);
+        var view = new MenuUserView();
+        var delegate = new MenuUserDelegate(view);
+        WatchUi.pushView(view, delegate, WatchUi.SLIDE_UP);
     }
 
     (:debug)
@@ -99,7 +101,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-
+    //call this function if you need the dev menu when testing (?) temporary solution 
     (:debug)
     function openDeveloperToolsForTesting() as Void {
         WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);

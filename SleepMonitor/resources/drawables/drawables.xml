@@ -22,5 +22,8 @@ Last Modified: February 7, 2026
     <bitmap id="playIcon" filename="playIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="volumeIcon" filename="volumeIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="upArrow" filename="upArrow.png" dithering="none" packingFormat="png" />
+    <bitmap id="linkIcon" filename="linkIcon.svg" dithering="none" packingFormat="png" />
+    <bitmap id="settingsIcon" filename="settingsIcon.svg" dithering="none" packingFormat="png" />
     <bitmap id="downArrow" filename="downArrow.png" dithering="none" packingFormat="png" />
+    
 </drawables>
