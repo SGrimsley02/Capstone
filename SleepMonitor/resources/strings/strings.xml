@@ -22,7 +22,7 @@ Last Modified: February 14, 2026
 
     <!-- User Menu Strings -->
     <string id="menu_relink_website">Relink Website</string>
-    <string id="menu_ui_customization">UI Customization</string>
+    <string id="menu_change_theme">Change Theme</string>
     <string id="menu_developer_tools">Developer Tools</string>
     <string id="menu_theme_dark">Dark Theme</string>
     <string id="menu_theme_light">Light Theme</string>

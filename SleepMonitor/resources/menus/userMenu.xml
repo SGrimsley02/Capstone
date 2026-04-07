@@ -7,5 +7,5 @@ Last Modified: April 3, 2026
 -->
 <menu id="UserMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <menu-item id="relinkWebsite" label="@Strings.menu_relink_website" />
-    <menu-item id="uiCustomization" label="@Strings.menu_ui_customization" />
+    <menu-item id="changeTheme" label="@Strings.menu_change_theme" />
 </menu>

@@ -26,9 +26,9 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
             System.println("Starting relink flow.");
             getApp().startRelinkFlow();
 
-        } else if (item == :uiCustomization) {
-            System.println("Opening settings menu.");
-            WatchUi.pushView(new Rez.Menus.UiCustomizationMenu(), new ThemeMenuDelegate(), WatchUi.SLIDE_UP);
-        } 
+        } else if (item == :changeTheme) {
+            var themeView = new MenuChangeThemeView();
+            WatchUi.pushView(themeView, new MenuChangeThemeBehaviorDelegate(themeView), WatchUi.SLIDE_UP);
+        }
     }
 }

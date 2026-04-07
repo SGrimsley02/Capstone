@@ -1,20 +1,22 @@
 /*
-Name: source/Menu/MenuUserDelegate.mc
-Description: Input delegate for the custom user menu.
+Name: source/Menu/MenuChangeThemeDelegate.mc
+Description: Input delegate for the custom theme menu.
 Authors: Audrey Pan
-Created: April 5, 2026
-Last Modified: April 5, 2026
+Created: April 7, 2026
+Last Modified: April 7, 2026
 */
 
+
+import Toybox.Application.Storage;
 import Toybox.System;
 import Toybox.WatchUi;
 
-class MenuUserDelegate extends WatchUi.BehaviorDelegate {
+class MenuChangeThemeBehaviorDelegate extends WatchUi.BehaviorDelegate {
 
     private var _view;
 
     function initialize(view) {
-        WatchUi.BehaviorDelegate.initialize();
+        BehaviorDelegate.initialize();
         _view = view;
     }
 
@@ -31,18 +33,16 @@ class MenuUserDelegate extends WatchUi.BehaviorDelegate {
             var selected = _view.getSelectedIndex();
 
             if (selected == 0) {
-                System.println("Starting relink flow.");
-                getApp().startRelinkFlow();
+                System.println("Saving Light Theme");
+                Storage.setValue(StorageKeys.UI_THEME_KEY, "light");
+                WatchUi.popView(WatchUi.SLIDE_DOWN);
                 return true;
             } else if (selected == 1) {
-                System.println("Opening custom settings menu.");
-                // Create the View instance
-                var themeView = new MenuChangeThemeView();
-                // Push the View and your new BehaviorDelegate (not the MenuInputDelegate)
-                WatchUi.pushView(themeView, new MenuChangeThemeBehaviorDelegate(themeView), WatchUi.SLIDE_UP);
+                System.println("Saving Dark Theme");
+                Storage.setValue(StorageKeys.UI_THEME_KEY, "dark");
+                WatchUi.popView(WatchUi.SLIDE_DOWN);
                 return true;
             } else if (selected == 2) {
-                System.println("Closing user menu.");
                 WatchUi.popView(WatchUi.SLIDE_DOWN);
                 return true;
             }
@@ -50,7 +50,6 @@ class MenuUserDelegate extends WatchUi.BehaviorDelegate {
             WatchUi.popView(WatchUi.SLIDE_DOWN);
             return true;
         }
-
         return false;
     }
 }

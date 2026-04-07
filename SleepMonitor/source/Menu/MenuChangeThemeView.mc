@@ -1,5 +1,5 @@
 /*
-Name: source/Menu/MenuUserView.mc
+Name: source/Menu/MenuChangeThemeView.mc
 Description: Custom user menu view for the SleepMonitor Connect IQ watch app.
              Draws the user menu header, menu rows, and wave footer action.
 Authors: Audrey Pan
@@ -15,22 +15,19 @@ import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 import Toybox.Math;
 
-class MenuUserView extends WatchUi.View {
+class MenuChangeThemeView extends WatchUi.View {
 
-    private var _linkIcon;
-    private var _gearIcon;
+    private var _sunIcon;
+    private var _moonIcon;
     private var _remixLogo;
 
     private var _selectedIndex = 0;
 
-    const COLOR_BROWN_ICON = 0x9B8A78;
-
     function initialize() {
         View.initialize();
 
-        _linkIcon = loadResource(Rez.Drawables.linkIcon);
-        _gearIcon = loadResource(Rez.Drawables.settingsIcon);
-        _remixLogo = loadResource(Rez.Drawables.remixLogo);
+        _sunIcon = loadResource(Rez.Drawables.sunIcon);
+        _moonIcon = loadResource(Rez.Drawables.moonIcon);
     }
 
     function onLayout(dc as Dc) as Void {
@@ -64,15 +61,21 @@ class MenuUserView extends WatchUi.View {
 
 
     function onUpdate(dc as Dc) as Void {
+
+        var sunColor  = 0xFFAA00; // Bright Orange/Yellow
+        var moonColor = 0x5555FF; // Soft Indigo/Blue
+        var iconGray  = 0x9B8A78; // Default for other menus
+
+
         // 1. Draw the scaffolding (Background, Title, Date/Time, Header Line)
-        MenuHelpers.drawHeader(dc, "USER MENU");
+        MenuHelpers.drawHeader(dc, "THEME");
 
         // 2. Draw the highlight behind the selected row
         MenuHelpers.drawSelectionHighlight(dc, _selectedIndex);
 
         // 3. Draw the rows
-        MenuHelpers.drawMenuRow(dc, 0, "Relink Website", _linkIcon, COLOR_BROWN_ICON);
-        MenuHelpers.drawMenuRow(dc, 1, "Change Theme", _gearIcon, COLOR_BROWN_ICON);
+        MenuHelpers.drawMenuRow(dc, 0, "Light Mode", _sunIcon, sunColor);
+        MenuHelpers.drawMenuRow(dc, 1, "Dark Mode", _moonIcon, moonColor);
 
         // 4. Draw the waves and the Exit button
         MenuHelpers.drawFooter(dc, _selectedIndex);

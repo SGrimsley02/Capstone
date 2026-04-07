@@ -24,6 +24,8 @@ Last Modified: February 7, 2026
     <bitmap id="upArrow" filename="upArrow.png" dithering="none" packingFormat="png" />
     <bitmap id="linkIcon" filename="linkIcon.svg" dithering="none" packingFormat="png" />
     <bitmap id="settingsIcon" filename="settingsIcon.svg" dithering="none" packingFormat="png" />
+    <bitmap id="sunIcon" filename="sunIcon.svg" dithering="none" packingFormat="png" />
+    <bitmap id="moonIcon" filename="moonIcon.svg" dithering="none" packingFormat="png" />
     <bitmap id="downArrow" filename="downArrow.png" dithering="none" packingFormat="png" />
     
 </drawables>
