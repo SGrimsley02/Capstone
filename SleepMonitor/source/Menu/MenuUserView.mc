@@ -23,14 +23,9 @@ class MenuUserView extends WatchUi.View {
 
     private var _selectedIndex = 0;
 
-    const COLOR_BROWN_ICON = 0x9B8A78;
 
     function initialize() {
         View.initialize();
-
-        _linkIcon = loadResource(Rez.Drawables.linkIcon);
-        _gearIcon = loadResource(Rez.Drawables.settingsIcon);
-        _remixLogo = loadResource(Rez.Drawables.remixLogo);
     }
 
     function onLayout(dc as Dc) as Void {
@@ -64,6 +59,11 @@ class MenuUserView extends WatchUi.View {
 
 
     function onUpdate(dc as Dc) as Void {
+        _linkIcon = loadResource(Rez.Drawables.linkIcon);
+        _gearIcon = loadResource(Rez.Drawables.settingsIcon);
+        _remixLogo = loadResource(Rez.Drawables.remixLogo);
+        var icon = ThemeHelpers.getColor("menu_user_icons"); // Default for other menus
+
         // 1. Draw the scaffolding (Background, Title, Date/Time, Header Line)
         MenuHelpers.drawHeader(dc, "USER MENU");
 
@@ -71,8 +71,8 @@ class MenuUserView extends WatchUi.View {
         MenuHelpers.drawSelectionHighlight(dc, _selectedIndex);
 
         // 3. Draw the rows
-        MenuHelpers.drawMenuRow(dc, 0, "Relink Website", _linkIcon, COLOR_BROWN_ICON);
-        MenuHelpers.drawMenuRow(dc, 1, "Change Theme", _gearIcon, COLOR_BROWN_ICON);
+        MenuHelpers.drawMenuRow(dc, 0, "Relink Website", _linkIcon, icon);
+        MenuHelpers.drawMenuRow(dc, 1, "Change Theme", _gearIcon, icon);
 
         // 4. Draw the waves and the Exit button
         MenuHelpers.drawFooter(dc, _selectedIndex);
