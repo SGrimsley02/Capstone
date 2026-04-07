@@ -19,15 +19,12 @@ class MenuChangeThemeView extends WatchUi.View {
 
     private var _sunIcon;
     private var _moonIcon;
-    private var _remixLogo;
 
     private var _selectedIndex = 0;
 
     function initialize() {
         View.initialize();
 
-        _sunIcon = loadResource(Rez.Drawables.sunIcon);
-        _moonIcon = loadResource(Rez.Drawables.moonIcon);
     }
 
     function onLayout(dc as Dc) as Void {
@@ -61,10 +58,11 @@ class MenuChangeThemeView extends WatchUi.View {
 
 
     function onUpdate(dc as Dc) as Void {
+        _sunIcon = loadResource(Rez.Drawables.sunIcon);
+        _moonIcon = loadResource(Rez.Drawables.moonIcon);
 
-        var sunColor  = 0xFFAA00; // Bright Orange/Yellow
-        var moonColor = 0x5555FF; // Soft Indigo/Blue
-        var iconGray  = 0x9B8A78; // Default for other menus
+        var sunColor  = ThemeHelpers.getColor("menu_theme_sun"); // Bright Orange/Yellow
+        var moonColor = ThemeHelpers.getColor("menu_theme_moon"); // Soft Indigo/Blue
 
 
         // 1. Draw the scaffolding (Background, Title, Date/Time, Header Line)

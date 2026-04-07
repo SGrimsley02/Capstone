@@ -32,4 +32,8 @@ module Colors {
     const STORMY_TEAL = 0x006D77; // deep teal (time text, bottom icons)
     const ALICE_BLUE = 0xEDF6F9; // off-white (light theme background)
     const DARK_CYAN = 0x42999B; // medium teal (light theme secondary text)
+    const DUSTY_TAUPE = 0x9B8A78; // muted brown (light theme user icons)
+    const ORANGE = 0xFFAA00; // Bright Orange
+    const INDIGO = 0x5555FF; // Soft Indigo
+    const CORAL  = 0xFF6A5C;
 }

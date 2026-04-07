@@ -31,18 +31,25 @@ module MenuHelpers {
         var W = dc.getWidth();
         var H = dc.getHeight();
         var cx = W / 2;
+        var bgColor = ThemeHelpers.getColor("bg");
 
-        dc.setColor(COLOR_WHITE, COLOR_WHITE);
+        // Sets the full-screen background color
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
-        dc.setColor(COLOR_TEAL_DARK, Graphics.COLOR_TRANSPARENT);
+        // TITLE text (e.g., "USER MENU" or "CHANGE THEME")
+        dc.setColor(ThemeHelpers.getColor("menu_title"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_SMALL, title, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
+        var dateTimeColor = ThemeHelpers.getColor("menu_date_time");
+        dc.setColor(dateTimeColor, Graphics.COLOR_TRANSPARENT);
+        // TIME (Left side) and DATE (Right side) text
         dc.drawText((W * 0.28).toNumber(), (H * 0.22).toNumber(), Graphics.FONT_XTINY, _getTimeString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.drawText((W * 0.72).toNumber(), (H * 0.22).toNumber(), Graphics.FONT_XTINY, _getDateString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
+        // TOP HORIZONTAL DIVIDER (The line under the date/time)
         dc.setPenWidth(3);
-        dc.setColor(COLOR_GREY_LIGHT, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("menu_line"), Graphics.COLOR_TRANSPARENT);
         dc.drawLine((W * 0.05).toNumber(), (H * 0.26).toNumber(), (W * 0.95).toNumber(), (H * 0.26).toNumber());
     }
 
@@ -55,7 +62,8 @@ module MenuHelpers {
         
         if (index < 2) {
             var highlightY = (index == 0) ? row1Top : (row1Top + rowHeight).toNumber();
-            dc.setColor(COLOR_BLUE_MIST, Graphics.COLOR_TRANSPARENT);
+            // THE BOX BEHIND THE SELECTED TEXT (The light blue rounded rectangle)
+            dc.setColor(ThemeHelpers.getColor("menu_selection"), Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle((W * 0.06).toNumber(), highlightY + 3, (W * 0.88).toNumber(), rowHeight - 6, 10);
         }
     }
@@ -71,15 +79,18 @@ module MenuHelpers {
         var iconX = (W * 0.10).toNumber();  
         var textX = (W * 0.26).toNumber();
 
-        dc.setColor(COLOR_TEAL_DARK, Graphics.COLOR_TRANSPARENT);
+        // THE ROW TEXT (e.g., "Relink Website" or "Dark Mode")
+        dc.setColor(ThemeHelpers.getColor("menu_text"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(textX, (currentY + rowHeight / 2).toNumber(), Graphics.FONT_SMALL, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         
+        // THE ICON COLOR (Set by whatever you pass in from the View)
         if (icon != null) { 
             dc.drawBitmap2(iconX, (currentY + rowHeight * 0.23).toNumber(), icon, { :tintColor => iconColor }); 
         }
 
+        // ROW DIVIDER (The thin line between menu items)
         dc.setPenWidth(2);
-        dc.setColor(COLOR_GREY_LIGHT, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("menu_line"), Graphics.COLOR_TRANSPARENT);
         dc.drawLine((W * 0.08).toNumber(), (currentY + rowHeight).toNumber(), (W * 0.92).toNumber(), (currentY + rowHeight).toNumber());
     }
 
@@ -91,15 +102,19 @@ module MenuHelpers {
         var cy = H / 2;
         var baseY = (H * 0.72).toNumber();
 
-        _drawWave(dc, W, baseY,      15.0, 3.0, COLOR_TEAL_LIGHT, 8); 
-        _drawWave(dc, W, baseY + 9,  15.0, 3.0, COLOR_CORAL, 8); 
+        // THE TWO SQUIGGLY WAVES AT THE BOTTOM
+        _drawWave(dc, W, baseY,      15.0, 3.0, ThemeHelpers.getColor("menu_wave1"), 8); // Top wave (Teal)
+        _drawWave(dc, W, baseY + 9,  15.0, 3.0, ThemeHelpers.getColor("menu_wave2"), 8);      // Bottom wave (Coral)
 
-        dc.setColor(COLOR_CORAL, Graphics.COLOR_TRANSPARENT);
+        // THE THICK RED/CORAL ARC (The partial circle border at the bottom)
+        dc.setColor(ThemeHelpers.getColor("menu_wave2"), Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(12);
         dc.drawArc(cx, cy, (W / 2) - 6, Graphics.ARC_COUNTER_CLOCKWISE, 213, 335);
 
+        // "EXIT MENU" TEXT
         var isExitSelected = (selectedIndex == 2);
-        dc.setColor(isExitSelected ? COLOR_CORAL : COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        // If selected: Coral. If not: Black.
+        dc.setColor(isExitSelected ? ThemeHelpers.getColor("menu_wave2") : ThemeHelpers.getColor("menu_wave1"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.86).toNumber(), isExitSelected ? Graphics.FONT_SMALL : Graphics.FONT_XTINY, "EXIT MENU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 

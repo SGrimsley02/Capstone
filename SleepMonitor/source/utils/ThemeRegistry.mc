@@ -42,7 +42,21 @@ module ThemeRegistry {
         "rating_hint" => Colors.DARK_CYAN,
         "rating_filled_star" => Colors.GOLD,
         "rating_unfilled_star" => Colors.STAR_GRAY,
-        "rating_song_name" => Colors.TANGERINE_DREAM
+        "rating_song_name" => Colors.TANGERINE_DREAM,
+
+        //MENU VIEW
+        "menu_title"    => Colors.STORMY_TEAL,
+        "menu_date_time" => Colors.DARK_CYAN,
+        "menu_line" => Colors.DARK_CYAN,
+        "menu_selection" => Colors.ALMOND_SILK, //not sure on this one, maybe STORMYTEAL
+        "menu_text" => Colors.ROSEWOOD,
+        "menu_user_icons" => Colors.DUSTY_TAUPE,
+        "menu_theme_sun" => Colors.ORANGE,
+        "menu_theme_moon" => Colors.INDIGO,
+        "menu_wave1" => Colors.STORMY_TEAL,
+        "menu_wave2" => Colors.TANGERINE_DREAM,
+        "menu_exit_resting" => Colors.STORMY_TEAL,
+        "menu_exit_active" => Colors.TANGERINE_DREAM
     };
 
     // DARK DEFAULT
@@ -85,7 +99,21 @@ module ThemeRegistry {
         "rating_hint" => Colors.GRAY_MID,
         "rating_filled_star" => Colors.GOLD,
         "rating_unfilled_star" => Colors.STAR_GRAY,
-        "rating_song_name" => Graphics.COLOR_WHITE
+        "rating_song_name" => Graphics.COLOR_WHITE,
+
+        //MENU VIEW
+        "menu_title"    => Graphics.COLOR_WHITE,
+        "menu_date_time" => Colors.GRAY_MID,
+        "menu_line" => Colors.PURPLE_DARK,
+        "menu_selection" => Colors.GRAY_DARK, //not sure on this one, maybe STORMYTEAL
+        "menu_text" => Colors.TEAL_LITE,
+        "menu_user_icons" => Graphics.COLOR_WHITE,
+        "menu_theme_sun" => Colors.ORANGE,
+        "menu_theme_moon" => Colors.PURPLE_LITE,
+        "menu_wave1" => Colors.TEAL_LITE,
+        "menu_wave2" => Colors.PURPLE_DARK,
+        "menu_exit_resting" => Colors.TEAL_LITE,
+        "menu_exit_active" => Colors.PURPLE_MID
     };
 
     const THEMES = {
