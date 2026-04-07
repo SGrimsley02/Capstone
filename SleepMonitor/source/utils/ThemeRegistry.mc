@@ -113,7 +113,7 @@ module ThemeRegistry {
         "menu_wave1" => Colors.TEAL_LITE,
         "menu_wave2" => Colors.PURPLE_DARK,
         "menu_exit_resting" => Colors.TEAL_LITE,
-        "menu_exit_active" => Colors.PURPLE_MID
+        "menu_exit_active" => Graphics.COLOR_WHITE
     };
 
     const THEMES = {

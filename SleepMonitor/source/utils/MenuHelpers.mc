@@ -16,16 +16,6 @@ import Toybox.Math;
 
 module MenuHelpers {
 
-    // ── Color Palette ────────────────────────────────────────
-    const COLOR_TEAL_DARK  = 0x0F5961; 
-    const COLOR_TEAL_LIGHT = 0x008080; 
-    const COLOR_CORAL      = 0xFF6A5C; 
-    const COLOR_GREY_LIGHT = 0xDCDCDC; 
-    const COLOR_BLUE_MIST  = 0xEAF4F5; 
-    const COLOR_BROWN_ICON = 0x9B8A78; 
-    const COLOR_WHITE      = 0xFFFFFF; 
-    const COLOR_BLACK      = 0x000000; 
-
     // ── Draw Background & Header ───────────────────────────
     function drawHeader(dc as Dc, title as String) as Void {
         var W = dc.getWidth();
@@ -114,7 +104,7 @@ module MenuHelpers {
         // "EXIT MENU" TEXT
         var isExitSelected = (selectedIndex == 2);
         // If selected: Coral. If not: Black.
-        dc.setColor(isExitSelected ? ThemeHelpers.getColor("menu_wave2") : ThemeHelpers.getColor("menu_wave1"), Graphics.COLOR_TRANSPARENT);
+        dc.setColor(isExitSelected ? ThemeHelpers.getColor("menu_exit_active") : ThemeHelpers.getColor("menu_exit_resting"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.86).toNumber(), isExitSelected ? Graphics.FONT_SMALL : Graphics.FONT_XTINY, "EXIT MENU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
