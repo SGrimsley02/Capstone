@@ -21,6 +21,8 @@ class MenuChangeThemeView extends WatchUi.View {
     private var _moonIcon;
 
     private var _selectedIndex = 0;
+    var rowHitboxes = [[0,0,0,0], [0,0,0,0]];
+    var exitHitbox = [0,0,0,0];
 
     function initialize() {
         View.initialize();
@@ -63,10 +65,21 @@ class MenuChangeThemeView extends WatchUi.View {
 
         var sunColor  = ThemeHelpers.getColor("menu_theme_sun"); // Bright Orange/Yellow
         var moonColor = ThemeHelpers.getColor("menu_theme_moon"); // Soft Indigo/Blue
+        var W = dc.getWidth();
+        var H = dc.getHeight();
+        var row1Top = (H * 0.28).toNumber();
+        var rowHeight = (H * 0.16).toNumber();
 
 
         // 1. Draw the scaffolding (Background, Title, Date/Time, Header Line)
         MenuHelpers.drawHeader(dc, "THEME");
+
+        // Save hitboxes for the two menu rows
+        rowHitboxes[0] = [0, row1Top, W, rowHeight];
+        rowHitboxes[1] = [0, row1Top + rowHeight, W, rowHeight];
+
+        // Save hitbox for Exit (Bottom area)
+        exitHitbox = [(W * 0.2).toNumber(), (H * 0.75).toNumber(), (W * 0.6).toNumber(), (H * 0.2).toNumber()];
 
         // 2. Draw the highlight behind the selected row
         MenuHelpers.drawSelectionHighlight(dc, _selectedIndex);
