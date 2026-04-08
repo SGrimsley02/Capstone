@@ -27,7 +27,7 @@ module MenuHelpers {
         dc.setColor(bgColor, bgColor);
         dc.clear();
 
-        // TITLE text (e.g., "USER MENU" or "CHANGE THEME")
+        // TITLE text 
         dc.setColor(ThemeHelpers.getColor("menu_title"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_SMALL, title, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
@@ -69,11 +69,11 @@ module MenuHelpers {
         var iconX = (W * 0.10).toNumber();  
         var textX = (W * 0.26).toNumber();
 
-        // THE ROW TEXT (e.g., "Relink Website" or "Dark Mode")
+        // THE ROW TEXT
         dc.setColor(ThemeHelpers.getColor("menu_text"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(textX, (currentY + rowHeight / 2).toNumber(), Graphics.FONT_SMALL, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         
-        // THE ICON COLOR (Set by whatever you pass in from the View)
+        // THE ICON COLOR 
         if (icon != null) { 
             dc.drawBitmap2(iconX, (currentY + rowHeight * 0.23).toNumber(), icon, { :tintColor => iconColor }); 
         }
@@ -92,18 +92,17 @@ module MenuHelpers {
         var cy = H / 2;
         var baseY = (H * 0.72).toNumber();
 
-        // THE TWO SQUIGGLY WAVES AT THE BOTTOM
+        // Squiggly waves
         _drawWave(dc, W, baseY,      15.0, 3.0, ThemeHelpers.getColor("menu_wave1"), 8); // Top wave (Teal)
         _drawWave(dc, W, baseY + 9,  15.0, 3.0, ThemeHelpers.getColor("menu_wave2"), 8);      // Bottom wave (Coral)
 
-        // THE THICK RED/CORAL ARC (The partial circle border at the bottom)
+        // ARC at the bottom
         dc.setColor(ThemeHelpers.getColor("menu_wave2"), Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(12);
         dc.drawArc(cx, cy, (W / 2) - 6, Graphics.ARC_COUNTER_CLOCKWISE, 213, 335);
 
         // "EXIT MENU" TEXT
         var isExitSelected = (selectedIndex == 2);
-        // If selected: Coral. If not: Black.
         dc.setColor(isExitSelected ? ThemeHelpers.getColor("menu_exit_active") : ThemeHelpers.getColor("menu_exit_resting"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.86).toNumber(), isExitSelected ? Graphics.FONT_SMALL : Graphics.FONT_XTINY, "EXIT MENU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
