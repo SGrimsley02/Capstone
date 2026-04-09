@@ -19,8 +19,6 @@ class MenuUserView extends WatchUi.View {
 
     private var _linkIcon;
     private var _gearIcon;
-    private var _remixLogo;
-
     private var _selectedIndex = 0;
 
     var rowHitboxes = [[0,0,0,0], [0,0,0,0]];
@@ -63,7 +61,6 @@ class MenuUserView extends WatchUi.View {
     function onUpdate(dc as Dc) as Void {
         _linkIcon = loadResource(Rez.Drawables.linkIcon);
         _gearIcon = loadResource(Rez.Drawables.settingsIcon);
-        _remixLogo = loadResource(Rez.Drawables.remixLogo);
         var icon = ThemeHelpers.getColor("menu_user_icons"); // Default for other menus
         var W = dc.getWidth();
         var H = dc.getHeight();
