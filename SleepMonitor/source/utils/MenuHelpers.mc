@@ -52,7 +52,7 @@ module MenuHelpers {
         
         if (index < 2) {
             var highlightY = (index == 0) ? row1Top : (row1Top + rowHeight).toNumber();
-            // THE BOX BEHIND THE SELECTED TEXT (The light blue rounded rectangle)
+            // THE BOX BEHIND THE SELECTED TEXT
             dc.setColor(ThemeHelpers.getColor("menu_selection"), Graphics.COLOR_TRANSPARENT);
             dc.fillRoundedRectangle((W * 0.06).toNumber(), highlightY + 3, (W * 0.88).toNumber(), rowHeight - 6, 10);
         }
@@ -93,8 +93,8 @@ module MenuHelpers {
         var baseY = (H * 0.72).toNumber();
 
         // Squiggly waves
-        _drawWave(dc, W, baseY,      15.0, 3.0, ThemeHelpers.getColor("menu_wave1"), 8); // Top wave (Teal)
-        _drawWave(dc, W, baseY + 9,  15.0, 3.0, ThemeHelpers.getColor("menu_wave2"), 8);      // Bottom wave (Coral)
+        _drawWave(dc, W, baseY,      15.0, 3.0, ThemeHelpers.getColor("menu_wave1"), 8); // Top wave 
+        _drawWave(dc, W, baseY + 9,  15.0, 3.0, ThemeHelpers.getColor("menu_wave2"), 8);  // Bottom wave
 
         // ARC at the bottom
         dc.setColor(ThemeHelpers.getColor("menu_wave2"), Graphics.COLOR_TRANSPARENT);
