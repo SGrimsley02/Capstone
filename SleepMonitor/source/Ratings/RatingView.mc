@@ -61,13 +61,24 @@ class RatingView extends WatchUi.View {
     function onShow() as Void { WatchUi.requestUpdate(); }
 
     function onUpdate(dc as Dc) as Void {
-        // Black background
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        // background
+        var bgColor = ThemeHelpers.getColor("bg");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
         // Render the layout-defined text labels
-        findDrawableById("ratingTitle").draw(dc);
-        findDrawableById("ratingHint").draw(dc);
+        var titleLabel = findDrawableById("ratingTitle") as WatchUi.Text;
+        var hintLabel = findDrawableById("ratingHint") as WatchUi.Text;
+
+        if (titleLabel != null) {
+            titleLabel.setColor(ThemeHelpers.getColor("rating_title"));
+            titleLabel.draw(dc);
+        }
+
+        if (hintLabel != null) {
+            hintLabel.setColor(ThemeHelpers.getColor("rating_hint"));
+            hintLabel.draw(dc);
+        }
 
         // Draw the five stars with tint reflecting the current rating
         _drawStars(dc);

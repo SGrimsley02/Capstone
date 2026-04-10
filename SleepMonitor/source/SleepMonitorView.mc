@@ -45,7 +45,8 @@ class SleepMonitorView extends WatchUi.View {
         var cy = H / 2;
 
         // ── Background ─────────────────────────────────────────────
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        var bgColor = ThemeHelpers.getColor("bg");
+        dc.setColor(bgColor, bgColor);
         dc.clear();
 
 
@@ -60,7 +61,7 @@ class SleepMonitorView extends WatchUi.View {
         var info    = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var dateStr = Lang.format("$1$, $2$ $3$", [info.day_of_week, info.month, info.day]);
 
-        dc.setColor(Colors.GRAY_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("date_am_pm"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx, (H * 0.45).toNumber(),
             Graphics.FONT_XTINY,
@@ -69,7 +70,7 @@ class SleepMonitorView extends WatchUi.View {
         );
 
         // ── Thin divider ───────────────────────────────────────────
-        dc.setColor(Colors.GRAY_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("line"), Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
         dc.drawLine(
             (cx - W * 0.28).toNumber(), (H * 0.52).toNumber(),
@@ -78,7 +79,7 @@ class SleepMonitorView extends WatchUi.View {
 
         // ── Next alarm ─────────────────────────────────────────────
         var alarmStr = _getAlarmString();
-        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("alarm_music"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             cx, (H * 0.58).toNumber(),
             Graphics.FONT_XTINY,
@@ -88,7 +89,7 @@ class SleepMonitorView extends WatchUi.View {
         if (_alarmIcon != null) {
             var iconW = _alarmIcon.getWidth();
             var iconY = (H * 0.58).toNumber() + dc.getFontHeight(Graphics.FONT_XTINY) / 2 + 4;
-            dc.drawBitmap2(cx - iconW / 2, iconY, _alarmIcon, {:tintColor => Colors.TEAL_LITE});
+            dc.drawBitmap2(cx - iconW / 2, iconY, _alarmIcon, {:tintColor => ThemeHelpers.getColor("alarm_music")});
         }
 
         // ── Action button circles ──────────────────────────────────
@@ -98,30 +99,30 @@ class SleepMonitorView extends WatchUi.View {
         var btnR   = (W * 0.19).toNumber();
 
         // Podcast button (left)
-        dc.setColor(Colors.PURPLE_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("podcast_btn"), Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(leftX, btnY, btnR);
-        dc.setColor(Colors.PURPLE_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("arc"), Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(leftX, btnY, btnR);
 
         // Music button (right)
-        dc.setColor(Colors.TEAL_DARK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("music_btn"), Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(rightX, btnY, btnR);
-        dc.setColor(Colors.TEAL_LITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("alarm_music"), Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(rightX, btnY, btnR);
 
         // Icons (centered in each button circle; icons are ~20x20 px)
         if (_podcastIcon != null) {
             dc.drawBitmap2(leftX - 16, btnY - 42, _podcastIcon, {
-                :tintColor => Colors.PURPLE_LITE,
+                :tintColor => ThemeHelpers.getColor("podcast_icon"),
                 });
         }
         if (_musicIcon != null) {
-            dc.drawBitmap2(rightX - 36, btnY - 42, _musicIcon, {:tintColor => Colors.TEAL_LITE});
+            dc.drawBitmap2(rightX - 36, btnY - 42, _musicIcon, {:tintColor => ThemeHelpers.getColor("alarm_music")});
         }
 
         // ── Decorative top arc (brand color) ───────────────────────
         // Arc spans the top of the round face (~10 o'clock → ~2 o'clock)
-        dc.setColor(Colors.PURPLE_MID, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ThemeHelpers.getColor("arc"), Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(4);
         dc.drawArc(cx, cy, (W / 2) - 6, Graphics.ARC_COUNTER_CLOCKWISE, 125, 55);
         dc.setPenWidth(1);
@@ -153,3 +154,4 @@ class SleepMonitorView extends WatchUi.View {
     function onHide() as Void { }
 
 }
+
