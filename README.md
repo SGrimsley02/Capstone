@@ -1,12 +1,175 @@
-# Capstone
-Capstone Project
+# 🎵 REMix — Smart Alarm & Morning Assistant
 
-## Running the Application
+> **Wake in your optimal sleep stage with music and your daily briefing.**
+> Sleep science meets personalization for mornings that feel timely, useful, and delightful.
 
-We need to run a server to connect to the API. Navigate to remix-ui and run
-`python -m http.server 5000`
-Then, visit `http://localhost:5000` in your web browser.
+![Version](https://img.shields.io/badge/version-0.5.0-blue) ![Languages](https://img.shields.io/badge/languages-16-brightgreen) ![Platform](https://img.shields.io/badge/platform-Web%20%26%20Garmin-success)
 
-For the watch, most functionality can be reached through the simulator.
-Build Current Project for some supported device, then run a debug session
-to start the simulator.
+---
+
+## ✨ What REMix Does
+
+REMix is a full-stack wake-up assistant that understands *your* sleep to wake you at the perfect moment, without the grogginess. Your day starts with a personalized briefing covering your schedule, weather, news, and more.
+
+### Core Features
+
+🧠 **Wake Timing by Sleep Stage** — REMix analyzes your sleep cycles via wearable sensors and triggers your alarm during an optimal window, helping you wake clearer and more refreshed.
+
+🎵 **Sleep-Aware Music Playback** — Your wake soundtrack adjusts based on sleep quality and dynamically adapts based on how you rate our recommendations.
+
+📻 **Daily Podcast-Style Briefing** — Schedule, weather, curated news, and optional horoscope — all combined into a concise morning summary your brain can actually process before coffee.
+
+🔗 **Connected Routine** — Integrate Google Calendar and Spotify so your morning context and media are ready immediately. No friction, just flow.
+
+🌍 **Global & Inclusive** — Support for 16+ languages ensures REMix is available to everyone, no matter where you're from.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Garmin SDK and Account
+- Modern web browser
+- (Optional) Garmin smartwatch for companion watch app
+    - Entire application is available through the Garmin SDK Simulator without a physical device
+
+### Installation & Running
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/SGrimsley02/Capstone.git
+   cd Capstone
+   ```
+1. **Continue to Watch App Setup**
+
+   - The watch app will walk you through the rest of the setup
+
+### Watch App Setup (Garmin Connect IQ)
+
+REMix also includes a native companion app for Garmin smartwatches (Descent MK3, Vivo Active 6).
+
+1. **Build the watch app**
+
+   ```bash
+   cd SleepMonitor
+   # Use the Garmin Connect IQ extension in VS Code or the monkey C compiler
+   # Monkey C: Build Current Project/Build for Device in VS Code, or...
+   monkeyc -d device.iq2 -o bin/SleepMonitor.prg -f monkey.jungle -y
+   ```
+1. **Run in simulator**
+
+   - Open the Connect IQ extension in VS Code
+   - Select your target device (e.g., Descent MK3 43mm)
+   - Run a debug session to start the simulator
+   - The watch app will sync with your web preferences automatically
+1. **Run on device**
+
+   - With the Connect IQ extension in VS Code, Build for Device
+   - Select your target device
+   - Add the generated prg to your device
+   - The watch app will be available alongside your other watch applications
+
+### 🪩 Website
+
+- To update your preferences at any time, access the site through the watch menu
+- Website is also available at www.remixdisco.com 💃
+
+---
+
+## 🛠️ Built With
+
+### Frontend (Web Dashboard)
+
+- **Framework:** Vanilla JavaScript
+- **Markup:** HTML5
+- **Styling:** CSS3 with responsive design
+- **Internationalization:** 16+ languages via custom i18n system
+- **Storage:** Browser localStorage for session persistence
+- **API:** Fetch API with AWS API Gateway backend
+
+### Watch Application (Garmin Connect IQ)
+
+- **Language:** Monkey C (Garmin proprietary)
+- **Platform:** Garmin Connect IQ SDK
+- **Supported Devices:** Descent MK3 (43mm), Vivo Active 6
+- **Sensors:** Heart rate, Body Battery, Stress history
+- **Features:** Native UI rendering, BLE connectivity
+
+### Backend Infrastructure
+
+- **API Host:** AWS API Gateway + Lambda
+- **Integrations:** Google (Calendar), Spotify (Music)
+
+---
+
+## 🧠 How It Works: The Sleep Science
+
+### Phase 1: Sleep Monitoring
+
+Your Garmin watch continuously monitors heart rate, body battery, and stress levels throughout the night. REMix analyzes this data to identify sleep blocks.
+
+### Phase 2: Sleep Stage Estimation
+
+Using the 90-minute ultradian rhythm cycle, REMix estimates your current sleep stage:
+
+- **Light Sleep:** 0–20 min of cycle
+- **Deep Sleep:** 20–50 min of cycle
+- **REM Sleep:** 50–70 min of cycle
+- **Light Sleep (pre-wake):** 70–90 min of cycle
+
+Optimal wake windows occur at the end of complete cycles, when you're closest to light sleep.
+
+### Phase 3: Quality Scoring
+
+REMix calculates a sleep quality score (0–100) combining:
+
+- **Body Battery recovery** (40%)
+- **Stress levels** (25%)
+- **Heart rate efficiency** (15%)
+- **Sleep duration** (20%)
+
+### Phase 4: Smart Wake
+
+Each morning, REMix triggers the alarm, aiming for a light sleep cycle within your wake window. If your window is small and you don't enter light sleep before you need to wake up, REMix will still make sure you're awake by the time you need to get up. Music selection adapts based on quality score—peppy tracks for great sleep, mellow vibes for restless nights.
+
+### Phase 5: Morning Briefing
+
+Your customized podcast-style briefing plays automatically:
+
+- **Schedule:** Today's events from Google Calendar
+- **Weather:** Local conditions for your area
+- **News:** Top stories from your preferred outlets (deduped and diversity-ranked)
+- **Horoscope:** Zodiac insight for the day ahead
+
+---
+
+## 🌐 Language Support
+
+REMix speaks your language. Fully localized in:
+
+🇬🇧 English | 🇪🇸 Spanish | 🇫🇷 French | 🇩🇪 German | 🇮🇹 Italian | 🇯🇵 Japanese | 🇰🇷 Korean | 🇳🇱 Dutch | 🇵🇹 Portuguese | 🇷🇺 Russian | 🇹🇭 Thai | 🇻🇳 Vietnamese | 🇸🇳 Wolof | 🇨🇳 Chinese | 🇸🇦 Arabic | 🇮🇳 Hindi
+
+---
+
+## 🔌 Integrations
+
+| Service             | Purpose                           | How It Works                      |
+| ------------------- | --------------------------------- | --------------------------------- |
+| **Google Calendar** | Today's schedule in your briefing | OAuth login, calendar permissions |
+| **Spotify**         | Sleep-aware music for wake-ups    | OAuth login, playlist access      |
+| **Garmin Connect**  | Sensor data from your watch       | Native watch app                  |
+| **News Sources**    | Curated, deduplicated articles    | RSS feeds + smart prioritization  |
+
+---
+
+## 👥 Contributors
+
+REMix was built by a talented team of students:
+
+- **Lauren D'Souza**
+- **Kiara Grimsley**
+- **Reeny Huang**
+- **Ella Nguyen**
+- **Audrey Pan**
