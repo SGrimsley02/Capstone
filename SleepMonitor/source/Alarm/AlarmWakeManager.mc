@@ -135,6 +135,7 @@ class WakeAlarmManager {
     }
 
     // TODO: delete once alarm is fully tested
+    (:debug)
     function scheduleAlarmInSeconds(seconds) {
         var nowEpoch = Time.now().value();
         scheduleAlarmAtEpoch(nowEpoch + seconds);

@@ -20,6 +20,7 @@ class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
     private var _wakeAlarmManager;
     private var _httpClient;
+    private var _onboardingManager as SleepMonitorOnboarding;
     var userInfoTimer as Timer.Timer;
 
     function initialize() {
@@ -27,14 +28,14 @@ class SleepMonitorApp extends Application.AppBase {
         _wakeAlarmManager = new WakeAlarmManager();
         _httpClient = new SleepMonitorHttpClient();
         userInfoTimer = new Timer.Timer();
+        _onboardingManager = new SleepMonitorOnboarding();
     }
 
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
 
         // One-time onboarding: prompt user to open a web page on their phone.
-        var onboarding = new SleepMonitorOnboarding();
-        var didOnboard = onboarding.runIfFirstTime("http://127.0.0.1:5000/");
+        var didOnboard = _onboardingManager.runIfFirstTime("http://127.0.0.1:5000/");
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
@@ -57,15 +58,27 @@ class SleepMonitorApp extends Application.AppBase {
     function setHttpStatus(message as String) as Void {
         _httpStatus = message;
     }
+
     function getWakeAlarmManager() {
         return _wakeAlarmManager;
     }
+
     function updateUserInfo(onReceive as Method) as Void {
         _httpClient.getUserInfo(onReceive);
     }
 
     function sendSleepSummary() as Void {
         _httpClient.sendSleepSummaryRequest();
+    }
+
+    function startRelinkFlow() as Void {
+        _onboardingManager.runRelink("http://127.0.0.1:5000/");
+        setHttpStatus("Open phone link to relink");
+        WatchUi.requestUpdate();
+    }
+
+    function getOnboardingManager() as SleepMonitorOnboarding {
+        return _onboardingManager;
     }
 }
 

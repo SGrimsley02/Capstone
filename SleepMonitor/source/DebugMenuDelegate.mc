@@ -11,6 +11,7 @@ import Toybox.System;
 import Toybox.WatchUi;
 import Toybox.Lang;
 
+(:debug)
 class DebugMenuDelegate extends WatchUi.MenuInputDelegate {
     private var _httpClient as SleepMonitorHttpClient;
 

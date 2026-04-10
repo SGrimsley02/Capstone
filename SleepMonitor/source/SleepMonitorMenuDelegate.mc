@@ -5,7 +5,7 @@ Description: Menu input delegate for the SleepMonitor Connect IQ watch app.
              through SleepMonitorHttpClient.
 Authors: Kiara Rose, Audrey Pan
 Created: February 7, 2026
-Last Modified: April 3, 2026
+Last Modified: April 9, 2026
 */
 
 import Toybox.Lang;
@@ -16,7 +16,6 @@ import Toybox.Communications;
 class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function initialize() {
-        // Initialize the menu delegate and construct the HTTP client for handling requests.
         MenuInputDelegate.initialize();
     }
 
@@ -25,15 +24,15 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
 
         if (item == :relinkWebsite) {
             System.println("Starting relink flow.");
-            // getApp().getOnboardingManager().runRelink("http://localhost:5000");
+            getApp().startRelinkFlow();
 
-        } else if (item == :uiCustomization) {
-            System.println("UI customization selected.");
-            WatchUi.pushView(new Rez.Menus.UiCustomizationMenu(), new ThemeMenuDelegate(), WatchUi.SLIDE_UP);
-        } else if (item == :scheduleAlarm) {
-            System.println("Scheduling alarm for 5 seconds from now.");
-            getApp().getWakeAlarmManager().scheduleAlarmInSeconds(5);
-        } 
+        } else if (item == :changeTheme) {
+            var themeView = new MenuChangeThemeView();
+            WatchUi.pushView(themeView, new MenuChangeThemeBehaviorDelegate(themeView), WatchUi.SLIDE_UP);
+
+        } else if (item == :debugMenu) {
+            System.println("Opening debug menu.");
+            WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
+        }
     }
-
 }
