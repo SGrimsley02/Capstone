@@ -5,7 +5,7 @@ Description: Menu input delegate for the SleepMonitor Connect IQ watch app.
              through SleepMonitorHttpClient.
 Authors: Kiara Rose, Audrey Pan
 Created: February 7, 2026
-Last Modified: April 5, 2026
+Last Modified: April 9, 2026
 */
 
 import Toybox.Lang;
@@ -29,6 +29,10 @@ class SleepMonitorMenuDelegate extends WatchUi.MenuInputDelegate {
         } else if (item == :changeTheme) {
             var themeView = new MenuChangeThemeView();
             WatchUi.pushView(themeView, new MenuChangeThemeBehaviorDelegate(themeView), WatchUi.SLIDE_UP);
+
+        } else if (item == :debugMenu) {
+            System.println("Opening debug menu.");
+            WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
         }
     }
 }
