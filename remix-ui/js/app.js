@@ -45,8 +45,10 @@ async function render() { // Main render function to initialize the app state an
     setView("auth");
     elements.googleStatus.textContent = t("setup.notConnected", "Not connected");
     elements.spotifyStatus.textContent = t("setup.notConnected", "Not connected");
+    elements.garminStatus.textContent = t("setup.notConnected", "Not connected");
     elements.googleStatus.className = "warn";
     elements.spotifyStatus.className = "warn";
+    elements.garminStatus.className = "warn";
     return;
   }
 
@@ -99,6 +101,11 @@ elements.btnSpotify.addEventListener("click", () => {
   window.location.href = `${API_BASE}/auth/spotify/login?username=${encodeURIComponent(userID)}&returnTo=${encodeURIComponent(FRONTEND_BASE)}`;
 });
 
+elements.btnGarmin.addEventListener("click", () => {
+  if (!state.currentUser?.username) return;
+  window.location.href = "./garmin-connect.html";
+});
+
 elements.btnLogout.addEventListener("click", () => {
   clearSession();
   setView("auth");
@@ -112,7 +119,11 @@ elements.btnResetAll.addEventListener("click", () => {
 });
 
 const params = new URLSearchParams(window.location.search);
-if (params.get("spotify") === "connected" || params.get("google") === "connected") {
+if (
+  params.get("spotify") === "connected" ||
+  params.get("google") === "connected" ||
+  params.get("garmin") === "connected"
+) {
   window.history.replaceState({}, document.title, window.location.pathname);
 }
 

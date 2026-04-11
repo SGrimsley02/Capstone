@@ -1,0 +1,89 @@
+/* Standalone Garmin connect page — OAuth-style layout; uses vars from styles.css */
+
+.oauth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.oauth-card {
+  width: 100%;
+  max-width: 460px;
+  background: color-mix(in oklab, var(--card) 92%, black);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+.oauth-card h1 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  letter-spacing: 0.2px;
+}
+
+.oauth-provider {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.oauth-lead {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.oauth-permissions {
+  margin: 0 0 18px;
+  padding-left: 1.15rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.oauth-permissions li {
+  margin-bottom: 6px;
+}
+
+.oauth-permissions li:last-child {
+  margin-bottom: 0;
+}
+
+.oauth-error {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #ffb4a8;
+}
+
+.oauth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.oauth-actions button[type="submit"] {
+  flex: 1 1 auto;
+  min-width: 140px;
+}
+
+.oauth-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.oauth-brand-row .logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #37d3ff);
+  flex-shrink: 0;
+}

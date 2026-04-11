@@ -50,6 +50,20 @@ export async function loginUser(username, password) {
   return parseResponse(res);
 }
 
+export async function connectGarmin(remixUsername, garminEmail, garminPassword) {
+  const res = await fetch(`${API_BASE}/garmin`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: remixUsername,
+      garminEmail,
+      garminPassword
+    })
+  });
+
+  return parseResponse(res);
+}
+
 export async function updatePreferences(username, prefs) {
   const res = await fetch(`${API_BASE}/preferences?username=${encodeURIComponent(username)}`, {
     method: "PUT",

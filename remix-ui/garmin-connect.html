@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect Garmin — REMix</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/garmin-oauth.css" />
+</head>
+<body>
+  <div class="oauth-page">
+    <main class="oauth-card" aria-labelledby="oauth-title">
+      <div class="oauth-brand-row">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="oauth-title">REMix</h1>
+          <p class="oauth-provider">Garmin Connect</p>
+        </div>
+      </div>
+
+      <p class="oauth-lead">
+        REMix is requesting access to your Garmin Connect account.
+      </p>
+      <ul class="oauth-permissions">
+        <li>Read sleep and activity data to improve wake timing and morning insights.</li>
+        <li>Associate this link with your REMix account only; your Garmin password is not stored by REMix.</li>
+      </ul>
+
+      <div id="garminConnectError" class="oauth-error" role="alert" hidden></div>
+
+      <form id="formGarminConnect">
+        <div class="row">
+          <div>
+            <label for="garminEmail">Garmin email</label>
+            <input
+              id="garminEmail"
+              name="garminEmail"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div>
+            <label for="garminPassword">Garmin password</label>
+            <input
+              id="garminPassword"
+              name="garminPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+        </div>
+        <div class="oauth-actions">
+          <button type="button" class="ghost" id="btnGarminCancel">Cancel</button>
+          <button type="submit" class="primary">Allow and connect</button>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script type="module" src="./js/garmin-connect.js"></script>
+</body>
+</html>

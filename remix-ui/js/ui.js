@@ -45,6 +45,8 @@ export function getElements() {
     btnDemoSignup: el("btnDemoSignup"),
     googleStatus: el("googleStatus"),
     spotifyStatus: el("spotifyStatus"),
+    garminStatus: el("garminStatus"),
+    btnGarmin: el("btnGarmin"),
     btnGoogle: el("btnGoogle"),
     btnSpotify: el("btnSpotify"),
     btnToPrefs: el("btnToPrefs"),
@@ -87,10 +89,17 @@ export function setTab(elements, which) {
 export function renderConnectedState(elements, currentUser, t) {
   const gOK = (currentUser.googleConnected === true) || (currentUser.googleEmail != null);
   const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
+  const garminOK =
+    (currentUser.garminConnected === true) ||
+    (currentUser.garminEmail != null && currentUser.garminEmail !== "");
 
   elements.googleStatus.textContent = gOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.googleStatus.className = gOK ? "ok" : "warn";
   elements.spotifyStatus.textContent = sOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.spotifyStatus.className = sOK ? "ok" : "warn";
-  return { gOK, sOK };
+  elements.garminStatus.textContent = garminOK
+    ? t("setup.connected", "Connected ✅")
+    : t("setup.notConnected", "Not connected");
+  elements.garminStatus.className = garminOK ? "ok" : "warn";
+  return { gOK, sOK, garminOK };
 }

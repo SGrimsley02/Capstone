@@ -129,7 +129,7 @@
         <!-- SETUP VIEW -->
         <div id="viewSetup" class="hide">
           <h2 data-i18n="setup.title">Connect your services</h2>
-          <p data-i18n="setup.subtitle">Connect Google Calendar and Spotify, then set your wake/music preferences.</p>
+          <p data-i18n="setup.subtitle">Connect Google Calendar, Spotify, and Garmin Connect, then set your wake/music preferences.</p>
 
           <div class="status">
             <div>
@@ -145,6 +145,14 @@
                <div id="spotifyStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
              <button id="btnSpotify" class="primary" type="button" data-i18n="setup.connectSpotify">Connect Spotify</button>
+          </div>
+
+          <div class="status">
+            <div>
+               <div class="mini" data-i18n="setup.garminAccount">Garmin Connect</div>
+               <div id="garminStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
+            </div>
+             <button id="btnGarmin" class="primary" type="button" data-i18n="setup.connectGarmin">Connect Garmin</button>
           </div>
 
           <div class="divider"></div>
