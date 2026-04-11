@@ -92,7 +92,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
     }
 
     // Helper for onTap: Check if a point (tx, ty) is inside a square [x, y, size]
-    private function isInHitbox(tx, ty, hitbox) as Boolean {
+    private function isInHitbox(tx as Number, ty as Number, hitbox as Array?) as Boolean {
         if (hitbox == null) { return false; }
         var hX = hitbox[0];
         var hY = hitbox[1];
