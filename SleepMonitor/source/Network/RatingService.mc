@@ -17,7 +17,7 @@ class SongRatingService {
     }
 
     // Call this method explicitly AFTER creating the object
-    function submitRating(userId as String, song as String, rating as Number) as Void {
+    function submitRating(userId as String, song as String, rating as Number, sleepScore as Number?) as Void {
         var url = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/storage/song-rating";
 
         // Failsafe: Prevent nulls from crashing the Garmin network API
@@ -29,7 +29,8 @@ class SongRatingService {
         var payload = {
             "userId" => userId,
             "track_uri" => song,
-            "rating" => rating
+            "rating" => rating,
+            "sleep_score" => sleepScore
         };
 
         try {
