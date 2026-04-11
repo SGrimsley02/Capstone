@@ -13,6 +13,7 @@ import Toybox.SensorHistory;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.Math;
+import Toybox.Application.Storage;
 
 module SleepAnalyzer {
     const SLEEP_WINDOW_SECONDS = 12 * 60 * 60;   // Analyze last 12 hours
@@ -43,6 +44,7 @@ module SleepAnalyzer {
         var isSleeping = hasLikelySlept(hrSummary, bbSummary);
 
         var sleepQuality = estimateSleepQuality(hrSummary, stressSummary, bbSummary, restWindow);
+        Storage.setValue(StorageKeys.SLEEP_SCORE_KEY, sleepQuality); // Storing sleep score here bc I need to use it, and I can't deal with trying to trace it through the mess we have going on
 
         var payload = {
             "eventType" => "sleep_summary",

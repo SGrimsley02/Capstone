@@ -17,6 +17,7 @@ Last Modified: March 14, 2026
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
+import Toybox.Application.Storage;
 
 class RatingDelegate extends WatchUi.InputDelegate {
 
@@ -63,7 +64,7 @@ class RatingDelegate extends WatchUi.InputDelegate {
             var rating = _view.getRating();
             if (rating > 0) {
                 var request = new SongRatingService();
-                request.submitRating(_view.getUserId(), _view.getSong(), rating);
+                request.submitRating(_view.getUserId(), _view.getSong(), rating, getSleepScore());
             }
             WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
             return true;
@@ -79,4 +80,8 @@ class RatingDelegate extends WatchUi.InputDelegate {
         return false;
     }
 
+    function getSleepScore() as Number? {
+        var score = Storage.getValue(StorageKeys.SLEEP_SCORE_KEY);
+        return score as Number?;
+    }
 }
