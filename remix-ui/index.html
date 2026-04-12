@@ -130,10 +130,14 @@
         <div id="viewSetup" class="hide">
           <h2 data-i18n="setup.title">Connect your services</h2>
           <p data-i18n="setup.subtitle">Connect Google Calendar, Spotify, and Garmin Connect, then set your wake/music preferences.</p>
+          <p class="mini setup-note" data-i18n="setup.requirementsNote">Google and Spotify are required for full functionality. Garmin Connect is for improved sleep analysis.</p>
 
           <div class="status">
             <div>
-               <div class="mini" data-i18n="setup.googleAccount">Google Account</div>
+               <div class="mini">
+                 <span data-i18n="setup.googleAccount">Google Account</span>
+                 <span class="inline-tag" data-i18n="setup.requiredTag">(Required)</span>
+               </div>
                <div id="googleStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
              <button id="btnGoogle" class="primary" type="button" data-i18n="setup.connectGoogle">Connect Google</button>
@@ -141,7 +145,10 @@
 
           <div class="status">
             <div>
-               <div class="mini" data-i18n="setup.spotifyAccount">Spotify Account</div>
+               <div class="mini">
+                 <span data-i18n="setup.spotifyAccount">Spotify Account</span>
+                 <span class="inline-tag" data-i18n="setup.requiredTag">(Required)</span>
+               </div>
                <div id="spotifyStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
              <button id="btnSpotify" class="primary" type="button" data-i18n="setup.connectSpotify">Connect Spotify</button>
@@ -149,7 +156,10 @@
 
           <div class="status">
             <div>
-               <div class="mini" data-i18n="setup.garminAccount">Garmin Connect</div>
+              <div class="mini">
+                 <span data-i18n="setup.garminAccount">Garmin Connect</span>
+                 <span class="inline-tag" data-i18n="setup.optionalTag">(Optional)</span>
+               </div>
                <div id="garminStatus" class="warn" data-i18n="setup.notConnected">Not connected</div>
             </div>
              <button id="btnGarmin" class="primary" type="button" data-i18n="setup.connectGarmin">Connect Garmin</button>

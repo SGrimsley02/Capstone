@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Smart Alarm"
+    "title": "REMix — Smart Alarm",
+    "garminConnectTitle": "Connect Garmin — REMix"
   },
   "header": {
     "title": "REMix • Smart Alarm",
@@ -44,16 +45,36 @@
   },
   "setup": {
     "title": "Connect your services",
-    "subtitle": "Connect Google Calendar and Spotify, then set your wake/music preferences.",
+    "subtitle": "Connect Google Calendar, Spotify, and Garmin Connect, then set your wake/music preferences.",
+    "requirementsNote": "Google and Spotify are required for full functionality. Garmin Connect is for improved sleep analysis.",
     "googleAccount": "Google Account",
     "spotifyAccount": "Spotify Account",
+    "garminAccount": "Garmin Connect",
+    "requiredTag": "(Required)",
+    "optionalTag": "(Optional)",
     "notConnected": "Not connected",
     "connected": "Connected ✅",
     "connectGoogle": "Connect Google",
     "connectSpotify": "Connect Spotify",
+    "connectGarmin": "Connect Garmin",
     "continue": "Continue to preferences",
     "logout": "Log out",
     "reset": "Reset session"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix is requesting access to your Garmin Connect account.",
+    "permissionRead": "Read sleep and activity data to improve wake timing and morning insights.",
+    "permissionCredential": "Associate this link with your REMix account only; your Garmin password is not stored by REMix.",
+    "email": "Garmin email",
+    "password": "Garmin password",
+    "cancel": "Cancel",
+    "allowAndConnect": "Allow and connect",
+    "errorWithReason": "Could not connect Garmin: {{reason}}",
+    "errorGeneric": "Could not connect Garmin. Check your credentials and try again.",
+    "checkCredentials": "Check your credentials and try again.",
+    "garminAuthFailed": "Garmin authentication failed."
+
   },
   "prefs": {
     "title": "Wake & music preferences",

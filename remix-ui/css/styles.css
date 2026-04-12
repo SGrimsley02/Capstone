@@ -111,6 +111,8 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .ok { color: #9af2c7; font-weight: 800; }
 .warn { color: #ffd37a; font-weight: 800; }
 .mini { font-size: 12px; color: var(--muted); }
+.inline-tag { margin-left: 6px; opacity: 0.9; }
+.setup-note { margin-bottom: 4px; }
 .divider { height:1px; background: var(--border); margin: 14px 0; opacity: .8; }
 .hide { display:none !important; }
 .toast { margin-top: 10px; font-size: 12.5px; color: var(--muted); }

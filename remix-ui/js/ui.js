@@ -97,9 +97,7 @@ export function renderConnectedState(elements, currentUser, t) {
   elements.googleStatus.className = gOK ? "ok" : "warn";
   elements.spotifyStatus.textContent = sOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.spotifyStatus.className = sOK ? "ok" : "warn";
-  elements.garminStatus.textContent = garminOK
-    ? t("setup.connected", "Connected ✅")
-    : t("setup.notConnected", "Not connected");
+  elements.garminStatus.textContent = garminOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.garminStatus.className = garminOK ? "ok" : "warn";
   return { gOK, sOK, garminOK };
 }
