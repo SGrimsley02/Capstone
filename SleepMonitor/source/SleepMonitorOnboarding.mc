@@ -98,15 +98,16 @@ class SleepMonitorOnboarding {
                 return;
             }
 
-            var isDifferentUser = false;
-            if (oldUsername != null) {
-                isDifferentUser = !oldUsername.equals(newUsername);
-            }
+            var isDifferentUser = (oldUsername == null) || !oldUsername.equals(newUsername);
 
             if (isDifferentUser) {
-                System.println("Relink detected account switch from " + oldUsername + " to " + newUsername);
+                if (oldUsername != null) {
+                    System.println("Relink detected account switch from " + oldUsername + " to " + newUsername);
+                } else {
+                    System.println("First-time onboarding for " + newUsername);
+                }
 
-                // Clear stale user-specific wake data before applying the new user's prefs
+                // Clear stale user-specific wake data before applying the current user's prefs
                 _wakeStart = null;
                 _wakeEnd = null;
                 Storage.setValue(StorageKeys.WAKE_START_KEY, null);
@@ -116,9 +117,6 @@ class SleepMonitorOnboarding {
             Storage.setValue(StorageKeys.USER_ID_KEY, newUsername);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
 
-            // Always reset local copies before re-reading preferences so stale values do not survive
-            _wakeStart = null;
-            _wakeEnd = null;
 
             if (preferences != null && preferences.size() > 0) {
                 _wakeStart = preferences["wakeStart"] as String?;

@@ -64,10 +64,6 @@ class MenuUserView extends WatchUi.View {
         }
     }
 
-    function getRowHitboxes() as Array {
-        return rowHitboxes;
-    }
-
     function getExitHitbox() as Array {
         return exitHitbox;
     }
@@ -140,7 +136,8 @@ class MenuUserView extends WatchUi.View {
             (W * 0.60).toNumber(),
             (H * 0.16).toNumber()
         ];
-        MenuHelpers.drawFooter(dc, _selectedIndex);
+        var itemCount = labels.size();
+        MenuHelpers.drawFooter(dc, _selectedIndex, itemCount);
 
         // 4. Top overlay sits in front of the list too
         MenuHelpers.drawHeaderOverlay(dc);

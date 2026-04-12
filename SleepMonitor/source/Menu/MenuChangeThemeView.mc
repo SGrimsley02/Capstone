@@ -81,14 +81,16 @@ class MenuChangeThemeView extends WatchUi.View {
         // Save hitbox for Exit (Bottom area)
         exitHitbox = [(W * 0.2).toNumber(), (H * 0.75).toNumber(), (W * 0.6).toNumber(), (H * 0.2).toNumber()];
 
+        var itemCount = 2;
+
         // 2. Draw the highlight behind the selected row
-        MenuHelpers.drawSelectionHighlight(dc, _selectedIndex);
+        MenuHelpers.drawSelectionHighlight(dc, _selectedIndex, itemCount);
 
         // 3. Draw the rows
         MenuHelpers.drawMenuRow(dc, 0, "Light Mode", _sunIcon, sunColor);
         MenuHelpers.drawMenuRow(dc, 1, "Dark Mode", _moonIcon, moonColor);
 
         // 4. Draw the waves and the Exit button
-        MenuHelpers.drawFooter(dc, _selectedIndex);
+        MenuHelpers.drawFooter(dc, _selectedIndex, itemCount);
     }
 }

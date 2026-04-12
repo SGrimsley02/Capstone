@@ -97,7 +97,7 @@ class PodcastProvider {
             return true;
         }
         // JSON-style response
-        if (bodyStr.find("\"status\":\"READY\"") != null) {
+        if (bodyStr.find("\"status\": \"READY\"") != null) {
             return true;
         }
         return false;

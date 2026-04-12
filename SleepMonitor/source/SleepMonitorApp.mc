@@ -73,7 +73,7 @@ class SleepMonitorApp extends Application.AppBase {
     }
 
     function startRelinkFlow() as Void {
-        _onboardingManager.runRelink("http://127.0.0.1:5000/");
+        _onboardingManager.runRelink("https://www.remixdisco.com");
         setHttpStatus("Open phone link to relink");
         WatchUi.requestUpdate();
     }

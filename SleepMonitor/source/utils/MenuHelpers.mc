@@ -71,8 +71,12 @@ module MenuHelpers {
         dc.fillRoundedRectangle((W * 0.06).toNumber(), y + 3, (W * 0.88).toNumber(), rowHeight - 6, 10);
     }
 
-    // ── Compatibility Highlight ────────────────────────────
-    function drawSelectionHighlight(dc as Dc, index as Number) as Void {
+    function drawSelectionHighlight(dc as Dc, index as Number, itemCount as Number) as Void {
+        // If Exit is selected, do not draw a row highlight
+        if (index >= itemCount) {
+            return;
+        }
+
         var H = dc.getHeight();
         var rowTop = (H * 0.28).toNumber();
         var rowHeight = (H * 0.16).toNumber();
@@ -113,7 +117,7 @@ module MenuHelpers {
     }
 
     // ── Draw Wave Footer & Exit ─────────────────────────────
-    function drawFooter(dc as Dc, selectedIndex as Number) as Void {
+    function drawFooter(dc as Dc, selectedIndex as Number, itemCount as Number) as Void {
         var W = dc.getWidth();
         var H = dc.getHeight();
         var cx = W / 2;
@@ -132,12 +136,18 @@ module MenuHelpers {
         dc.setPenWidth(12);
         dc.drawArc(cx, cy, (W / 2) - 6, Graphics.ARC_COUNTER_CLOCKWISE, 213, 335);
 
-        var isExitSelected = (selectedIndex == 3);
+        var isExitSelected = (selectedIndex == itemCount);
         dc.setColor(
             isExitSelected ? ThemeHelpers.getColor("menu_exit_active") : ThemeHelpers.getColor("menu_exit_resting"),
             Graphics.COLOR_TRANSPARENT
         );
-        dc.drawText(cx, (H * 0.86).toNumber(), isExitSelected ? Graphics.FONT_SMALL : Graphics.FONT_XTINY, "EXIT MENU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(
+            cx,
+            (H * 0.86).toNumber(),
+            isExitSelected ? Graphics.FONT_SMALL : Graphics.FONT_XTINY,
+            "EXIT MENU",
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+        );
     }
 
     // ── Internal Helpers ───────────────────────────────────
