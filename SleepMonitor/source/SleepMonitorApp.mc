@@ -34,7 +34,7 @@ class SleepMonitorApp extends Application.AppBase {
 
         // One-time onboarding: prompt user to open a web page on their phone.
         var onboarding = new SleepMonitorOnboarding();
-        var didOnboard = onboarding.runIfFirstTime("http://127.0.0.1:5000/");
+        var didOnboard = onboarding.runIfFirstTime("https://www.remixdisco.com");
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
