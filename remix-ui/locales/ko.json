@@ -31,7 +31,6 @@
     "password": "비밀번호",
     "login": "로그인",
     "createAccount": "계정 만들기",
-    "demoSignup": "데모 가입",
     "accountCreated": "계정이 만들어졌습니다 ✓",
     "registrationFailed": "가입 실패",
     "loggedIn": "로그인했습니다 ✓",

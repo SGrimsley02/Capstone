@@ -31,7 +31,6 @@
     "password": "Password",
     "login": "Log in",
     "createAccount": "Create account",
-    "demoSignup": "Demo signup",
     "accountCreated": "Account created ✓",
     "registrationFailed": "Registration failed",
     "loggedIn": "Logged in ✓",

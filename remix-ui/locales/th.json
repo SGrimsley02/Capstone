@@ -31,7 +31,6 @@
     "password": "รหัสผ่าน",
     "login": "เข้าสู่ระบบ",
     "createAccount": "สร้างบัญชี",
-    "demoSignup": "สมัครสมาชิกสาธารณะ",
     "accountCreated": "สร้างบัญชีแล้ว ✓",
     "registrationFailed": "การสมัครสมาชิกล้มเหลว",
     "loggedIn": "เข้าสู่ระบบแล้ว ✓",

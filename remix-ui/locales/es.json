@@ -31,7 +31,6 @@
     "password": "Contraseña",
     "login": "Iniciar sesión",
     "createAccount": "Crear cuenta",
-    "demoSignup": "Registro demo",
     "accountCreated": "Cuenta creada ✓",
     "registrationFailed": "Error de registro",
     "loggedIn": "Sesión iniciada ✓",

@@ -31,7 +31,6 @@
     "password": "Mot de passe",
     "login": "Se connecter",
     "createAccount": "Créer un compte",
-    "demoSignup": "Inscription de démonstration",
     "accountCreated": "Compte créé ✓",
     "registrationFailed": "L'inscription a échoué",
     "loggedIn": "Connecté ✓",

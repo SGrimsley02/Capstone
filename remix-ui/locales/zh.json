@@ -31,7 +31,6 @@
     "password": "密码",
     "login": "登录",
     "createAccount": "创建账户",
-    "demoSignup": "演示注册",
     "accountCreated": "账户已创建 ✓",
     "registrationFailed": "注册失败",
     "loggedIn": "登录成功 ✓",

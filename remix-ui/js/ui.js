@@ -42,7 +42,6 @@ export function getElements() {
     formSignup: el("formSignup"),
     authMsg: el("authMsg"),
     signupMsg: el("signupMsg"),
-    btnDemoSignup: el("btnDemoSignup"),
     googleStatus: el("googleStatus"),
     spotifyStatus: el("spotifyStatus"),
     btnGoogle: el("btnGoogle"),
