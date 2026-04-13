@@ -31,7 +31,6 @@
     "password": "كلمة المرور",
     "login": "تسجيل الدخول",
     "createAccount": "إنشاء حساب",
-    "demoSignup": "تسجيل تجريبي",
     "accountCreated": "تم إنشاء الحساب ✓",
     "registrationFailed": "فشل التسجيل",
     "loggedIn": "تم تسجيل الدخول ✓",

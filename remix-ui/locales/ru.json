@@ -31,7 +31,6 @@
     "password": "Пароль",
     "login": "Вход",
     "createAccount": "Создать учётную запись",
-    "demoSignup": "Демо-регистрация",
     "accountCreated": "Учётная запись создана ✓",
     "registrationFailed": "Ошибка регистрации",
     "loggedIn": "Вошли в систему ✓",

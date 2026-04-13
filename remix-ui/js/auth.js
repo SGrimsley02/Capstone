@@ -131,34 +131,4 @@ export function bindAuthHandlers({ elements, render, setView, setTab, t }) {
     }
   });
 
-  elements.btnDemoSignup.addEventListener("click", async () => { // Handle demo account signup/login
-    try {
-      const { ok } = await signupUser("demo", "demo123");
-
-      if (ok) {
-        const { data } = await loginUser("demo", "demo123");
-
-        // Apply language from login response if available
-        if (data && data.language) {
-          console.log(`Setting language from demo login: ${data.language}`);
-          await setLanguage(data.language);
-          applyTranslations();
-          elements.languageSelect.value = data.language;
-        }
-      }
-
-      lastAuthError = null;
-      lastSignupError = null;
-      saveSession({ username: "demo" });
-      await render();
-      setView("setup");
-    } catch (e2) {
-      lastSignupError = {
-        type: "error",
-        message: e2.message,
-        translate: () => t("auth.errorPrefix", "Error: ") + e2.message
-      };
-      elements.signupMsg.textContent = lastSignupError.translate();
-    }
-  });
 }

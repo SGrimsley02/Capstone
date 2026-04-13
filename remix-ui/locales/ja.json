@@ -31,7 +31,6 @@
     "password": "パスワード",
     "login": "ログイン",
     "createAccount": "アカウント作成",
-    "demoSignup": "デモサインアップ",
     "accountCreated": "アカウントが作成されました ✓",
     "registrationFailed": "登録に失敗しました",
     "loggedIn": "ログインしました ✓",
