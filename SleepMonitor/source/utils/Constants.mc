@@ -12,6 +12,7 @@ module StorageKeys {
     const HAS_ONBOARDED_KEY = "hasOnboarded";
     const PODCAST_URL_KEY = "podcast_url";
     const UI_THEME_KEY = "ui_theme";
+    const SLEEP_SCORE_KEY = "sleep_score";
 }
 
 module Defaults {
