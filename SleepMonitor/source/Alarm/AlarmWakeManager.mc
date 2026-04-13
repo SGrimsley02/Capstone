@@ -202,7 +202,6 @@ class WakeAlarmManager {
             _ringTimer = null;
         }
 
-        stopPodcastPolling();
         _alarmEpoch = null;
         _resetAlarm = true; // Even if the alarm time hasn't changed, we still need to reset the alarm for the next day here.
         getApp().updateUserInfo(method(:onReceive));
