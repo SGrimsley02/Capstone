@@ -86,33 +86,68 @@ class SleepMonitorOnboarding {
         if (responseCode == 200 && data != null) {
             // Got the result — stop polling
             _timer.stop();
+            _pollCount = 0;
 
+            var oldUsername = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
+            var newUsername = data["username"] as String?;
             var preferences = data["preferences"] as Dictionary?;
-            Storage.setValue(StorageKeys.USER_ID_KEY, data["username"]);
+
+            if (newUsername == null) {
+                Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+                System.println("Username poll returned success but no username was present.");
+                return;
+            }
+
+            var isDifferentUser = (oldUsername == null) || !oldUsername.equals(newUsername);
+
+            if (isDifferentUser) {
+                if (oldUsername != null) {
+                    System.println("Relink detected account switch from " + oldUsername + " to " + newUsername);
+                } else {
+                    System.println("First-time onboarding for " + newUsername);
+                }
+
+                // Clear stale user-specific wake data before applying the current user's prefs
+                _wakeStart = null;
+                _wakeEnd = null;
+                Storage.setValue(StorageKeys.WAKE_START_KEY, null);
+                Storage.setValue(StorageKeys.WAKE_END_KEY, null);
+            }
+
+            Storage.setValue(StorageKeys.USER_ID_KEY, newUsername);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
+
 
             if (preferences != null && preferences.size() > 0) {
                 _wakeStart = preferences["wakeStart"] as String?;
                 if (_wakeStart != null) {
                     Storage.setValue(StorageKeys.WAKE_START_KEY, _wakeStart);
                     System.println("Wake start time: " + _wakeStart);
+                } else {
+                    Storage.setValue(StorageKeys.WAKE_START_KEY, null);
                 }
+
                 _wakeEnd = preferences["wakeEnd"] as String?;
                 if (_wakeEnd != null) {
                     Storage.setValue(StorageKeys.WAKE_END_KEY, _wakeEnd);
                     System.println("Wake end time: " + _wakeEnd);
+                } else {
+                    Storage.setValue(StorageKeys.WAKE_END_KEY, null);
                 }
-            } 
+            } else {
+                Storage.setValue(StorageKeys.WAKE_START_KEY, null);
+                Storage.setValue(StorageKeys.WAKE_END_KEY, null);
+                System.println("No preferences returned from poll response.");
+            }
 
             getApp().getWakeAlarmManager().scheduleAlarmFromWakeWindow(_wakeStart, _wakeEnd);
 
-            System.println("Onboarding complete for: " + data["username"]);
+            System.println("Onboarding complete for: " + newUsername);
 
-            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false); // repull for preferences after 5 minutes
+            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false);
         } else if (responseCode == 404) {
             // Not ready yet — keep polling
             System.println("Waiting for user to log in... (" + _pollCount + ")");
-
         } else {
             // Something went wrong — stop polling
             _timer.stop();
@@ -126,5 +161,24 @@ class SleepMonitorOnboarding {
         _timer.stop();
         var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
         _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
+    }
+    
+    function runRelink(targetUrl as String) as Void {
+        System.println("Relink flow started.");
+
+        _pollCount = 0;
+        _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
+
+        try {
+            System.println("Attempting openWebPage for relink...");
+            Communications.openWebPage(targetUrl, {"sessionId" => _sessionId}, null);
+            System.println("Relink openWebPage call completed.");
+        } catch (ex) {
+            System.println("Relink openWebPage FAILED: " + ex.toString());
+            return;
+        }
+
+        _timer.stop();
+        _timer.start(method(:pollForUsername), 20000, true);
     }
 }

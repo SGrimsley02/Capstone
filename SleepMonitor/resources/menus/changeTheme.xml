@@ -6,7 +6,7 @@ Created: April 4, 2026
 Last Modified: April 4, 2026
 -->
 
-<menu id="UiCustomizationMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+<menu id="ChangeThemeMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <menu-item id="themeDark" label="@Strings.menu_theme_dark" />
     <menu-item id="themeLight" label="@Strings.menu_theme_light" />
 </menu>
