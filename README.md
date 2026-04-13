@@ -161,7 +161,7 @@ REMix speaks your language. Fully localized in:
 | ------------------- | --------------------------------- | --------------------------------- |
 | **Google Calendar** | Today's schedule in your briefing | OAuth login, calendar permissions |
 | **Spotify**         | Sleep-aware music for wake-ups    | OAuth login, playlist access      |
-| **Garmin Connect**  | Sensor data from your watch       | Native watch app                  |
+| **Garmin Connect**  | More accurate sleep analysis      | OAuth login, fetches sleep data   |
 | **News Sources**    | Curated, deduplicated articles    | RSS feeds + smart prioritization  |
 
 ---
