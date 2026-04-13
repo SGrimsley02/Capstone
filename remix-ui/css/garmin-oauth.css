@@ -60,6 +60,17 @@
   color: #ffb4a8;
 }
 
+#mfaBlock {
+  margin-top: 16px;
+}
+
+.oauth-mfa-note {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
 .oauth-actions {
   display: flex;
   flex-wrap: wrap;

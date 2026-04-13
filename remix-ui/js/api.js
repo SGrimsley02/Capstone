@@ -10,7 +10,7 @@ import { API_BASE } from "./config.js";
 
 async function parseResponse(res) {
   const data = await res.json().catch(() => ({}));
-  return { ok: res.ok, data };
+  return { ok: res.ok, status: res.status, data };
 }
 
 export async function getCurrentUser(username) {
@@ -50,15 +50,19 @@ export async function loginUser(username, password) {
   return parseResponse(res);
 }
 
-export async function connectGarmin(remixUsername, garminEmail, garminPassword) {
+export async function connectGarmin(remixUsername, garminEmail, garminPassword, mfaCode) {
+  console.log("Connecting Garmin with:", mfaCode);
+  const payload = {
+    username: remixUsername,
+    garminEmail,
+    garminPassword,
+    mfaCode
+  };
+
   const res = await fetch(`${API_BASE}/garmin`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: remixUsername,
-      garminEmail,
-      garminPassword
-    })
+    body: JSON.stringify(payload)
   });
 
   return parseResponse(res);

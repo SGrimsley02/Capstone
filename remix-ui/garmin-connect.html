@@ -51,6 +51,19 @@
             />
           </div>
         </div>
+        <div id="mfaBlock" hidden>
+          <p class="oauth-mfa-note" data-i18n="connect.mfaPrompt">Enter the verification code from Garmin to finish connecting.</p>
+          <label for="garminMfaCode" data-i18n="connect.mfaCode">Verification code</label>
+          <input
+            id="garminMfaCode"
+            name="garminMfaCode"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            data-i18n-placeholder="connect.mfaCodePlaceholder"
+            placeholder="123456"
+          />
+        </div>
         <div class="oauth-actions">
           <button type="button" class="ghost" id="btnGarminCancel" data-i18n="connect.cancel">Cancel</button>
           <button type="submit" class="primary" id="btnGarminSubmit" data-i18n="connect.allowAndConnect">Allow and connect</button>

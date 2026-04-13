@@ -68,10 +68,15 @@
     "permissionCredential": "Associate this link with your REMix account only; your Garmin password is not stored by REMix.",
     "email": "Garmin email",
     "password": "Garmin password",
+    "mfaPrompt": "Enter the verification code from Garmin to finish connecting.",
+    "mfaCode": "Verification code",
+    "mfaCodePlaceholder": "123456",
     "cancel": "Cancel",
     "allowAndConnect": "Allow and connect",
+    "verifyAndConnect": "Verify and connect",
     "errorWithReason": "Could not connect Garmin: {{reason}}",
     "errorGeneric": "Could not connect Garmin. Check your credentials and try again.",
+    "mfaRequired": "Enter your verification code to continue.",
     "checkCredentials": "Check your credentials and try again.",
     "garminAuthFailed": "Garmin authentication failed."
 
