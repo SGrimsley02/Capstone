@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="meta.garminConnectTitle">Connect Garmin — REMix</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/garmin-oauth.css" />
+</head>
+<body>
+  <div class="oauth-page">
+    <main class="oauth-card" aria-labelledby="oauth-title">
+      <div class="oauth-brand-row">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 id="oauth-title" data-i18n="connect.title">REMix</h1>
+          <p class="oauth-provider" data-i18n="setup.garminAccount">Garmin Connect</p>
+        </div>
+      </div>
+
+      <p class="oauth-lead" data-i18n="connect.lead">
+        REMix is requesting access to your Garmin Connect account.
+      </p>
+      <ul class="oauth-permissions">
+        <li data-i18n="connect.permissionRead">Read sleep and activity data to improve wake timing and morning insights.</li>
+        <li data-i18n="connect.permissionCredential">Associate this link with your REMix account only; your Garmin password is not stored by REMix.</li>
+      </ul>
+
+      <div id="garminConnectError" class="oauth-error" role="alert" hidden></div>
+
+      <form id="formGarminConnect">
+        <div class="row">
+          <div>
+            <label for="garminEmail" data-i18n="connect.email">Garmin email</label>
+            <input
+              id="garminEmail"
+              name="garminEmail"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div>
+            <label for="garminPassword" data-i18n="connect.password">Garmin password</label>
+            <input
+              id="garminPassword"
+              name="garminPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+        </div>
+        <div id="mfaBlock" hidden>
+          <p class="oauth-mfa-note" data-i18n="connect.mfaPrompt">Enter the verification code from Garmin to finish connecting.</p>
+          <label for="garminMfaCode" data-i18n="connect.mfaCode">Verification code</label>
+          <input
+            id="garminMfaCode"
+            name="garminMfaCode"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            data-i18n-placeholder="connect.mfaCodePlaceholder"
+            placeholder="123456"
+          />
+        </div>
+        <div class="oauth-actions">
+          <button type="button" class="ghost" id="btnGarminCancel" data-i18n="connect.cancel">Cancel</button>
+          <button type="submit" class="primary" id="btnGarminSubmit" data-i18n="connect.allowAndConnect">Allow and connect</button>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script type="module" src="./js/garmin-connect.js"></script>
+</body>
+</html>
