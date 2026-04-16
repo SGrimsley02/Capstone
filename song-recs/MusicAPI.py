@@ -313,42 +313,193 @@ class MusicAPI:
             raise e
 
     # =========================
-    # RECOBEATS METHODS
+    # RECCOBEATS METHODS
     # =========================
     def get_recommendations(
         self,
-        genre: Optional[str] = None,
-        mood: Optional[str] = None,
-        limit: int = 5
+        size: int,
+        seeds:List[str],
+        negative_seeds:Optional[List[str]],
+        acousticness:Optional[float],
+        danceability:Optional[float],
+        energy:Optional[float],
+        instrumentalness:Optional[float],
+        key:Optional[int],
+        liveness:Optional[float],
+        loudness:Optional[float],
+        mode:Optional[int],
+        speechiness:Optional[float],
+        tempo:Optional[float],
+        valence:Optional[float],
+        popularity:Optional[int],
+        featureWeight:Optional[float]
     ) -> List[Dict[str, Any]]:
         """
         RecoBeats API (no auth required)
-        Docs: https://recobeats.com/api
+        Docs: https://reccobeats.com/docs/apis/get-recommendation
+
+        Get track recommendations based on parameters
+
+        Input:
+        size (int):
+            Number of tracks to return [1:100]
+
+        seeds (List[str]):
+            List of seed track IDs (spotify or reccobeats) used to generate recommendations
+
+        negative_seeds (Optional[List[str]]):
+            List of track IDs (spotify or reccobeats) to avoid in recommendations
+
+        acousticness (Optional[float]):
+            (0.0 - 1.0), greater value represents higher confidence the track is acoustic
+
+        danceability (Optional[float]):
+            (0.0 - 1.0), higher scores indicate stronger, more rhythmically engaging tracks
+
+        energy (Optional[float]):
+            (0.0 - 1.0), low score (0) indicates a very calm, relaxed, or low-energy song
+
+        instrumentalness (Optional[float]):
+            (0.0 - 1.0), higher value indicates greater likelihood the track contains no vocal content
+
+        key (Optional[int]):
+            (-1 - 11), where 0 = C, 1 = C#/Db, ..., 11 = B), no key = -1
+
+        liveness (Optional[float]):
+            (0.0 - 1.0), higher value = high probability that the track was performed live
+
+        loudness (Optional[float]):
+            Target loudness in decibels (typically -60 to 0)
+
+        mode (Optional[int]):
+            Modality of the track (0 = minor, 1 = major)
+
+        speechiness (Optional[float]):
+            (0.0 - 1.0), 
+            values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music
+            values below 0.33 most likely represent music and other non-speech-like tracks
+
+        tempo (Optional[float]):
+            (0.0 - 250.0)(beats per minute)
+
+        valence (Optional[float]):
+            Target musical positivity/happiness (0.0 - 1.0), 1 represents a more positive, happy, or uplifting mood
+
+        popularity (Optional[int]):
+            Target popularity score (0 - 100), 100 being the most popular
+
+        featureWeight (Optional[float]):
+            (1 - 5), weight applied to audio feature similarity (higher = stronger influence)
+            scales the influence of audio feature queries by multiplying each feature before averaging
+
+        Output:
+        List[Dict[str, Any]]:
+            A list of recommended tracks, where each track includes metadata such as:
+                - id (str): Track ID
+                - title (str): Track name
+                - artists (List): Artist information
+                - audio features and other metadata depending on API response
+
         """
         url = "https://api.recobeats.com/v1/track/recommendation"
 
-        params = {
-            "size": limit
+        if not 1 <= size <= 100:
+            raise ValueError("size must be between 1 and 100")
+
+        if not seeds:
+            raise ValueError("seeds must contain at least one track ID")
+    
+        data = {
+            "size": size,
+            "seeds": seeds
         }
 
-        if genre:
-            params["genre"] = genre
-        if mood:
-            params["mood"] = mood
+        optional_data = {
+            "negativeSeeds": negative_seeds,
+            "acousticness": acousticness,
+            "danceability": danceability,
+            "energy": energy,
+            "instrumentalness": instrumentalness,
+            "key": key,
+            "liveness": liveness,
+            "loudness": loudness,
+            "mode": mode,
+            "speechiness": speechiness,
+            "tempo": tempo,
+            "valence": valence,
+            "popularity": popularity,
+            "featureWeight": featureWeight,
+        }
 
-        response = requests.get(url, params=params)
-        response.raise_for_status()
+        for k, v in optional_data.items():
+            if v is not None:
+                data[k] = v
 
-        data = response.json()
+        headers = {
+            'Accept': 'application/json'
+        }
 
-        return [
-            {
-                "title": track["title"],
-                "artist": track["artists"][0]["name"],
-                "id": track["id"]
-            }
-            for track in data.get("content", [])
-        ]
+        try: 
+            response = requests.request("GET", url, headers=headers, data=data)
+            response.raise_for_status()
+
+            response = response.json()
+
+            return [
+                {
+                    "title": track["title"],
+                    "artist": track["artists"][0]["name"],
+                    "id": track["id"]
+                }
+                for track in response.get("content", [])
+            ]
+        except Exception as e:
+            print(f"Failed to get track recommendation: {str(e)}")
+            raise e
     
-    def get_audio_features(self):
-        return 0
+    def get_audio_features(self, ids:List[str]) -> List:
+        '''
+        Get multiple audio features
+        Docs: https://reccobeats.com/docs/apis/get-audio-features
+
+        Input:
+        ids (List[str]): list of reccobeats or spotify ids [1,40]
+
+        Output:
+        content (List[Dict[str:any])
+        - ids (str)
+        - href (str)
+        - isrc (str)
+        - acousticness (float)
+        - danceability (float)
+        - energy (float)
+        - instrumentalness (float)
+        - key (int)
+        - liveness (float)
+        - loudness (float)
+        - mode (int)
+        - speechiness (float)
+        - tempo (float)
+        - valence (float)
+        '''
+        url = 'https://api.reccobeats.com/v1/audio-features'
+
+        data = {
+            'ids': ids
+        }
+
+        headers = {
+            'Accept': 'application/json'
+        }
+
+        try: 
+            response = requests.request("GET", url, headers=headers, data=data)
+            response.raise_for_status()
+
+            response = response.json()
+
+            return response.get("content", [])
+        
+        except Exception as e:
+            print(f"Failed to get audio features: {str(e)}")
+            raise e
