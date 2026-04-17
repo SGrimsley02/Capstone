@@ -65,7 +65,7 @@ class MusicAPI:
     # =========================
 
     # Create Playlist
-    def create_playlist(self, name: str, public: bool = False, description: str = None) -> str:
+    def create_playlist(self, name: str, public: bool = False, description: Optional[str] = None) -> str:
         '''
         Creat a playlist for a specific user
 
@@ -86,7 +86,7 @@ class MusicAPI:
             "description": description
         }
         try:
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, data=data)
             response.raise_for_status()
             
             #TODO: discuss if any other information is wanted/needed
@@ -117,7 +117,7 @@ class MusicAPI:
             data["position"] = position
 
         try:
-            response = requests.get(url, headers=headers, params=data)
+            response = requests.put(url, headers=headers, data=data)
             return response.status_code == 201
         
         except Exception as e:
@@ -145,7 +145,7 @@ class MusicAPI:
         }
 
         try:
-            response = requests.get(url, headers=headers, params=data)
+            response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
  
             items = response.json().get("items", [])
@@ -183,7 +183,7 @@ class MusicAPI:
         }
 
         try:
-            response = requests.delete(url, headers=headers, json=data)
+            response = requests.delete(url, headers=headers, data=data)
             response.raise_for_status()
             return response.status_code == 200
  
@@ -211,7 +211,7 @@ class MusicAPI:
         }
  
         try:
-            response = requests.get(url, headers=headers, params=data)
+            response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
  
             items = response.json().get("items", [])
@@ -254,7 +254,7 @@ class MusicAPI:
         }
  
         try:
-            response = requests.get(url, headers=headers, params=data)
+            response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
  
             items = response.json().get("items", [])
@@ -294,7 +294,7 @@ class MusicAPI:
             data["after"] = after
  
         try:
-            response = requests.get(url, headers=headers, params=data)
+            response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
  
             artists = response.json().get("artists", {}).get("items", [])
@@ -335,7 +335,7 @@ class MusicAPI:
         featureWeight:Optional[float]
     ) -> List[Dict[str, Any]]:
         """
-        RecoBeats API (no auth required)
+        ReccoBeats API (no auth required)
         Docs: https://reccobeats.com/docs/apis/get-recommendation
 
         Get track recommendations based on parameters
@@ -401,7 +401,7 @@ class MusicAPI:
                 - audio features and other metadata depending on API response
 
         """
-        url = "https://api.recobeats.com/v1/track/recommendation"
+        url = "https://api.reccobeats.com/v1/track/recommendation"
 
         if not 1 <= size <= 100:
             raise ValueError("size must be between 1 and 100")
@@ -482,7 +482,7 @@ class MusicAPI:
         - tempo (float)
         - valence (float)
         '''
-        url = 'https://api.reccobeats.com/v1/audio-features'
+        url = "https://api.reccobeats.com/v1/audio-features"
 
         data = {
             'ids': ids
