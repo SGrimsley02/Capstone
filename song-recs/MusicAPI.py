@@ -318,21 +318,21 @@ class MusicAPI:
     def get_recommendations(
         self,
         size: int,
-        seeds:List[str],
-        negative_seeds:Optional[List[str]],
-        acousticness:Optional[float],
-        danceability:Optional[float],
-        energy:Optional[float],
-        instrumentalness:Optional[float],
-        key:Optional[int],
-        liveness:Optional[float],
-        loudness:Optional[float],
-        mode:Optional[int],
-        speechiness:Optional[float],
-        tempo:Optional[float],
-        valence:Optional[float],
-        popularity:Optional[int],
-        featureWeight:Optional[float]
+        seeds: List[str],
+        negative_seeds: Optional[List[str]] = None,
+        acousticness: Optional[float] = None,
+        danceability: Optional[float] = None,
+        energy: Optional[float] = None,
+        instrumentalness: Optional[float] = None,
+        key: Optional[int] = None,
+        liveness: Optional[float] = None,
+        loudness: Optional[float] = None,
+        mode: Optional[int] = None,
+        speechiness: Optional[float] = None,
+        tempo: Optional[float] = None,
+        valence: Optional[float] = None,
+        popularity: Optional[int] = None,
+        featureWeight: Optional[float] = None
     ) -> List[Dict[str, Any]]:
         """
         ReccoBeats API (no auth required)

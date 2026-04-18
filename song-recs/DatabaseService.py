@@ -192,8 +192,7 @@ class DatabaseService:
             playlists = {
                 'good': user.get('playlist_good_sleep'),
                 'average': user.get('playlist_average_sleep'),
-                # Backward compatibility for older field naming.
-                'poor': user.get('playlist_poor_sleep') or user.get('playlist_bad_sleep')
+                'poor': user.get('playlist_poor_sleep')
             }
 
             return {k: v for k, v in playlists.items() if v}
