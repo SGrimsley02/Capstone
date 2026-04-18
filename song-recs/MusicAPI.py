@@ -67,7 +67,7 @@ class MusicAPI:
     # Create Playlist
     def create_playlist(self, name: str, public: bool = False, description: Optional[str] = None) -> str:
         '''
-        Creat a playlist for a specific user
+        Create a playlist for a specific user
 
         Input:
         name[str]        = name of the playlist
@@ -88,10 +88,10 @@ class MusicAPI:
         try:
             response = requests.post(url, headers=headers, data=data)
             response.raise_for_status()
-            
+
             #TODO: discuss if any other information is wanted/needed
             return response.json()["id"]
-        
+
         except Exception as e:
             print(f"Failed to create playlist: {str(e)}")
             raise e
@@ -101,7 +101,7 @@ class MusicAPI:
         '''
         Add a list of tracks to user's playlist
 
-        Input: 
+        Input:
         playlist_id[str]  = id that is returned from create playlist
         uris[List[str]]   = list of tracks: 'spotify:track:4iV5W9uYEdYUVa79Axb7Rh' (MAX = 100)
         position[int]     = zero-based index to insert at; appends if omitted
@@ -119,11 +119,11 @@ class MusicAPI:
         try:
             response = requests.put(url, headers=headers, data=data)
             return response.status_code == 201
-        
+
         except Exception as e:
             print(f'Failed to add tracks to playlist: {str(e)}')
             raise e
-        
+
     def get_playlist_item(self, playlist_id: str, limit: int = 20, offset: int = 0) -> List[Dict[str, Any]]:
         '''
         Get the tracks/episodes in a playlist
@@ -132,13 +132,13 @@ class MusicAPI:
         playlist_id[str] = Spotify playlist ID
         limit[int]       = max items to return (1-50, default 20)
         offset[int]      = index of first item to return (for pagination)
- 
+
         Output:
         List of dicts with keys: title, artist, uri, id
         '''
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/items"
         headers = self._get_headers()
- 
+
         data = {
             "limit": limit,
             "offset": offset
@@ -147,7 +147,7 @@ class MusicAPI:
         try:
             response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
- 
+
             items = response.json().get("items", [])
             return [
                 {
@@ -159,19 +159,19 @@ class MusicAPI:
                 for item in items
                 if item.get("track")  # skip episode/null tracks
             ]
- 
+
         except Exception as e:
             print(f"Failed to get playlist items: {str(e)}")
             raise e
-    
+
     def remove_playlist_item(self, playlist_id: str, uris: List[str]) -> bool:
         '''
         Remove one or more tracks from a playlist
-        
+
         Input:
         playlist_id[str] = Spotify playlist ID
         uris[List[str]]  = list of Spotify track URIs to remove
- 
+
         Output:
         bool: True if successful
         '''
@@ -186,11 +186,11 @@ class MusicAPI:
             response = requests.delete(url, headers=headers, data=data)
             response.raise_for_status()
             return response.status_code == 200
- 
+
         except Exception as e:
             print(f"Failed to remove playlist items: {str(e)}")
             raise e
-    
+
     def get_user_saved_tracks(self, limit: int = 20, offset: int = 0) -> List[Dict[str, Any]]:
         '''
         Get the current user's saved/liked tracks
@@ -198,22 +198,22 @@ class MusicAPI:
         Input:
         limit[int]  = max tracks to return (1-50, default 20)
         offset[int] = index of first track to return (for pagination)
- 
+
         Output:
         List of dicts with keys: title, artist, uri, id
         '''
         url = "https://api.spotify.com/v1/me/tracks"
         headers = self._get_headers()
- 
+
         data = {
             "limit": limit,
             "offset": offset
         }
- 
+
         try:
             response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
- 
+
             items = response.json().get("items", [])
             return [
                 {
@@ -225,38 +225,38 @@ class MusicAPI:
                 for item in items
                 if item.get("track")
             ]
- 
+
         except Exception as e:
             print(f"Failed to get saved tracks: {str(e)}")
             raise e
-    
+
     def get_user_top_tracks(self, time_range: str = "medium_term", limit: int = 20, offset: int = 0) -> List[Dict[str, Any]]:
         '''
         Get the current user's top tracks.
         Requires: user-top-read scope.
- 
+
         Input:
         time_range[str] = "short_term" (~4 weeks), "medium_term" (~6 months),
                           or "long_term" (all time). Default: "medium_term"
         limit[int]      = max items to return (1-50, default 20)
         offset[int]     = index of first item to return (for pagination)
- 
+
         Output:
         List of dicts with keys: title, artist, uri, id
         '''
         url = "https://api.spotify.com/v1/me/top/tracks"
         headers = self._get_headers()
- 
+
         data = {
             "time_range": time_range,
             "limit": limit,
             "offset": offset
         }
- 
+
         try:
             response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
- 
+
             items = response.json().get("items", [])
             return [
                 {
@@ -267,36 +267,36 @@ class MusicAPI:
                 }
                 for track in items
             ]
- 
+
         except Exception as e:
             print(f"Failed to get top tracks: {str(e)}")
             raise e
-    
+
     def get_user_artists(self, limit: int = 20, after: Optional[str] = None) -> List[Dict[str, Any]]:
         '''
         Get the current user's followed artists.
- 
+
         Input:
         limit[int]        = max artists to return (1-50, default 20)
         after[str]        = the last artist ID from a previous request (for pagination)
- 
+
         Output:
         List of dicts with keys: name, id, uri, genres
         '''
         url = "https://api.spotify.com/v1/me/following"
         headers = self._get_headers()
- 
+
         data: Dict[str, Any] = {
             "type": "artist",
             "limit": limit
         }
         if after:
             data["after"] = after
- 
+
         try:
             response = requests.get(url, headers=headers, data=data)
             response.raise_for_status()
- 
+
             artists = response.json().get("artists", {}).get("items", [])
             return [
                 {
@@ -307,7 +307,7 @@ class MusicAPI:
                 }
                 for artist in artists
             ]
- 
+
         except Exception as e:
             print(f"Failed to get followed artists: {str(e)}")
             raise e
@@ -375,7 +375,7 @@ class MusicAPI:
             Modality of the track (0 = minor, 1 = major)
 
         speechiness (Optional[float]):
-            (0.0 - 1.0), 
+            (0.0 - 1.0),
             values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music
             values below 0.33 most likely represent music and other non-speech-like tracks
 
@@ -408,7 +408,7 @@ class MusicAPI:
 
         if not seeds:
             raise ValueError("seeds must contain at least one track ID")
-    
+
         data = {
             "size": size,
             "seeds": seeds
@@ -439,7 +439,7 @@ class MusicAPI:
             'Accept': 'application/json'
         }
 
-        try: 
+        try:
             response = requests.request("GET", url, headers=headers, data=data)
             response.raise_for_status()
 
@@ -456,7 +456,7 @@ class MusicAPI:
         except Exception as e:
             print(f"Failed to get track recommendation: {str(e)}")
             raise e
-    
+
     def get_audio_features(self, ids:List[str]) -> List:
         '''
         Get multiple audio features
@@ -492,14 +492,14 @@ class MusicAPI:
             'Accept': 'application/json'
         }
 
-        try: 
+        try:
             response = requests.request("GET", url, headers=headers, data=data)
             response.raise_for_status()
 
             response = response.json()
 
             return response.get("content", [])
-        
+
         except Exception as e:
             print(f"Failed to get audio features: {str(e)}")
             raise e
