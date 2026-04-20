@@ -62,7 +62,7 @@ class QueueView extends WatchUi.View {
         // Title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(W / 2, y, Graphics.FONT_TINY, "Queue", Graphics.TEXT_JUSTIFY_CENTER);
-        y += 32;
+        y += 40;
 
         if (_loading) {
             dc.drawText(left, y, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_LEFT);
@@ -78,41 +78,58 @@ class QueueView extends WatchUi.View {
 
         // Now Playing header
         dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
-        dc.drawText(left, y, Graphics.FONT_XTINY, "Now Playing:", Graphics.TEXT_JUSTIFY_LEFT);
-        y += 22;
+        dc.drawText(W / 2, y, Graphics.FONT_XTINY, "Now Playing:", Graphics.TEXT_JUSTIFY_CENTER);
+        y += 25;
 
         if (_currentlyPlaying != null) {
             var currentName = _currentlyPlaying["name"];
             var currentArtist = _currentlyPlaying["artist_name"];
 
-            dc.drawText(
-                left + 8,
-                y,
-                Graphics.FONT_XTINY,
+            var nowTitleFont = Graphics.FONT_XTINY;
+            var nowArtistFont = Graphics.FONT_XTINY;
+
+            var nowTitle = _truncateText(
+                dc,
                 currentName != null ? currentName.toString() : "Unknown track",
-                Graphics.TEXT_JUSTIFY_LEFT
+                nowTitleFont,
+                dc.getWidth() - 70
             );
-            y += 18;
+
+            var nowArtist = _truncateText(
+                dc,
+                currentArtist != null ? currentArtist.toString() : "Unknown artist",
+                nowArtistFont,
+                dc.getWidth() - 80
+            );
 
             dc.drawText(
-                left + 8,
+                W / 2,
                 y,
-                Graphics.FONT_XTINY,
-                currentArtist != null ? currentArtist.toString() : "Unknown artist",
-                Graphics.TEXT_JUSTIFY_LEFT
+                nowTitleFont,
+                nowTitle,
+                Graphics.TEXT_JUSTIFY_CENTER
             );
-            y += 26;
+            y += 20;
+
+            dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(
+                W / 2,
+                y,
+                nowArtistFont,
+                nowArtist,
+                Graphics.TEXT_JUSTIFY_CENTER
+            );
+            y += 30;
         } else {
-            dc.drawText(left + 8, y, Graphics.FONT_XTINY, "Nothing currently playing", Graphics.TEXT_JUSTIFY_LEFT);
-            y += 26;
+            dc.drawText(W / 2, y, Graphics.FONT_XTINY, "Nothing currently playing", Graphics.TEXT_JUSTIFY_CENTER);
+            y += 24;
         }
 
         // Up Next header
-        dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-        dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
-        y += 18;
-
         if (_queue.size() == 0) {
+            dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
+            y += 30;
             dc.drawText(left + 8, y, Graphics.FONT_XTINY, "Queue is empty.", Graphics.TEXT_JUSTIFY_LEFT);
             return;
         }
@@ -122,13 +139,13 @@ class QueueView extends WatchUi.View {
             left,
             y,
             Graphics.FONT_XTINY,
-            (_selectedIndex + 1).toString() + "/" + _queue.size().toString(),
+            "Up Next (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
             Graphics.TEXT_JUSTIFY_LEFT
         );
-        y += 20;
+        y += 34;
 
         // Fewer visible rows so text doesn't crowd the screen
-        var maxRows = 4;
+        var maxRows = 3;
         var startIndex = _scrollOffset;
         var endIndex = startIndex + maxRows;
 
@@ -144,15 +161,26 @@ class QueueView extends WatchUi.View {
 
             if (isSelected) {
                 dc.setColor(Graphics.COLOR_WHITE, ThemeHelpers.getColor("playback_controls"));
-                dc.fillRoundedRectangle(left + 4, y - 2, dc.getWidth() - 24, 34, 6);
+                dc.fillRoundedRectangle(left + 4, y - 3, dc.getWidth() - 24, 50, 6);
                 dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
             } else {
                 dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             }
 
-            var line = (name != null ? name.toString() : "Unknown track");
-            dc.drawText(left + 10, y, Graphics.FONT_XTINY, line, Graphics.TEXT_JUSTIFY_LEFT);
-            y += 16;
+            var titleFont = Graphics.FONT_XTINY;
+            var artistFont = Graphics.FONT_XTINY;
+
+            var titleMaxWidth = dc.getWidth() - 40;
+            var artistMaxWidth = dc.getWidth() - 70;
+
+            var rawTitle = name != null ? name.toString() : "Unknown track";
+            var rawArtist = artist != null ? artist.toString() : "Unknown artist";
+
+            var displayTitle = _truncateText(dc, rawTitle, titleFont, titleMaxWidth);
+            var displayArtist = _truncateText(dc, rawArtist, artistFont, artistMaxWidth);
+
+            dc.drawText(left + 10, y, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
+            y += 19;
 
             if (isSelected) {
                 dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
@@ -160,14 +188,8 @@ class QueueView extends WatchUi.View {
                 dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
             }
 
-            dc.drawText(
-                left + 18,
-                y,
-                Graphics.FONT_XTINY,
-                artist != null ? artist.toString() : "Unknown artist",
-                Graphics.TEXT_JUSTIFY_LEFT
-            );
-            y += 22;
+            dc.drawText(left + 26, y, artistFont, displayArtist, Graphics.TEXT_JUSTIFY_LEFT);
+            y += 31;
         }
     }
 
@@ -206,6 +228,26 @@ class QueueView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+    function _truncateText(dc as Dc, text as String, font as Graphics.FontType, maxWidth as Number) as String {
+        if (text == null) {
+            return "";
+        }
+
+        if (dc.getTextWidthInPixels(text, font) <= maxWidth) {
+            return text;
+        }
+
+        var ellipsis = "...";
+        var shortened = text;
+
+        while (shortened.length() > 0 &&
+            dc.getTextWidthInPixels(shortened + ellipsis, font) > maxWidth) {
+            shortened = shortened.substring(0, shortened.length() - 1);
+        }
+
+        return shortened + ellipsis;
+    }
+
     function getProvider() as PlaybackProvider {
         return _provider;
     }
@@ -228,7 +270,7 @@ class QueueView extends WatchUi.View {
             return;
         }
 
-        var maxRows = 4;
+        var maxRows = 3;
         var maxOffset = _queue.size() - maxRows;
         if (maxOffset < 0) {
             maxOffset = 0;
@@ -260,7 +302,7 @@ class QueueView extends WatchUi.View {
             _selectedIndex = index;
         }
 
-        var maxRows = 4;
+        var maxRows = 3;
 
         if (_selectedIndex < _scrollOffset) {
             _scrollOffset = _selectedIndex;
