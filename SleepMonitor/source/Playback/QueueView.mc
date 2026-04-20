@@ -22,6 +22,7 @@ class QueueView extends WatchUi.View {
 
     private var _currentlyPlaying as Lang.Dictionary?;
     private var _queue as Array;
+    private var _selectedIndex as Number;
 
     function initialize(provider as PlaybackProvider) {
         View.initialize();
@@ -31,6 +32,7 @@ class QueueView extends WatchUi.View {
         _loadFailed = false;
         _currentlyPlaying = null;
         _queue = [] as Array;
+        _selectedIndex = 0;
     }
 
     function onShow() as Void {
@@ -38,6 +40,7 @@ class QueueView extends WatchUi.View {
         _loadFailed = false;
         _currentlyPlaying = null;
         _queue = [] as Array;
+        _selectedIndex = 0;
 
         _provider.sendPlaybackCommand("queue", null, null, method(:_onQueueLoaded));
         WatchUi.requestUpdate();
@@ -122,7 +125,8 @@ class QueueView extends WatchUi.View {
             var name = item["name"];
             var artist = item["artist_name"];
 
-            var line = (i + 1).toString() + ". " +
+            var prefix = (i == _selectedIndex) ? "> " : "  ";
+            var line = prefix + (i + 1).toString() + ". " +
                 (name != null ? name.toString() : "Unknown track");
 
             dc.drawText(left + 8, y, Graphics.FONT_XTINY, line, Graphics.TEXT_JUSTIFY_LEFT);
@@ -141,6 +145,7 @@ class QueueView extends WatchUi.View {
 
     function _onQueueLoaded(data as Lang.Dictionary) as Void {
         System.println("QueueView._onQueueLoaded: " + data);
+        System.println("RAW QUEUE DATA = " + data["queue"]);
 
         _loading = false;
         _loadFailed = false;
@@ -179,5 +184,26 @@ class QueueView extends WatchUi.View {
 
     function getQueue() as Array {
         return _queue;
+    }
+
+    function getSelectedIndex() as Number {
+        return _selectedIndex;
+    }
+
+    function setSelectedIndex(index as Number) as Void {
+        if (_queue.size() == 0) {
+            _selectedIndex = 0;
+            return;
+        }
+
+        if (index < 0) {
+            _selectedIndex = 0;
+        } else if (index >= _queue.size()) {
+            _selectedIndex = _queue.size() - 1;
+        } else {
+            _selectedIndex = index;
+        }
+
+        WatchUi.requestUpdate();
     }
 }

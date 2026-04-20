@@ -75,7 +75,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
     // Navigate to queue view
     private function _pushQueueView() as Void {
         var queueView = new QueueView(_view.getProvider());
-        WatchUi.pushView(queueView, null, WatchUi.SLIDE_UP);
+        WatchUi.pushView(queueView, new QueueDelegate(queueView), WatchUi.SLIDE_UP);
     }
 
     // ── Rating flow helpers ────────────────────────────────────────
