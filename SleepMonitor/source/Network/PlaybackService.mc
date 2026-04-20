@@ -21,6 +21,11 @@ class PlaybackProvider {
     private var _notifyUrl = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify/playback";
     private var _statusCallback as Lang.Method?;
 
+    private function _refreshUserId() as Void {
+        var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
+        _userId = stored != null ? stored.toString() : "unknown";
+    }
+
 
     function initialize() {
         var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
@@ -46,6 +51,9 @@ class PlaybackProvider {
 
     function sendPlaybackCommand(action as String, volume as Number?, trackUri as String?, callback as Lang.Method?) as Void {
         _statusCallback = callback;
+
+        _refreshUserId();
+        System.println("PlaybackProvider user_id: " + _userId);
 
         var payload = {
             "userId" => _userId,
