@@ -36,6 +36,7 @@ class PlaybackView extends WatchUi.View {
     private var _playIcon;
     private var _skipIcon;
     private var _volumeIcon;
+    private var _queueIcon;
     private var _starIcon;
 
     // Current track info (populated by status response)
@@ -49,6 +50,7 @@ class PlaybackView extends WatchUi.View {
     private var _playBounds as Array;
     private var _skipBounds as Array;
     private var _volumeBounds as Array;
+    private var _queueBounds as Array;
     private var _starBounds as Array;
 
     private var _provider as PlaybackProvider;
@@ -71,6 +73,7 @@ class PlaybackView extends WatchUi.View {
         _playIcon = loadResource(Rez.Drawables.playIcon);
         _skipIcon = loadResource(Rez.Drawables.skipIcon);
         _volumeIcon = loadResource(Rez.Drawables.volumeIcon);
+        _queueIcon = loadResource(Rez.Drawables.queueIcon);
         _starIcon = loadResource(Rez.Drawables.starIcon);
 
         _provider = new PlaybackProvider();
@@ -83,6 +86,7 @@ class PlaybackView extends WatchUi.View {
         _playBounds = zero;
         _skipBounds = zero;
         _volumeBounds = zero;
+        _queueBounds = zero;
         _starBounds = zero;
     }
 
@@ -142,14 +146,16 @@ class PlaybackView extends WatchUi.View {
         _playBounds = _iconBounds(_playIcon, cx, ctrlY);
         _skipBounds = _iconBounds(_skipIcon, cx + spacing, ctrlY);
 
-        // ── Secondary row: Volume | Star @ 80% ─────────────────────
+        // ── Secondary row: Volume | Queue | Star @ 80% ─────────────────
         var secY = (H * 0.80).toNumber();
         var secSpacing = (W * 0.22).toNumber();
 
         _drawIconCentered(dc, _volumeIcon, cx - secSpacing, secY, ThemeHelpers.getColor("playback_volume"));
+        _drawIconCentered(dc, _queueIcon, cx, secY, ThemeHelpers.getColor("playback_controls"));
         _drawIconCentered(dc, _starIcon, cx + secSpacing, secY, ThemeHelpers.getColor("playback_star"));
 
         _volumeBounds = _iconBounds(_volumeIcon, cx - secSpacing, secY);
+        _queueBounds = _iconBounds(_queueIcon, cx, secY);
         _starBounds = _iconBounds(_starIcon, cx + secSpacing, secY);
     }
 
@@ -159,6 +165,7 @@ class PlaybackView extends WatchUi.View {
     function getPlayBounds() as Array { return _playBounds; }
     function getSkipBounds() as Array { return _skipBounds; }
     function getVolumeBounds() as Array { return _volumeBounds; }
+    function getQueueBounds() as Array { return _queueBounds; }
     function getStarBounds() as Array { return _starBounds; }
 
     function isPlaying() as Boolean { return _isPlaying; }

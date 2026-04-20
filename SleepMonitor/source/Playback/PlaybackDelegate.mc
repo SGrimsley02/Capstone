@@ -63,6 +63,11 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
             return true;
         }
 
+        if (_hitTest(tapX, tapY, _view.getQueueBounds())) {
+            _pushQueueView();
+            return true;
+        }
+
         if (_hitTest(tapX, tapY, _view.getStarBounds())) {
             _pushRatingView();
             return true;
@@ -71,7 +76,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         return false;
     }
 
-    // ── Rating flow helpers ────────────────────────────────────────
+    // ── Queue flow helpers ────────────────────────────────────────
     // Navigate to queue view
     private function _pushQueueView() as Void {
         var queueView = new QueueView(_view.getProvider());

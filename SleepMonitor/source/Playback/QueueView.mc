@@ -64,15 +64,17 @@ class QueueView extends WatchUi.View {
         dc.drawText(W / 2, y, Graphics.FONT_TINY, "Queue", Graphics.TEXT_JUSTIFY_CENTER);
         y += 40;
 
+        var centerX = dc.getWidth() / 2;
+
         if (_loading) {
-            dc.drawText(left, y, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
         if (_loadFailed) {
-            dc.drawText(left, y, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_CENTER);
             y += 20;
-            dc.drawText(left, y, Graphics.FONT_XTINY, "Open Spotify on a device first.", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Open Spotify on a device first.", Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
