@@ -13,9 +13,9 @@ Description: Music playback control screen. Displays five tappable icon buttons:
                3. refreshStatus() — called by PlaybackDelegate after a skip or
                   rewind; uses a 1.5 s one-shot timer so Spotify has time to
                   advance before we query.
-Authors: Kiara Rose
+Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
-Last Modified: March 15, 2026
+Last Modified: April 19, 2026
 */
 
 import Toybox.Graphics;
@@ -212,7 +212,7 @@ class PlaybackView extends WatchUi.View {
     // ── Private helpers ────────────────────────────────────────────
 
     private function _requestStatus() as Void {
-        _provider.sendPlaybackCommand("status", null, method(:_onStatusReceived));
+        _provider.sendPlaybackCommand("status", null, null, method(:_onStatusReceived));
     }
 
     private function _stopTimers() as Void {

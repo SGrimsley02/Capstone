@@ -4,9 +4,9 @@ Description: Input delegate for the volume control screen.
              Handles taps on the upArrow / downArrow icons and physical UP/DOWN
              button presses — each adjusting the volume by 10% and immediately
              sending a "volume" action via PlaybackService. ESC pops the view.
-Authors: Kiara Rose
+Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
-Last Modified: March 15, 2026
+Last Modified: April 19, 2026
 */
 
 import Toybox.Lang;
@@ -64,7 +64,7 @@ class VolumeDelegate extends WatchUi.InputDelegate {
 
     private function _changeVolume(delta as Number) as Void {
         _view.setVolume(_view.getVolume() + delta);
-        _view.getProvider().sendPlaybackCommand("volume", _view.getVolume(), null);
+        _view.getProvider().sendPlaybackCommand("volume", _view.getVolume(), null, null);
         WatchUi.requestUpdate();
     }
 

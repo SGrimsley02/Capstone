@@ -4,9 +4,9 @@ Description: Implements the PlaybackProvider class responsible for communicating
                 with the AWS Lambda backend to control Spotify playback on the user's phone.
                 Also handles checking of playback status and triggering review submission whenever
                 a song finishes playing or the user exits the playback screen.
-Authors: Kiara Rose
+Authors: Kiara Rose, Ella Nguyen
 Created: March 14, 2026
-Last Modified: March 14, 2026
+Last Modified: April 19, 2026
 */
 
 
@@ -39,10 +39,12 @@ class PlaybackProvider {
     // { "userId": "testing", "action": "previous" }
     // { "userId": "testing", "action": "volume", "volume": 35 }
     // { "userId": "testing", "action": "status" }
-    // Goal: allow user to pause, resume, skip, replay, and adjust volume through watch app UI
+    // { "userId": "testing", "action": "queue" }
+    // { "userId": "testing", "action": "play_uri", "trackUri": "spotify:track:..." }
+    // Goal: allow user to pause, resume, skip, replay, fetch queue data, and adjust volume through watch app UI
     //       Use "status" action to check if a song is playing and retrieve its URI for review submission.
 
-    function sendPlaybackCommand(action as String, volume as Number?, callback as Lang.Method?) as Void {
+    function sendPlaybackCommand(action as String, volume as Number?, trackUri as String?, callback as Lang.Method?) as Void {
         _statusCallback = callback;
 
         var payload = {
@@ -51,6 +53,10 @@ class PlaybackProvider {
         };
         if (action.equals("volume")) {
             payload["volume"] = volume;
+        }
+
+        if (trackUri != null) {
+            payload["trackUri"] = trackUri;
         }
 
         try {
