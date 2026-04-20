@@ -4,7 +4,7 @@
   * switch views and tabs, and render the connected state of external services.
   * Authors: Kiara Rose
   * Created: March 24, 2026
-  * Last updated: March 25, 2026
+  * Last updated: April 20, 2026
 */
 
 const el = (id) => document.getElementById(id);
@@ -51,6 +51,7 @@ export function getElements() {
     btnToPrefs: el("btnToPrefs"),
     btnLogout: el("btnLogout"),
     btnResetAll: el("btnResetAll"),
+    btnDeleteAccountPrefs: el("btnDeleteAccountPrefs"),
     prefsForm: el("prefsForm"),
     prefsMsg: el("prefsMsg"),
     btnBackToSetup: el("btnBackToSetup"),

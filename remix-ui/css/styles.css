@@ -139,3 +139,33 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 @media (min-width: 560px){
   .toggle-grid{ grid-template-columns: 1fr 1fr; }
 }
+.danger-zone {
+  margin-top: 18px;
+}
+
+.danger-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #ffd6d6;
+}
+
+.danger-copy {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.danger-button {
+  cursor: pointer;
+  border: 1px solid rgba(255, 120, 120, 0.45);
+  background: rgba(120, 22, 36, 0.22);
+  color: #ffd6d6;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.danger-button:hover {
+  background: rgba(120, 22, 36, 0.32);
+  border-color: rgba(255, 120, 120, 0.6);
+}
