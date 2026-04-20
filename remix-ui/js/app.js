@@ -4,12 +4,12 @@
   * interactions between the UI, authentication, and preferences modules.
   * Authors: Kiara Rose
   * Created: March 24, 2026
-  * Last updated: March 25, 2026
+  * Last updated: April 20, 2026
 */
 
 import { API_BASE, FRONTEND_BASE } from "./config.js";
 import { clearSession, loadSession } from "./storage.js";
-import { getCurrentUser, updateLanguage } from "./api.js";
+import { getCurrentUser, updateLanguage, deleteAccount } from "./api.js";
 import { bindAuthHandlers } from "./auth.js";
 import { bindPreferencesHandlers, bindPreferenceToggles } from "./prefs.js";
 import { applyTranslations, getLanguage, initI18n, setLanguage, t } from "./i18n.js";
@@ -33,7 +33,7 @@ function setTab(which) {
   setTabUI(elements, which);
 }
 
-async function render() { // Main render function to initialize the app state and UI based on authentication status
+async function render() {
   const session = loadSession();
   const signedIn = !!session.username;
 
@@ -42,6 +42,7 @@ async function render() { // Main render function to initialize the app state an
     : t("header.signedOut", "Signed out");
 
   if (!signedIn) {
+    state.currentUser = null;
     setView("auth");
     elements.googleStatus.textContent = t("setup.notConnected", "Not connected");
     elements.spotifyStatus.textContent = t("setup.notConnected", "Not connected");
@@ -63,12 +64,10 @@ async function render() { // Main render function to initialize the app state an
     return;
   }
 
-  // DEBUG: Log the entire user object to see what backend returns
   console.log("User data from backend:", state.currentUser);
   console.log("Language field in user object:", state.currentUser.language);
   console.log("Current UI language:", getLanguage());
 
-  // Load user's saved language preference if available from backend
   if (state.currentUser.language && state.currentUser.language !== getLanguage()) {
     console.log(`Restoring user language from backend: ${state.currentUser.language}`);
     await setLanguage(state.currentUser.language);
@@ -118,6 +117,41 @@ elements.btnResetAll.addEventListener("click", () => {
   setTab("login");
 });
 
+async function handleDeleteAccount() {
+  const username = state.currentUser?.username || loadSession().username;
+  if (!username) return;
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete your account? This will permanently remove your REMix account and saved data."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const { ok, data } = await deleteAccount(username);
+
+    if (!ok) {
+      const message = data?.message || "Failed to delete account.";
+      alert(message);
+      return;
+    }
+
+    clearSession();
+    state.currentUser = null;
+    setView("auth");
+    setTab("login");
+    elements.authMsg.textContent = "Account deleted successfully.";
+    await render();
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    alert("Error deleting account.");
+  }
+}
+
+elements.btnDeleteAccountPrefs?.addEventListener("click", handleDeleteAccount);
+
 const params = new URLSearchParams(window.location.search);
 if (
   params.get("spotify") === "connected" ||
@@ -135,13 +169,11 @@ async function bootstrap() {
   elements.languageSelect.value = getLanguage();
   elements.languageSelect.addEventListener("change", async (e) => {
     const newLanguage = e.target.value;
-    
-    // Update language immediately in UI
+
     await setLanguage(newLanguage);
     applyTranslations();
     document.title = t("meta.title", document.title);
-    
-    // Save language preference to backend if user is logged in
+
     const session = loadSession();
     if (session.username) {
       try {
@@ -150,7 +182,6 @@ async function bootstrap() {
           console.error("Failed to save language preference to backend:", response.data);
         } else {
           console.log(`Language preference saved to backend: ${newLanguage}`);
-          // Update local state to reflect what's on the backend
           if (state.currentUser) {
             state.currentUser.language = newLanguage;
           }
