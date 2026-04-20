@@ -11,6 +11,7 @@
 import { DEFAULT_NEWS_SOURCES } from "./config.js";
 import { updatePreferences } from "./api.js";
 import { loadSession } from "./storage.js";
+import { COUNTRIES } from "./countries.js";
 
 export function bindPreferenceToggles(elements) {
   /**
@@ -41,6 +42,26 @@ export function bindPreferenceToggles(elements) {
   });
 }
 
+function populateCountrySelect(selectElement) {
+  if (!selectElement || selectElement.dataset.loaded === "true") {
+    return;
+  }
+
+  selectElement.innerHTML = "";
+
+  COUNTRIES
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(({ code, name }) => {
+      const option = document.createElement("option");
+      option.value = code;
+      option.textContent = name;
+      selectElement.appendChild(option);
+    });
+
+  selectElement.dataset.loaded = "true";
+}
+
 export function bindPreferencesHandlers({ elements, state, render, setView, t }) {
   /**
    * Bind event handlers for the preferences form, including loading existing
@@ -50,6 +71,7 @@ export function bindPreferencesHandlers({ elements, state, render, setView, t })
   elements.btnToPrefs.addEventListener("click", () => {
     setView("prefs");
     elements.prefsMsg.textContent = "";
+    populateCountrySelect(elements.countrySelect);
 
     if (state.currentUser?.preferences) {
       elements.prefsForm.wakeStart.value = state.currentUser.preferences.wakeStart || "07:00";
