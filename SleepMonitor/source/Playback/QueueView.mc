@@ -23,6 +23,8 @@ class QueueView extends WatchUi.View {
     private var _currentlyPlaying as Lang.Dictionary?;
     private var _queue as Array;
     private var _selectedIndex as Number;
+    private var _scrollOffset as Number;
+
 
     function initialize(provider as PlaybackProvider) {
         View.initialize();
@@ -33,6 +35,7 @@ class QueueView extends WatchUi.View {
         _currentlyPlaying = null;
         _queue = [] as Array;
         _selectedIndex = 0;
+        _scrollOffset = 0;
     }
 
     function onShow() as Void {
@@ -41,6 +44,7 @@ class QueueView extends WatchUi.View {
         _currentlyPlaying = null;
         _queue = [] as Array;
         _selectedIndex = 0;
+        _scrollOffset = 0;
 
         _provider.sendPlaybackCommand("queue", null, null, method(:_onQueueLoaded));
         WatchUi.requestUpdate();
@@ -106,31 +110,55 @@ class QueueView extends WatchUi.View {
         // Up Next header
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
-        y += 22;
+        y += 18;
 
         if (_queue.size() == 0) {
             dc.drawText(left + 8, y, Graphics.FONT_XTINY, "Queue is empty.", Graphics.TEXT_JUSTIFY_LEFT);
             return;
         }
 
+        dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+        dc.drawText(
+            left,
+            y,
+            Graphics.FONT_XTINY,
+            (_selectedIndex + 1).toString() + "/" + _queue.size().toString(),
+            Graphics.TEXT_JUSTIFY_LEFT
+        );
+        y += 20;
+
         // Fewer visible rows so text doesn't crowd the screen
         var maxRows = 4;
-        var count = _queue.size();
-        if (count > maxRows) {
-            count = maxRows;
+        var startIndex = _scrollOffset;
+        var endIndex = startIndex + maxRows;
+
+        if (endIndex > _queue.size()) {
+            endIndex = _queue.size();
         }
 
-        for (var i = 0; i < count; i += 1) {
+        for (var i = startIndex; i < endIndex; i += 1) {
             var item = _queue[i] as Lang.Dictionary;
             var name = item["name"];
             var artist = item["artist_name"];
+            var isSelected = (i == _selectedIndex);
 
-            var prefix = (i == _selectedIndex) ? "> " : "  ";
-            var line = prefix + (i + 1).toString() + ". " +
-                (name != null ? name.toString() : "Unknown track");
+            if (isSelected) {
+                dc.setColor(Graphics.COLOR_WHITE, ThemeHelpers.getColor("playback_controls"));
+                dc.fillRoundedRectangle(left + 4, y - 2, dc.getWidth() - 24, 34, 6);
+                dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
+            } else {
+                dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
+            }
 
-            dc.drawText(left + 8, y, Graphics.FONT_XTINY, line, Graphics.TEXT_JUSTIFY_LEFT);
-            y += 18;
+            var line = (name != null ? name.toString() : "Unknown track");
+            dc.drawText(left + 10, y, Graphics.FONT_XTINY, line, Graphics.TEXT_JUSTIFY_LEFT);
+            y += 16;
+
+            if (isSelected) {
+                dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
+            } else {
+                dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            }
 
             dc.drawText(
                 left + 18,
@@ -190,9 +218,37 @@ class QueueView extends WatchUi.View {
         return _selectedIndex;
     }
 
+    function getScrollOffset() as Number {
+        return _scrollOffset;
+    }
+
+    function setScrollOffset(offset as Number) as Void {
+        if (_queue.size() == 0) {
+            _scrollOffset = 0;
+            return;
+        }
+
+        var maxRows = 4;
+        var maxOffset = _queue.size() - maxRows;
+        if (maxOffset < 0) {
+            maxOffset = 0;
+        }
+
+        if (offset < 0) {
+            _scrollOffset = 0;
+        } else if (offset > maxOffset) {
+            _scrollOffset = maxOffset;
+        } else {
+            _scrollOffset = offset;
+        }
+
+        WatchUi.requestUpdate();
+    }
+
     function setSelectedIndex(index as Number) as Void {
         if (_queue.size() == 0) {
             _selectedIndex = 0;
+            _scrollOffset = 0;
             return;
         }
 
@@ -202,6 +258,14 @@ class QueueView extends WatchUi.View {
             _selectedIndex = _queue.size() - 1;
         } else {
             _selectedIndex = index;
+        }
+
+        var maxRows = 4;
+
+        if (_selectedIndex < _scrollOffset) {
+            _scrollOffset = _selectedIndex;
+        } else if (_selectedIndex >= _scrollOffset + maxRows) {
+            _scrollOffset = _selectedIndex - maxRows + 1;
         }
 
         WatchUi.requestUpdate();
