@@ -5,9 +5,10 @@ Description: Simple queue screen for Spotify playback. Fetches queue data from
              a basic text list of upcoming songs.
 Authors: Ella Nguyen
 Created: April 19, 2026
-Last Modified: April 19, 2026
+Last Modified: April 20, 2026
 */
 
+import Toybox.Communications;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
@@ -20,10 +21,13 @@ class QueueView extends WatchUi.View {
     private var _loading as Boolean;
     private var _loadFailed as Boolean;
 
-    private var _currentlyPlaying as Lang.Dictionary?;
     private var _queue as Array;
     private var _selectedIndex as Number;
     private var _scrollOffset as Number;
+
+    private var _rowCoverCache as Lang.Dictionary;
+    private var _pendingCoverUrl as String?;
+    private var _placeholderIcon;
 
 
     function initialize(provider as PlaybackProvider) {
@@ -32,19 +36,22 @@ class QueueView extends WatchUi.View {
         _provider = provider;
         _loading = true;
         _loadFailed = false;
-        _currentlyPlaying = null;
         _queue = [] as Array;
         _selectedIndex = 0;
         _scrollOffset = 0;
+        _rowCoverCache = {} as Lang.Dictionary;
+        _pendingCoverUrl = null;
+        _placeholderIcon = loadResource(Rez.Drawables.musicIcon);
     }
 
     function onShow() as Void {
         _loading = true;
         _loadFailed = false;
-        _currentlyPlaying = null;
         _queue = [] as Array;
         _selectedIndex = 0;
         _scrollOffset = 0;
+        _pendingCoverUrl = null;
+        _rowCoverCache = {} as Lang.Dictionary;
 
         _provider.sendPlaybackCommand("queue", null, null, method(:_onQueueLoaded));
         WatchUi.requestUpdate();
@@ -52,7 +59,7 @@ class QueueView extends WatchUi.View {
 
     function onUpdate(dc as Dc) as Void {
         var W = dc.getWidth();
-        var left = 16;
+        var left = 50;
         var y = 20;
 
         var bgColor = ThemeHelpers.getColor("bg");
@@ -62,7 +69,7 @@ class QueueView extends WatchUi.View {
         // Title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(W / 2, y, Graphics.FONT_TINY, "Queue", Graphics.TEXT_JUSTIFY_CENTER);
-        y += 40;
+        y += 32;
 
         var centerX = dc.getWidth() / 2;
 
@@ -78,54 +85,7 @@ class QueueView extends WatchUi.View {
             return;
         }
 
-        // Now Playing header
-        dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
-        dc.drawText(W / 2, y, Graphics.FONT_XTINY, "Now Playing:", Graphics.TEXT_JUSTIFY_CENTER);
-        y += 25;
-
-        if (_currentlyPlaying != null) {
-            var currentName = _currentlyPlaying["name"];
-            var currentArtist = _currentlyPlaying["artist_name"];
-
-            var nowTitleFont = Graphics.FONT_XTINY;
-            var nowArtistFont = Graphics.FONT_XTINY;
-
-            var nowTitle = _truncateText(
-                dc,
-                currentName != null ? currentName.toString() : "Unknown track",
-                nowTitleFont,
-                dc.getWidth() - 70
-            );
-
-            var nowArtist = _truncateText(
-                dc,
-                currentArtist != null ? currentArtist.toString() : "Unknown artist",
-                nowArtistFont,
-                dc.getWidth() - 80
-            );
-
-            dc.drawText(
-                W / 2,
-                y,
-                nowTitleFont,
-                nowTitle,
-                Graphics.TEXT_JUSTIFY_CENTER
-            );
-            y += 20;
-
-            dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-            dc.drawText(
-                W / 2,
-                y,
-                nowArtistFont,
-                nowArtist,
-                Graphics.TEXT_JUSTIFY_CENTER
-            );
-            y += 30;
-        } else {
-            dc.drawText(W / 2, y, Graphics.FONT_XTINY, "Nothing currently playing", Graphics.TEXT_JUSTIFY_CENTER);
-            y += 24;
-        }
+        y += 10;
 
         // Up Next header
         if (_queue.size() == 0) {
@@ -144,7 +104,7 @@ class QueueView extends WatchUi.View {
             "Up Next (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
             Graphics.TEXT_JUSTIFY_LEFT
         );
-        y += 34;
+        y += 28;
 
         // Fewer visible rows so text doesn't crowd the screen
         var maxRows = 3;
@@ -155,25 +115,58 @@ class QueueView extends WatchUi.View {
             endIndex = _queue.size();
         }
 
+        _ensureVisibleCovers();
+
         for (var i = startIndex; i < endIndex; i += 1) {
             var item = _queue[i] as Lang.Dictionary;
             var name = item["name"];
             var artist = item["artist_name"];
             var isSelected = (i == _selectedIndex);
 
+            var rowTop = y;
+            var rowHeight = 78;
+
+            var coverSize = 56;
+            var coverX = left + 10;
+            var coverY = rowTop + (rowHeight - coverSize) / 2;
+
+            var textX = coverX + coverSize + 14;
+
             if (isSelected) {
                 dc.setColor(Graphics.COLOR_WHITE, ThemeHelpers.getColor("playback_controls"));
-                dc.fillRoundedRectangle(left + 4, y - 3, dc.getWidth() - 24, 50, 6);
+                dc.fillRoundedRectangle(4, rowTop - 2, dc.getWidth() - 8, rowHeight, 10);
                 dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
             } else {
                 dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             }
 
+            var imageUrl = item["image_url"];
+            var cachedCover = null;
+
+            if (imageUrl != null) {
+                cachedCover = _rowCoverCache[imageUrl.toString()];
+            }
+
+            if (cachedCover != null) {
+                dc.drawBitmap(coverX, coverY, cachedCover);
+            } else if (_placeholderIcon != null) {
+                _drawTinyIconCentered(
+                    dc,
+                    _placeholderIcon,
+                    coverX + (coverSize / 2),
+                    coverY + (coverSize / 2),
+                    ThemeHelpers.getColor("playback_artist_name")
+                );
+            } else {
+                dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+                dc.drawRectangle(coverX, coverY, coverSize, coverSize);
+            }
+
             var titleFont = Graphics.FONT_XTINY;
             var artistFont = Graphics.FONT_XTINY;
 
-            var titleMaxWidth = dc.getWidth() - 40;
-            var artistMaxWidth = dc.getWidth() - 70;
+            var titleMaxWidth = dc.getWidth() - textX - 18;
+            var artistMaxWidth = dc.getWidth() - textX - 18;
 
             var rawTitle = name != null ? name.toString() : "Unknown track";
             var rawArtist = artist != null ? artist.toString() : "Unknown artist";
@@ -181,18 +174,79 @@ class QueueView extends WatchUi.View {
             var displayTitle = _truncateText(dc, rawTitle, titleFont, titleMaxWidth);
             var displayArtist = _truncateText(dc, rawArtist, artistFont, artistMaxWidth);
 
-            dc.drawText(left + 10, y, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
-            y += 19;
+            // Spacing
+            var lineGap = 22;
+            var totalTextHeight = 2 * lineGap;
 
-            if (isSelected) {
-                dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
-            } else {
-                dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            var textStartY = rowTop + ((rowHeight - totalTextHeight) / 2) - 2;
+
+            dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, textStartY, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
+
+            dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, textStartY + lineGap, artistFont, displayArtist, Graphics.TEXT_JUSTIFY_LEFT);
+
+            y += 80;
+        }
+    }
+
+    private function _ensureVisibleCovers() as Void {
+        if (_pendingCoverUrl != null) {
+            return;
+        }
+
+        var maxRows = 3;
+        var startIndex = _scrollOffset;
+        var endIndex = startIndex + maxRows;
+
+        if (endIndex > _queue.size()) {
+            endIndex = _queue.size();
+        }
+
+        for (var i = startIndex; i < endIndex; i += 1) {
+            var item = _queue[i] as Lang.Dictionary;
+            var imageUrl = item["image_url"];
+
+            if (imageUrl == null) {
+                continue;
             }
 
-            dc.drawText(left + 26, y, artistFont, displayArtist, Graphics.TEXT_JUSTIFY_LEFT);
-            y += 31;
+            var url = imageUrl.toString();
+
+            if (_rowCoverCache[url] == null) {
+                _requestRowCover(url);
+                return;
+            }
         }
+    }
+
+    private function _requestRowCover(url as String) as Void {
+        System.println("REQUESTING ROW COVER: " + url);
+        _pendingCoverUrl = url;
+
+        Communications.makeImageRequest(
+            url,
+            {},
+            {
+                :width => 56,
+                :height => 56,
+                :dithering => Communications.IMAGE_DITHERING_NONE
+            },
+            method(:_onRowCoverLoaded)
+        );
+    }
+
+    function _onRowCoverLoaded(responseCode as Lang.Number, data as Graphics.BitmapReference or WatchUi.BitmapResource or Null) as Void {
+        System.println("ROW COVER RESPONSE CODE = " + responseCode);
+        System.println("ROW COVER URL = " + _pendingCoverUrl);
+        System.println("ROW COVER DATA NULL? " + (data == null));
+        
+        if (_pendingCoverUrl != null && responseCode == 200 && data != null) {
+            _rowCoverCache[_pendingCoverUrl] = data;
+        }
+
+        _pendingCoverUrl = null;
+        WatchUi.requestUpdate();
     }
 
     function _onQueueLoaded(data as Lang.Dictionary) as Void {
@@ -201,7 +255,6 @@ class QueueView extends WatchUi.View {
 
         _loading = false;
         _loadFailed = false;
-        _currentlyPlaying = null;
         _queue = [] as Array;
 
         if (data == null) {
@@ -217,17 +270,34 @@ class QueueView extends WatchUi.View {
             return;
         }
 
-        var currentlyPlaying = data["currently_playing"];
-        if (currentlyPlaying != null && currentlyPlaying instanceof Lang.Dictionary) {
-            _currentlyPlaying = currentlyPlaying;
-        }
-
         var queueData = data["queue"];
         if (queueData != null && queueData instanceof Array) {
             _queue = queueData;
+
+            if (_queue.size() > 0) {
+                var firstItem = _queue[0] as Lang.Dictionary;
+                System.println("FIRST QUEUE ITEM IMAGE URL = " + firstItem["image_url"]);
+            }
         }
 
+        _ensureVisibleCovers();
         WatchUi.requestUpdate();
+    }
+
+    private function _drawTinyIconCentered(dc as Dc, icon, cx as Number, cy as Number, tint as Number) as Void {
+        if (icon == null) {
+            return;
+        }
+
+        var iw = icon.getWidth();
+        var ih = icon.getHeight();
+
+        dc.drawBitmap2(
+            cx - iw / 2,
+            cy - ih / 2,
+            icon,
+            { :tintColor => tint }
+        );
     }
 
     function _truncateText(dc as Dc, text as String, font as Graphics.FontType, maxWidth as Number) as String {
@@ -312,6 +382,7 @@ class QueueView extends WatchUi.View {
             _scrollOffset = _selectedIndex - maxRows + 1;
         }
 
+        _ensureVisibleCovers();
         WatchUi.requestUpdate();
     }
 }
