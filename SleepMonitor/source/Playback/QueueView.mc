@@ -16,8 +16,8 @@ import Toybox.WatchUi;
 
 class QueueView extends WatchUi.View {
 
+    // Queue data + UI state
     private var _provider as PlaybackProvider;
-
     private var _loading as Boolean;
     private var _loadFailed as Boolean;
 
@@ -25,10 +25,13 @@ class QueueView extends WatchUi.View {
     private var _selectedIndex as Number;
     private var _scrollOffset as Number;
 
+    // Album art caching
     private var _rowCoverCache as Lang.Dictionary;
     private var _pendingCoverUrl as String?;
     private var _placeholderIcon;
 
+
+    // ── Lifecycle ────────────────────────────────────────────
 
     function initialize(provider as PlaybackProvider) {
         View.initialize();
@@ -57,11 +60,14 @@ class QueueView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+    // ── Rendering ────────────────────────────────────────────
+
     function onUpdate(dc as Dc) as Void {
         var W = dc.getWidth();
         var left = 50;
         var y = 20;
 
+        // Background
         var bgColor = ThemeHelpers.getColor("bg");
         dc.setColor(bgColor, bgColor);
         dc.clear();
@@ -73,11 +79,13 @@ class QueueView extends WatchUi.View {
 
         var centerX = dc.getWidth() / 2;
 
+        // Loading state
         if (_loading) {
             dc.drawText(centerX, y, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
+        // Error state
         if (_loadFailed) {
             dc.drawText(centerX, y, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_CENTER);
             y += 20;
@@ -87,7 +95,7 @@ class QueueView extends WatchUi.View {
 
         y += 10;
 
-        // Up Next header
+        // Empty state
         if (_queue.size() == 0) {
             dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
@@ -96,6 +104,7 @@ class QueueView extends WatchUi.View {
             return;
         }
 
+        // Up Next header
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(
             left,
@@ -106,7 +115,7 @@ class QueueView extends WatchUi.View {
         );
         y += 28;
 
-        // Fewer visible rows so text doesn't crowd the screen
+        // Visible window
         var maxRows = 3;
         var startIndex = _scrollOffset;
         var endIndex = startIndex + maxRows;
@@ -140,6 +149,7 @@ class QueueView extends WatchUi.View {
                 dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             }
 
+            // Album art
             var imageUrl = item["image_url"];
             var cachedCover = null;
 
@@ -162,6 +172,7 @@ class QueueView extends WatchUi.View {
                 dc.drawRectangle(coverX, coverY, coverSize, coverSize);
             }
 
+            // Text
             var titleFont = Graphics.FONT_XTINY;
             var artistFont = Graphics.FONT_XTINY;
 
@@ -189,6 +200,8 @@ class QueueView extends WatchUi.View {
             y += 80;
         }
     }
+
+    // ── Album art loading ───────────────────────────────────
 
     private function _ensureVisibleCovers() as Void {
         if (_pendingCoverUrl != null) {
@@ -245,6 +258,8 @@ class QueueView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+    // ── Queue callback ──────────────────────────────────────
+
     function _onQueueLoaded(data as Lang.Dictionary) as Void {
 
         _loading = false;
@@ -276,6 +291,8 @@ class QueueView extends WatchUi.View {
         _ensureVisibleCovers();
         WatchUi.requestUpdate();
     }
+
+    // ── Helpers ─────────────────────────────────────────────
 
     private function _drawTinyIconCentered(dc as Dc, icon, cx as Number, cy as Number, tint as Number) as Void {
         if (icon == null) {
@@ -320,6 +337,8 @@ class QueueView extends WatchUi.View {
     function getQueue() as Array {
         return _queue;
     }
+
+    // ── Navigation ──────────────────────────────────────────
 
     function getSelectedIndex() as Number {
         return _selectedIndex;
