@@ -5,7 +5,7 @@ Description: Simple queue screen for Spotify playback. Fetches queue data from
              a basic text list of upcoming songs.
 Authors: Ella Nguyen
 Created: April 19, 2026
-Last Modified: April 20, 2026
+Last Modified: April 21, 2026
 */
 
 import Toybox.Communications;
@@ -221,7 +221,6 @@ class QueueView extends WatchUi.View {
     }
 
     private function _requestRowCover(url as String) as Void {
-        System.println("REQUESTING ROW COVER: " + url);
         _pendingCoverUrl = url;
 
         Communications.makeImageRequest(
@@ -237,9 +236,6 @@ class QueueView extends WatchUi.View {
     }
 
     function _onRowCoverLoaded(responseCode as Lang.Number, data as Graphics.BitmapReference or WatchUi.BitmapResource or Null) as Void {
-        System.println("ROW COVER RESPONSE CODE = " + responseCode);
-        System.println("ROW COVER URL = " + _pendingCoverUrl);
-        System.println("ROW COVER DATA NULL? " + (data == null));
         
         if (_pendingCoverUrl != null && responseCode == 200 && data != null) {
             _rowCoverCache[_pendingCoverUrl] = data;
@@ -250,8 +246,6 @@ class QueueView extends WatchUi.View {
     }
 
     function _onQueueLoaded(data as Lang.Dictionary) as Void {
-        System.println("QueueView._onQueueLoaded: " + data);
-        System.println("RAW QUEUE DATA = " + data["queue"]);
 
         _loading = false;
         _loadFailed = false;
@@ -276,7 +270,6 @@ class QueueView extends WatchUi.View {
 
             if (_queue.size() > 0) {
                 var firstItem = _queue[0] as Lang.Dictionary;
-                System.println("FIRST QUEUE ITEM IMAGE URL = " + firstItem["image_url"]);
             }
         }
 
