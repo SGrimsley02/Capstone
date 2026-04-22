@@ -29,26 +29,46 @@
         </div>
       </div>
       <div class="header-actions">
-        <label for="languageSelect" class="mini" data-i18n="header.language">Language</label>
-        <select id="languageSelect" class="language-select" aria-label="Language selector" data-i18n-aria-label="header.languageSelector">
-          <option value="en" data-i18n="language.en">English</option>
-          <option value="es" data-i18n="language.es">Español</option>
-          <option value="fr" data-i18n="language.fr">Français</option>
-          <option value="de" data-i18n="language.de">Deutsch</option>
-          <option value="it" data-i18n="language.it">Italiano</option>
-          <option value="ja" data-i18n="language.ja">日本語</option>
-          <option value="ko" data-i18n="language.ko">한국어</option>
-          <option value="nl" data-i18n="language.nl">Nederlands</option>
-          <option value="pt" data-i18n="language.pt">Português</option>
-          <option value="ru" data-i18n="language.ru">Русский</option>
-          <option value="th" data-i18n="language.th">ไทย</option>
-          <option value="wo" data-i18n="language.wo">Wolof</option>
-          <option value="zh" data-i18n="language.zh">中文</option>
-          <option value="ar" data-i18n="language.ar">العربية</option>
-          <option value="hi" data-i18n="language.hi">हिन्दी</option>
-          <option value="vi" data-i18n="language.vi">Tiếng Việt</option>
-        </select>
-        <div class="pill" id="pillState" data-i18n="header.signedOut">Signed out</div>
+        <div class="language-group">
+          <label for="languageSelect" class="mini" data-i18n="header.language">Language</label>
+          <select id="languageSelect" class="language-select" aria-label="Language selector" data-i18n-aria-label="header.languageSelector">
+            <option value="en" data-i18n="language.en">English</option>
+            <option value="es" data-i18n="language.es">Español</option>
+            <option value="fr" data-i18n="language.fr">Français</option>
+            <option value="de" data-i18n="language.de">Deutsch</option>
+            <option value="it" data-i18n="language.it">Italiano</option>
+            <option value="ja" data-i18n="language.ja">日本語</option>
+            <option value="ko" data-i18n="language.ko">한국어</option>
+            <option value="nl" data-i18n="language.nl">Nederlands</option>
+            <option value="pt" data-i18n="language.pt">Português</option>
+            <option value="ru" data-i18n="language.ru">Русский</option>
+            <option value="th" data-i18n="language.th">ไทย</option>
+            <option value="wo" data-i18n="language.wo">Wolof</option>
+            <option value="zh" data-i18n="language.zh">中文</option>
+            <option value="ar" data-i18n="language.ar">العربية</option>
+            <option value="hi" data-i18n="language.hi">हिन्दी</option>
+            <option value="vi" data-i18n="language.vi">Tiếng Việt</option>
+          </select>
+        </div>
+
+        <div class="account-menu-wrap">
+          <button
+            type="button"
+            id="btnAccountMenu"
+            class="account-menu-trigger hide"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span id="pillState">Signed out</span>
+            <span class="account-menu-caret">▾</span>
+          </button>
+
+          <div id="accountDropdown" class="account-dropdown hide">
+            <button type="button" id="btnDeleteAccountHeader" class="account-dropdown-item danger-item">
+              Delete account
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -167,9 +187,9 @@
           <div class="divider"></div>
 
           <div class="btns">
-            <button id="btnToPrefs" type="button" disabled data-i18n="setup.continue">Continue to preferences</button>
-            <button id="btnLogout" type="button" class="ghost" data-i18n="setup.logout">Log out</button>
-            <button id="btnResetAll" type="button" class="ghost" data-i18n="setup.reset">Reset session</button>
+             <button id="btnToPrefs" type="button" disabled data-i18n="setup.continue">Continue to preferences</button>
+             <button id="btnLogout" type="button" class="ghost" data-i18n="setup.logout">Log out</button>
+             <button id="btnResetAll" type="button" class="ghost" data-i18n="setup.reset">Reset session</button>
           </div>
 
         </div>
@@ -386,15 +406,8 @@
              </div>
 
             <div class="btns">
-              <button type="submit" class="primary" data-i18n="prefs.save">Save preferences</button>
-              <button type="button" id="btnBackToSetup" class="ghost" data-i18n="prefs.back">Back</button>
-            </div>
-
-            <div class="danger-zone">
-              <div class="divider"></div>
-              <h3 class="danger-title">Delete account</h3>
-              <p class="danger-copy">Permanently delete your REMix account and saved data.</p>
-              <button type="button" id="btnDeleteAccountPrefs" class="danger-button">Delete account</button>
+               <button type="submit" class="primary" data-i18n="prefs.save">Save preferences</button>
+               <button type="button" id="btnBackToSetup" class="ghost" data-i18n="prefs.back">Back</button>
             </div>
 
             <div class="toast" id="prefsMsg"></div>

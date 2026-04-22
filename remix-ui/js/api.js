@@ -1,9 +1,9 @@
 /**
   * api.js - API helper functions for the Remix dashboard
   * This file contains functions to interact with the backend API.
-  * Authors: Kiara Rose
+  * Authors: Kiara Rose, Audrey Pan
   * Created: March 24, 2026
-  * Last updated: April 20, 2026
+  * Last updated: April 21, 2026
 */
 
 import { API_BASE } from "./config.js";
@@ -88,10 +88,13 @@ export async function updateLanguage(username, language) {
   return parseResponse(res);
 }
 
-export async function deleteAccount(username) {
-  const res = await fetch(`${API_BASE}/delete-account?username=${encodeURIComponent(username)}`, {
+export async function deleteAccount(sessionId) {
+  const res = await fetch(`${API_BASE}/delete-account`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      "Content-Type": "application/json",
+      "X-Session-Id": sessionId
+    }
   });
 
   return parseResponse(res);

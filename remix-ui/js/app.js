@@ -4,7 +4,7 @@
   * interactions between the UI, authentication, and preferences modules.
   * Authors: Kiara Rose
   * Created: March 24, 2026
-  * Last updated: April 20, 2026
+  * Last updated: April 22, 2026
 */
 
 import { API_BASE, FRONTEND_BASE } from "./config.js";
@@ -17,13 +17,31 @@ import {
   getElements,
   renderConnectedState,
   setTab as setTabUI,
-  setView as setViewUI
+  setView as setViewUI,
+  toggleAccountMenu
 } from "./ui.js";
 
 const elements = getElements();
 const state = {
   currentUser: null
 };
+
+let accountMenuBound = false;
+
+function bindAccountMenuHandlers() {
+  if (accountMenuBound) return;
+  accountMenuBound = true;
+
+  elements.btnAccountMenu?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleAccountMenu(elements);
+  });
+
+  document.addEventListener("click", () => {
+    elements.accountDropdown?.classList.add("hide");
+    elements.btnAccountMenu?.setAttribute("aria-expanded", "false");
+  });
+}
 
 function setView(which) {
   setViewUI(elements, which);
@@ -36,9 +54,16 @@ function setTab(which) {
 async function render() {
   const session = loadSession();
   const signedIn = !!session.username;
+  
+  // Show/Hide the whole dropdown trigger based on login status
+  elements.btnAccountMenu?.classList.toggle("hide", !signedIn);
+
+  // Ensure dropdown is closed on re-render
+  elements.accountDropdown?.classList.add("hide");
+  elements.btnAccountMenu?.setAttribute("aria-expanded", "false");
 
   elements.pillState.textContent = signedIn
-    ? t("header.signedIn", "Signed in: {{username}}").replace("{{username}}", loadSession().username)
+    ? t("header.signedIn", "Signed in: {{username}}").replace("{{username}}", session.username)
     : t("header.signedOut", "Signed out");
 
   if (!signedIn) {
@@ -118,8 +143,13 @@ elements.btnResetAll.addEventListener("click", () => {
 });
 
 async function handleDeleteAccount() {
-  const username = state.currentUser?.username || loadSession().username;
-  if (!username) return;
+  const session = loadSession();
+  const sessionId = session.sessionId;
+
+  if (!sessionId) {
+    alert("You must be logged in with a valid session to delete your account.");
+    return;
+  }
 
   const confirmed = window.confirm(
     "Are you sure you want to delete your account? This will permanently remove your REMix account and saved data."
@@ -130,7 +160,7 @@ async function handleDeleteAccount() {
   }
 
   try {
-    const { ok, data } = await deleteAccount(username);
+    const { ok, data } = await deleteAccount(sessionId);
 
     if (!ok) {
       const message = data?.message || "Failed to delete account.";
@@ -150,7 +180,7 @@ async function handleDeleteAccount() {
   }
 }
 
-elements.btnDeleteAccountPrefs?.addEventListener("click", handleDeleteAccount);
+elements.btnDeleteAccountHeader?.addEventListener("click", handleDeleteAccount);
 
 const params = new URLSearchParams(window.location.search);
 if (
@@ -167,6 +197,9 @@ async function bootstrap() {
   document.title = t("meta.title", document.title);
 
   elements.languageSelect.value = getLanguage();
+
+  bindAccountMenuHandlers();
+
   elements.languageSelect.addEventListener("change", async (e) => {
     const newLanguage = e.target.value;
 
