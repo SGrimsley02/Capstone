@@ -25,11 +25,6 @@ import Toybox.WatchUi;
 
 class PlaybackView extends WatchUi.View {
 
-    // Polling interval while the screen is visible (milliseconds)
-    private const POLL_INTERVAL_MS = 10000;
-    // Delay after skip/rewind before fetching status (milliseconds)
-    private const REFRESH_DELAY_MS = 1500;
-
     // Playback icons
     private var _rewindIcon;
     private var _playIcon;
