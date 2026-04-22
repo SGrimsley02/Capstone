@@ -30,6 +30,9 @@ class QueueView extends WatchUi.View {
     private var _pendingCoverUrl as String?;
     private var _placeholderIcon;
 
+    // Row tap targets
+    var rowHitboxes = [];
+
 
     // ── Lifecycle ────────────────────────────────────────────
 
@@ -45,6 +48,7 @@ class QueueView extends WatchUi.View {
         _rowCoverCache = {} as Lang.Dictionary;
         _pendingCoverUrl = null;
         _placeholderIcon = loadResource(Rez.Drawables.musicIcon);
+        rowHitboxes = [];
     }
 
     function onShow() as Void {
@@ -55,6 +59,7 @@ class QueueView extends WatchUi.View {
         _scrollOffset = 0;
         _pendingCoverUrl = null;
         _rowCoverCache = {} as Lang.Dictionary;
+        rowHitboxes = [];
 
         _provider.sendPlaybackCommand("queue", null, null, method(:_onQueueLoaded));
         WatchUi.requestUpdate();
@@ -66,17 +71,14 @@ class QueueView extends WatchUi.View {
         var W = dc.getWidth();
         var H = dc.getHeight();
 
-        var coverSize = (W * 14 / 100).toNumber();
-        var left = (W * 16 / 100).toNumber();
+        // Layout Constants
+        var left = (W * 0.12).toNumber();
+        var rightPad = (W * 0.08).toNumber();
+        var maxRows = 3;
+        var rowGap = (H * 0.015).toNumber();
+        var y = (H * 0.08).toNumber();
 
-        // spacing scale (based on screen height)
-        var SPACING_SM = (H * 2 / 100).toNumber();   // small gap
-        var SPACING_MD = (H * 4 / 100).toNumber();   // medium gap
-        var SPACING_LG = (H * 6 / 100).toNumber();   // large gap
-
-        var y = SPACING_MD + 8;
-
-        // Background
+        // Colors
         var bgColor = ThemeHelpers.getColor("bg");
         var selectedBg = ThemeHelpers.getColor("queue_selected_bg");
         var selectedTitle = ThemeHelpers.getColor("queue_selected_title");
@@ -84,137 +86,112 @@ class QueueView extends WatchUi.View {
 
         dc.setColor(bgColor, bgColor);
         dc.clear();
+        rowHitboxes = [];
 
-        // Title
+        // Draw Header ("Queue")
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(W / 2, y, Graphics.FONT_TINY, loadResource(Rez.Strings.Queue), Graphics.TEXT_JUSTIFY_CENTER);
-        y += SPACING_LG + 8;
+        
+        y += (H * 0.11).toNumber();
 
-        var centerX = dc.getWidth() / 2;
-
-        // Loading state
+        // Loading & Error States
         if (_loading) {
-            var loadingY = y + SPACING_MD + 6;
-            dc.drawText(centerX, loadingY, Graphics.FONT_XTINY, loadResource(Rez.Strings.LoadingQueue), Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, loadResource(Rez.Strings.LoadingQueue), Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
-
-        // Error state
         if (_loadFailed) {
-            var errorY = y + SPACING_MD + 4;
-            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueNotLoaded), Graphics.TEXT_JUSTIFY_CENTER);
-            errorY += SPACING_MD + 6;
-            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, loadResource(Rez.Strings.OpenSpotify), Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueNotLoaded), Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
-        y += SPACING_MD;
-
-        // Empty state
-        if (_queue.size() == 0) {
-            dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-            dc.drawText(left, y, Graphics.FONT_XTINY, loadResource(Rez.Strings.UpNext) + ":", Graphics.TEXT_JUSTIFY_LEFT);
-            y += SPACING_MD + 10;
-            dc.drawText(left + 10, y, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueEmpty), Graphics.TEXT_JUSTIFY_LEFT);
-            return;
-        }
-
-        // Up Next header
+        // Draw "Up Next" Text
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-        dc.drawText(
-            left,
-            y,
-            Graphics.FONT_XTINY,
-            loadResource(Rez.Strings.UpNext) + " (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
-            Graphics.TEXT_JUSTIFY_LEFT
-        );
-        y += (coverSize * 7 / 10).toNumber();
+        var upNextStr = loadResource(Rez.Strings.UpNext) + " (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):";
+        dc.drawText(left, y, Graphics.FONT_XTINY, upNextStr, Graphics.TEXT_JUSTIFY_LEFT);
 
-        // Visible window
-        var maxRows = 3;
+        // Calculate List Area
+        var listTop = y + (dc.getFontHeight(Graphics.FONT_XTINY) * 1.4).toNumber();
+        var listBottom = (H * 0.78).toNumber(); 
+        var listHeight = listBottom - listTop;
+
+        var totalGapHeight = (maxRows - 1) * rowGap;
+        var rowHeight = ((listHeight - totalGapHeight) / maxRows).toNumber();
+        var coverSize = (rowHeight * 0.70).toNumber();
+
         var startIndex = _scrollOffset;
         var endIndex = startIndex + maxRows;
-
-        if (endIndex > _queue.size()) {
-            endIndex = _queue.size();
+        if (endIndex > _queue.size()) { 
+            endIndex = _queue.size(); 
         }
 
         _ensureVisibleCovers();
 
+        // Render Rows
         for (var i = startIndex; i < endIndex; i += 1) {
             var item = _queue[i] as Lang.Dictionary;
-            var name = item["name"];
-            var artist = item["artist_name"];
             var isSelected = (i == _selectedIndex);
+            var visibleIndex = i - startIndex;
+            
+            var rowTop = listTop + (visibleIndex * (rowHeight + rowGap));
+            
+            var cardWidth = W - 20; 
+            var cardX = (W - cardWidth) / 2 + 6; 
 
-            var rowTop = y;
-            var rowHeight = (coverSize + 22).toNumber();
-
-            var coverX = left + 10;
-            var coverY = (rowTop + ((rowHeight - coverSize) / 2)).toNumber();
-
-            var textX = (coverX + coverSize + 14).toNumber();
+            rowHitboxes.add([cardX, rowTop, cardWidth, rowHeight]);
 
             if (isSelected) {
+                var rectPaddingY = 12; 
+                var stretchX = 0;
+                var stretchWidth = (cardX + cardWidth) - stretchX;
+                
                 dc.setColor(selectedBg, selectedBg);
-                dc.fillRoundedRectangle(4, rowTop - 2, dc.getWidth() - 8, rowHeight, 10);
+                dc.fillRoundedRectangle(
+                    stretchX, 
+                    rowTop - (rectPaddingY / 2), 
+                    stretchWidth, 
+                    rowHeight + rectPaddingY, 
+                    8
+                );
             }
 
-            // Album art
+            // --- Artwork Rendering ---
+            var coverX = cardX + (cardWidth * 0.05).toNumber();
+            var coverY = rowTop + ((rowHeight - coverSize) / 2);
+
             var imageUrl = item["image_url"];
-            var cachedCover = null;
-
-            if (imageUrl != null) {
-                cachedCover = _rowCoverCache[imageUrl.toString()];
-            }
+            var cachedCover = (imageUrl != null) ? _rowCoverCache[imageUrl.toString()] : null;
 
             if (cachedCover != null) {
                 dc.drawBitmap(coverX, coverY, cachedCover);
-            } else if (_placeholderIcon != null) {
-                _drawTinyIconCentered(
-                    dc,
-                    _placeholderIcon,
-                    coverX + (coverSize / 2),
-                    coverY + (coverSize / 2),
-                    ThemeHelpers.getColor("playback_artist_name")
-                );
             } else {
                 dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
                 dc.drawRectangle(coverX, coverY, coverSize, coverSize);
             }
 
-            // Text
+            // --- Text Rendering ---
             var titleFont = Graphics.FONT_XTINY;
             var artistFont = Graphics.FONT_XTINY;
+            
+            var internalGap = -2; 
 
-            var titleMaxWidth = dc.getWidth() - textX - 18;
-            var artistMaxWidth = dc.getWidth() - textX - 18;
+            var textGap = (W * 0.04).toNumber(); 
+            var totalTextBlockHeight = dc.getFontHeight(titleFont) + dc.getFontHeight(artistFont) + internalGap;
+            
+            var textStartY = rowTop + ((rowHeight - totalTextBlockHeight) / 2);
+            var textX = coverX + coverSize + textGap;
+            
+            var titleMaxWidth = (cardX + cardWidth) - textX - rightPad;
 
-            var rawTitle = name != null ? name.toString() : loadResource(Rez.Strings.UnknownTrack);
-            var rawArtist = artist != null ? artist.toString() : loadResource(Rez.Strings.UnknownArtist);
+            // Title Moving (Used to separate title and artist)
+            var titleVerticalScooch = 1;
 
-            var displayTitle = _truncateText(dc, rawTitle, titleFont, titleMaxWidth);
-            var displayArtist = _truncateText(dc, rawArtist, artistFont, artistMaxWidth);
+            // Draw Title
+            dc.setColor(isSelected ? selectedTitle : ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, textStartY - titleVerticalScooch, titleFont, _truncateText(dc, item["name"], titleFont, titleMaxWidth), Graphics.TEXT_JUSTIFY_LEFT);
 
-            // Spacing
-            var lineGap = 26;
-            var totalTextHeight = 2 * lineGap;
-
-            var textStartY = (rowTop + ((rowHeight - totalTextHeight) / 2) - 4).toNumber();
-
-            dc.setColor(
-                isSelected ? selectedTitle : ThemeHelpers.getColor("playback_song_name"),
-                Graphics.COLOR_TRANSPARENT
-            );
-            dc.drawText(textX, textStartY, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
-
-            dc.setColor(
-                isSelected ? selectedArtist : ThemeHelpers.getColor("playback_artist_name"),
-                Graphics.COLOR_TRANSPARENT
-            );
-            dc.drawText(textX, textStartY + lineGap, artistFont, displayArtist, Graphics.TEXT_JUSTIFY_LEFT);
-
-            y += 80;
+            // Draw Artist
+            dc.setColor(isSelected ? selectedArtist : ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, textStartY + dc.getFontHeight(titleFont) + internalGap, artistFont, _truncateText(dc, item["artist_name"], artistFont, titleMaxWidth), Graphics.TEXT_JUSTIFY_LEFT);
         }
     }
 
@@ -299,10 +276,6 @@ class QueueView extends WatchUi.View {
         var queueData = data["queue"];
         if (queueData != null && queueData instanceof Array) {
             _queue = queueData;
-
-            if (_queue.size() > 0) {
-                var firstItem = _queue[0] as Lang.Dictionary;
-            }
         }
 
         _ensureVisibleCovers();
@@ -363,6 +336,18 @@ class QueueView extends WatchUi.View {
 
     function getScrollOffset() as Number {
         return _scrollOffset;
+    }
+
+    function getVisibleIndexForTap(tx as Number, ty as Number) as Number {
+        for (var i = 0; i < rowHitboxes.size(); i += 1) {
+            var hitbox = rowHitboxes[i];
+            if (tx >= hitbox[0] && tx <= hitbox[0] + hitbox[2] &&
+                ty >= hitbox[1] && ty <= hitbox[1] + hitbox[3]) {
+                return _scrollOffset + i;
+            }
+        }
+
+        return -1;
     }
 
     function setScrollOffset(offset as Number) as Void {

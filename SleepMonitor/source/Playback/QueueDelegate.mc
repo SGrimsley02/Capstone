@@ -11,16 +11,16 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
 
-class QueueDelegate extends WatchUi.InputDelegate {
+class QueueDelegate extends WatchUi.BehaviorDelegate {
 
     private var _view as QueueView;
 
     function initialize(view as QueueView) {
-        InputDelegate.initialize();
+        WatchUi.BehaviorDelegate.initialize();
         _view = view;
     }
 
-    function onKeyPressed(evt as WatchUi.KeyEvent) as Boolean {
+    function onKey(evt as WatchUi.KeyEvent) as Boolean {
         var key = evt.getKey();
 
         if (key == WatchUi.KEY_UP) {
@@ -32,9 +32,32 @@ class QueueDelegate extends WatchUi.InputDelegate {
         } else if (key == WatchUi.KEY_ENTER) {
             _playSelectedTrack();
             return true;
+        } else if (key == WatchUi.KEY_ESC) {
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+            return true;
         }
 
         return false;
+    }
+
+    function onTap(evt as WatchUi.ClickEvent) as Boolean {
+        var coords = evt.getCoordinates();
+        var tx = coords[0];
+        var ty = coords[1];
+
+        var tappedIndex = _view.getVisibleIndexForTap(tx, ty);
+
+        if (tappedIndex == -1) {
+            return false;
+        }
+
+        if (tappedIndex == _view.getSelectedIndex()) {
+            _playSelectedTrack();
+        } else {
+            _view.setSelectedIndex(tappedIndex);
+        }
+
+        return true;
     }
 
     private function _playSelectedTrack() as Void {
