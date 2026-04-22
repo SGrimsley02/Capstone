@@ -139,20 +139,26 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 @media (min-width: 560px){
   .toggle-grid{ grid-template-columns: 1fr 1fr; }
 }
-.danger-zone {
-  margin-top: 18px;
+
+.language-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.danger-title {
-  margin: 0 0 6px;
-  font-size: 14px;
-  color: #ffd6d6;
+.account-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
-.danger-copy {
-  margin: 0 0 12px;
-  color: var(--muted);
-  font-size: 13px;
+.header-danger {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
 }
 
 .danger-button {
@@ -168,4 +174,60 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .danger-button:hover {
   background: rgba(120, 22, 36, 0.32);
   border-color: rgba(255, 120, 120, 0.6);
+}
+
+.account-menu-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.account-menu-trigger {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 6px 16px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.account-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1a1b26; /* Match your card background */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-width: 160px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.account-dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  color: #ff7e7e; /* Muted red for delete */
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.account-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hide {
+  display: none !important;
 }
