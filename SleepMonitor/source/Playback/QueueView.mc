@@ -64,8 +64,17 @@ class QueueView extends WatchUi.View {
 
     function onUpdate(dc as Dc) as Void {
         var W = dc.getWidth();
-        var left = 50;
-        var y = 20;
+        var H = dc.getHeight();
+
+        var coverSize = (W * 14 / 100).toNumber();
+        var left = (W * 16 / 100).toNumber();
+
+        // spacing scale (based on screen height)
+        var SPACING_SM = (H * 2 / 100).toNumber();   // small gap
+        var SPACING_MD = (H * 4 / 100).toNumber();   // medium gap
+        var SPACING_LG = (H * 6 / 100).toNumber();   // large gap
+
+        var y = SPACING_MD + 8;
 
         // Background
         var bgColor = ThemeHelpers.getColor("bg");
@@ -75,32 +84,34 @@ class QueueView extends WatchUi.View {
         // Title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(W / 2, y, Graphics.FONT_TINY, "Queue", Graphics.TEXT_JUSTIFY_CENTER);
-        y += 32;
+        y += SPACING_LG + 8;
 
         var centerX = dc.getWidth() / 2;
 
         // Loading state
         if (_loading) {
-            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_CENTER);
+            var loadingY = y + SPACING_MD + 6;
+            dc.drawText(centerX, loadingY, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
         // Error state
         if (_loadFailed) {
-            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_CENTER);
-            y += 20;
-            dc.drawText(centerX, y, Graphics.FONT_XTINY, "Open Spotify on a device first.", Graphics.TEXT_JUSTIFY_CENTER);
+            var errorY = y + SPACING_MD + 4;
+            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_CENTER);
+            errorY += SPACING_MD + 6;
+            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, "Open Spotify on a device first.", Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
-        y += 4;
+        y += SPACING_MD;
 
         // Empty state
         if (_queue.size() == 0) {
             dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
-            y += 30;
-            dc.drawText(left + 8, y, Graphics.FONT_XTINY, "Queue is empty.", Graphics.TEXT_JUSTIFY_LEFT);
+            y += SPACING_MD + 10;
+            dc.drawText(left + 10, y, Graphics.FONT_XTINY, "Queue is empty.", Graphics.TEXT_JUSTIFY_LEFT);
             return;
         }
 
@@ -113,7 +124,7 @@ class QueueView extends WatchUi.View {
             "Up Next (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
             Graphics.TEXT_JUSTIFY_LEFT
         );
-        y += 36;
+        y += (coverSize * 7 / 10).toNumber();
 
         // Visible window
         var maxRows = 3;
@@ -133,13 +144,12 @@ class QueueView extends WatchUi.View {
             var isSelected = (i == _selectedIndex);
 
             var rowTop = y;
-            var rowHeight = 78;
+            var rowHeight = (coverSize + 22).toNumber();
 
-            var coverSize = 56;
             var coverX = left + 10;
-            var coverY = rowTop + (rowHeight - coverSize) / 2;
+            var coverY = (rowTop + ((rowHeight - coverSize) / 2)).toNumber();
 
-            var textX = coverX + coverSize + 14;
+            var textX = (coverX + coverSize + 14).toNumber();
 
             if (isSelected) {
                 dc.setColor(Graphics.COLOR_WHITE, ThemeHelpers.getColor("playback_controls"));
@@ -189,7 +199,7 @@ class QueueView extends WatchUi.View {
             var lineGap = 26;
             var totalTextHeight = 2 * lineGap;
 
-            var textStartY = rowTop + ((rowHeight - totalTextHeight) / 2) - 4;
+            var textStartY = (rowTop + ((rowHeight - totalTextHeight) / 2) - 4).toNumber();
 
             dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(textX, textStartY, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
