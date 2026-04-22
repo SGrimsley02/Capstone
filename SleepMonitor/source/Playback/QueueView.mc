@@ -83,7 +83,7 @@ class QueueView extends WatchUi.View {
 
         // Title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
-        dc.drawText(W / 2, y, Graphics.FONT_TINY, "Queue", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(W / 2, y, Graphics.FONT_TINY, loadResource(Rez.Strings.Queue), Graphics.TEXT_JUSTIFY_CENTER);
         y += SPACING_LG + 8;
 
         var centerX = dc.getWidth() / 2;
@@ -91,16 +91,16 @@ class QueueView extends WatchUi.View {
         // Loading state
         if (_loading) {
             var loadingY = y + SPACING_MD + 6;
-            dc.drawText(centerX, loadingY, Graphics.FONT_XTINY, "Loading queue...", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, loadingY, Graphics.FONT_XTINY, loadResource(Rez.Strings.LoadingQueue), Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
         // Error state
         if (_loadFailed) {
             var errorY = y + SPACING_MD + 4;
-            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, "Could not load queue.", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueNotLoaded), Graphics.TEXT_JUSTIFY_CENTER);
             errorY += SPACING_MD + 6;
-            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, "Open Spotify on a device first.", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, errorY, Graphics.FONT_XTINY, loadResource(Rez.Strings.OpenSpotify), Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 
@@ -109,9 +109,9 @@ class QueueView extends WatchUi.View {
         // Empty state
         if (_queue.size() == 0) {
             dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-            dc.drawText(left, y, Graphics.FONT_XTINY, "Up Next:", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(left, y, Graphics.FONT_XTINY, loadResource(Rez.Strings.UpNext) + ":", Graphics.TEXT_JUSTIFY_LEFT);
             y += SPACING_MD + 10;
-            dc.drawText(left + 10, y, Graphics.FONT_XTINY, "Queue is empty.", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(left + 10, y, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueEmpty), Graphics.TEXT_JUSTIFY_LEFT);
             return;
         }
 
@@ -121,7 +121,7 @@ class QueueView extends WatchUi.View {
             left,
             y,
             Graphics.FONT_XTINY,
-            "Up Next (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
+            loadResource(Rez.Strings.UpNext) + " (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
             Graphics.TEXT_JUSTIFY_LEFT
         );
         y += (coverSize * 7 / 10).toNumber();
@@ -189,8 +189,8 @@ class QueueView extends WatchUi.View {
             var titleMaxWidth = dc.getWidth() - textX - 18;
             var artistMaxWidth = dc.getWidth() - textX - 18;
 
-            var rawTitle = name != null ? name.toString() : "Unknown track";
-            var rawArtist = artist != null ? artist.toString() : "Unknown artist";
+            var rawTitle = name != null ? name.toString() : loadResource(Rez.Strings.UnknownTrack);
+            var rawArtist = artist != null ? artist.toString() : loadResource(Rez.Strings.UnknownArtist);
 
             var displayTitle = _truncateText(dc, rawTitle, titleFont, titleMaxWidth);
             var displayArtist = _truncateText(dc, rawArtist, artistFont, artistMaxWidth);
