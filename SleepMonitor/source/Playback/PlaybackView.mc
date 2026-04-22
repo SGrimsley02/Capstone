@@ -11,8 +11,8 @@ Description: Music playback control screen. Displays five tappable icon buttons:
                2. Periodic poll — every 10 s while the screen is visible, to
                   detect when a song finishes and a new one starts
                3. refreshStatus() — called by PlaybackDelegate after a skip or
-                  rewind; uses a shared one-shot timer task so Spotify has time
-                  to advance before we query.
+                  rewind; uses a 1.5 s one-shot timer so Spotify has time to
+                  advance before we query.
 Authors: Kiara Rose
 Created: March 15, 2026
 Last Modified: April 22, 2026
@@ -21,13 +21,14 @@ Last Modified: April 22, 2026
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
-import Toybox.Timer;
 import Toybox.WatchUi;
 
 class PlaybackView extends WatchUi.View {
 
-    private const POLL_TASK_ID = "playback_poll";
-    private const REFRESH_TASK_ID = "playback_refresh";
+    // Polling interval while the screen is visible (milliseconds)
+    private const POLL_INTERVAL_MS = 10000;
+    // Delay after skip/rewind before fetching status (milliseconds)
+    private const REFRESH_DELAY_MS = 1500;
 
     // Playback icons
     private var _rewindIcon;
@@ -51,7 +52,12 @@ class PlaybackView extends WatchUi.View {
 
     private var _provider as PlaybackProvider;
 
+    // Shared timer state
+    private var _refreshPending as Boolean;
+    private var _isActive as Boolean;
+
     // ── Lifecycle ──────────────────────────────────────────────────
+
     function initialize() {
         View.initialize();
 
@@ -68,6 +74,9 @@ class PlaybackView extends WatchUi.View {
 
         _provider = new PlaybackProvider();
 
+        _refreshPending = false;
+        _isActive = false;
+
         var zero = [0, 0, 0, 0] as Array;
         _rewindBounds = zero;
         _playBounds = zero;
@@ -79,6 +88,9 @@ class PlaybackView extends WatchUi.View {
     function onLayout(dc as Dc) as Void { setLayout(Rez.Layouts.PlaybackLayout(dc)); }
 
     function onShow() as Void {
+        _isActive = true;
+        _refreshPending = false;
+
         // Immediate status fetch on entry
         _requestStatus();
 
@@ -92,9 +104,7 @@ class PlaybackView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
-    function onHide() as Void {
-        _stopTimers();
-    }
+    function onHide() as Void { _stopTimers(); }
 
     function onUpdate(dc as Dc) as Void {
         var W = dc.getWidth();
@@ -105,16 +115,19 @@ class PlaybackView extends WatchUi.View {
         var bgColor = ThemeHelpers.getColor("bg");
         dc.setColor(bgColor, bgColor);
         dc.clear();
+
         // "Now Playing" title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.NowPlaying),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
         // Song name
         if (_songName != null) {
             dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, (H * 0.27).toNumber(), Graphics.FONT_XTINY, _songName.toString(),
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        }
+        } 
+
         // Artist name
         if (_artistName != null) {
             dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
@@ -146,6 +159,7 @@ class PlaybackView extends WatchUi.View {
     }
 
     // ── Accessors (called by PlaybackDelegate) ─────────────────────
+
     function getRewindBounds() as Array { return _rewindBounds; }
     function getPlayBounds() as Array { return _playBounds; }
     function getSkipBounds() as Array { return _skipBounds; }
@@ -161,30 +175,53 @@ class PlaybackView extends WatchUi.View {
     // Called by PlaybackDelegate after a skip or rewind.
     // Waits REFRESH_DELAY_MS before querying status so Spotify has time to advance.
     function refreshStatus() as Void {
+        if (!_isActive) {
+            return;
+        }
+
         // Cancel any pending refresh that hasn't fired yet
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_REFRESH_TASK_ID);
+        _refreshPending = true;
+
         getApp().getSharedTimerManager().registerOneShotTask(
             TimerConstants.PLAYBACK_REFRESH_TASK_ID,
             TimerConstants.PLAYBACK_REFRESH_DELAY_SEC,
             method(:_onRefreshTick)
         );
     }
-    
+
     // ── Timer callbacks ────────────────────────────────────────────
 
     // Fires every POLL_INTERVAL_MS — detects when a song ends and a new one starts
     function _onPollTick() as Void {
+        if (!_isActive) {
+            return;
+        }
+
         System.println("PlaybackView._onPollTick: polling status");
         _requestStatus();
     }
 
     // Fires once REFRESH_DELAY_MS after a skip/rewind
     function _onRefreshTick() as Void {
+        if (!_isActive || !_refreshPending) {
+            return;
+        }
+
+        _refreshPending = false;
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_REFRESH_TASK_ID);
+
         System.println("PlaybackView._onRefreshTick: fetching status after skip/rewind");
         _requestStatus();
     }
 
     // ── Status response callback ───────────────────────────────────
+
     function _onStatusReceived(data as Lang.Dictionary) as Void {
+        if (!_isActive) {
+            return;
+        }
+
         if (data != null) {
             _songUri = data["track_uri"] as String?;
             _songName = data["track_name"] as String?;
@@ -197,14 +234,20 @@ class PlaybackView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
-     // ── Private helpers ────────────────────────────────────────────
+    // ── Private helpers ────────────────────────────────────────────
+
     private function _requestStatus() as Void {
+        if (!_isActive) {
+            return;
+        }
         _provider.sendPlaybackCommand("status", null, method(:_onStatusReceived));
     }
 
     private function _stopTimers() as Void {
+        _isActive = false;
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_POLL_TASK_ID);
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_REFRESH_TASK_ID);
+        _refreshPending = false;
     }
 
     private function _drawIconCentered(dc as Dc, icon, cx as Number, cy as Number, tint as Number) as Void {
