@@ -5,7 +5,7 @@ Description: Application entry point for the SleepMonitor Connect IQ watch app.
              view + input delegate wiring.
 Authors: Kiara Rose, Audrey Pan
 Created: February 7, 2026
-Last Modified: February 14, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Application;
@@ -15,12 +15,13 @@ import Toybox.Application.Storage;
 import Toybox.Communications;
 import Toybox.Timer;
 
-(:background_exluded)
 class SleepMonitorApp extends Application.AppBase {
     private var _httpStatus as String = "Idle";
     private var _wakeAlarmManager;
     private var _httpClient;
     private var _onboardingManager as SleepMonitorOnboarding;
+    private var _sharedTimerManager as SharedTimerManager;
+
     var userInfoTimer as Timer.Timer;
 
     function initialize() {
@@ -29,14 +30,14 @@ class SleepMonitorApp extends Application.AppBase {
         _httpClient = new SleepMonitorHttpClient();
         userInfoTimer = new Timer.Timer();
         _onboardingManager = new SleepMonitorOnboarding();
+        _sharedTimerManager = new SharedTimerManager();
     }
 
     // onStart() is called on application start up
     function onStart(state as Dictionary?) as Void {
 
         // One-time onboarding: prompt user to open a web page on their phone.
-        var onboarding = new SleepMonitorOnboarding();
-        var didOnboard = onboarding.runIfFirstTime("https://www.remixdisco.com");
+        var didOnboard = _onboardingManager.runIfFirstTime("https://www.remixdisco.com");
 
         if (didOnboard) {
             setHttpStatus("Open phone link to continue");
@@ -45,7 +46,11 @@ class SleepMonitorApp extends Application.AppBase {
     }
 
     // onStop() is called when your application is exiting
-    function onStop(state as Dictionary?) as Void {}
+    function onStop(state as Dictionary?) as Void {
+        if (_sharedTimerManager != null) {
+            _sharedTimerManager.clearAllTasks();
+        }
+    }
 
     // Return the initial view of your application here
     function getInitialView() as [Views] or [Views, InputDelegates] {
@@ -80,6 +85,10 @@ class SleepMonitorApp extends Application.AppBase {
 
     function getOnboardingManager() as SleepMonitorOnboarding {
         return _onboardingManager;
+    }
+
+    function getSharedTimerManager() as SharedTimerManager {
+        return _sharedTimerManager;
     }
 }
 

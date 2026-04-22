@@ -8,30 +8,28 @@ Description: Input delegate for the SleepMonitor Connect IQ watch app.
              - Back hold  (lower-right) → exits the app
 Authors: Kiara Rose
 Created: February 7, 2026
-Last Modified: April 4, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.System;
-import Toybox.Timer;
 import Toybox.WatchUi;
 import Toybox.Application.Storage;
 import StorageKeys;
 
-// TODO: add podcast_url to storage in PodcastService.mc
-// Hold threshold for back-button exit (milliseconds)
-const HOLD_MS = 700;
+// Hold threshold for back-button exit (seconds)
+// Using 1 second because SharedTimerManager runs on 1-second granularity.
+const HOLD_SEC = 1;
+const ESC_HOLD_TASK_ID = "sleep_monitor_esc_hold";
 
 class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
 
-    private var _escHoldTimer   as Timer.Timer?;
     private var _escHoldFired   as Boolean = false;
     private var _escPressedHere as Boolean = false;
 
     function initialize() {
         BehaviorDelegate.initialize();
-        _escHoldTimer    = null;
         _escHoldFired    = false;
         _escPressedHere  = false;
     }
@@ -101,7 +99,7 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    //call this function if you need the dev menu when testing (?) temporary solution 
+    // call this function if you need the dev menu when testing (?) temporary solution
     (:debug)
     function openDeveloperToolsForTesting() as Void {
         WatchUi.pushView(new Rez.Menus.DebugMenu(), new DebugMenuDelegate(), WatchUi.SLIDE_UP);
@@ -113,9 +111,13 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
         if (key == WatchUi.KEY_ESC) {
             _escPressedHere = true;
             _escHoldFired = false;
-            _cancelEscTimer();
-            _escHoldTimer = new Timer.Timer();
-            _escHoldTimer.start(method(:_onEscHeld), HOLD_MS, false);
+            _cancelEscHoldTask();
+
+            getApp().getSharedTimerManager().registerOneShotTask(
+                ESC_HOLD_TASK_ID,
+                HOLD_SEC,
+                method(:_onEscHeld)
+            );
             return true;
 
         } else if (key == WatchUi.KEY_DOWN) {
@@ -136,35 +138,40 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
 
     function onKeyReleased(evt as WatchUi.KeyEvent) as Boolean {
         var key = evt.getKey();
+
         if (key == WatchUi.KEY_ESC) {
             if (!_escPressedHere) {
                 return false;
             }
+
             _escPressedHere = false;
-            _cancelEscTimer();
+            _cancelEscHoldTask();
+
             if (!_escHoldFired) {
                 System.println("SleepMonitorDelegate: opening music playback");
                 var pbView = new PlaybackView();
                 WatchUi.pushView(pbView, new PlaybackDelegate(pbView), WatchUi.SLIDE_UP);
             }
+
             _escHoldFired = false;
             return true;
         }
+
         return false;
     }
 
     function _onEscHeld() as Void {
+        if (!_escPressedHere) {
+            return;
+        }
+
         _escHoldFired = true;
-        _cancelEscTimer();
+        _cancelEscHoldTask();
         System.println("SleepMonitorDelegate: back held — exiting app");
         System.exit();
     }
 
-    private function _cancelEscTimer() as Void {
-        if (_escHoldTimer != null) {
-            _escHoldTimer.stop();
-            _escHoldTimer = null;
-        }
+    private function _cancelEscHoldTask() as Void {
+        getApp().getSharedTimerManager().unregisterTask(ESC_HOLD_TASK_ID);
     }
-
 }
