@@ -20,8 +20,6 @@ import StorageKeys;
 
 // Hold threshold for back-button exit (seconds)
 // Using 1 second because SharedTimerManager runs on 1-second granularity.
-const HOLD_SEC = 1;
-const ESC_HOLD_TASK_ID = "sleep_monitor_esc_hold";
 
 class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
 
@@ -114,8 +112,8 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
             _cancelEscHoldTask();
 
             getApp().getSharedTimerManager().registerOneShotTask(
-                ESC_HOLD_TASK_ID,
-                HOLD_SEC,
+                TimerConstants.ESC_HOLD_TASK_ID,
+                TimerConstants.ESC_HOLD_SEC,
                 method(:_onEscHeld)
             );
             return true;
@@ -172,6 +170,6 @@ class SleepMonitorDelegate extends WatchUi.BehaviorDelegate {
     }
 
     private function _cancelEscHoldTask() as Void {
-        getApp().getSharedTimerManager().unregisterTask(ESC_HOLD_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ESC_HOLD_TASK_ID);
     }
 }

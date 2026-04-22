@@ -65,16 +65,6 @@ class SharedTimerManager {
         }
     }
 
-    function hasTask(taskId as String) as Boolean {
-        for (var i = 0; i < _tasks.size(); i += 1) {
-            var task = _tasks[i] as Dictionary;
-            if ((task[:id] as String).equals(taskId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     function clearAllTasks() as Void {
         _tasks = [];
         _stopMasterTimer();

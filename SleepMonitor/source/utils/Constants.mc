@@ -21,3 +21,24 @@ module Defaults {
     const SHORT_PREF_INT = 5 * 60 * 1000; // 5 minutes in milliseconds
     const LONG_PREF_INT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 }
+
+module TimerConstants {
+    const ESC_HOLD_SEC = 1;
+    const ESC_HOLD_TASK_ID = "sleep_monitor_esc_hold";
+
+    const RING_TASK_ID = "wake_alarm_ring";
+    const RING_INTERVAL_SEC = 2;
+
+    const PODCAST_POLL_TASK_ID = "wake_alarm_podcast_poll";
+    const PODCAST_POLL_INTERVAL_SEC = 15;
+
+    const SNOOZE_TASK_ID = "alarm_snooze_countdown";
+    const SNOOZE_DURATION_SEC = 600;
+    const SNOOZE_TICK_INTERVAL_SEC = 1;
+
+    const PLAYBACK_POLL_TASK_ID = "playback_poll";
+    const PLAYBACK_POLL_INTERVAL_SEC = 10;
+
+    const PLAYBACK_REFRESH_TASK_ID = "playback_refresh";
+    const PLAYBACK_REFRESH_DELAY_SEC = 2;
+}

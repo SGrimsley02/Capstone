@@ -19,8 +19,6 @@ import StorageKeys;
 
 class WakeAlarmManager {
 
-    private const RING_TASK_ID = "wake_alarm_ring";
-    private const PODCAST_POLL_TASK_ID = "wake_alarm_podcast_poll";
 
     var _alarmEpoch = null;
     var _alarmTimer = null;
@@ -32,14 +30,16 @@ class WakeAlarmManager {
     var _podcastReady = false;
     var _wakeStartEpoch = null;
     var _wakeEndEpoch = null;
-    var _resetAlarm = false;
-
+    var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
+    
+    // Instance of the network provider
     private var _podcastProvider;
 
     function initialize() {
         _podcastProvider = new PodcastProvider();
     }
 
+     // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
     function scheduleAlarmFromWakeWindow(wakeStartTime as String?, endWakeTime as String?) as Void {
         if (wakeStartTime == null) {
             System.println("WakeAlarmManager: no stored wake start time, defaulting to " + Defaults.DEFAULT_WAKE_START);
@@ -59,7 +59,7 @@ class WakeAlarmManager {
             _wakeEndEpoch += 24 * 60 * 60;
         }
         if (_wakeEndEpoch < _wakeStartEpoch) {
-            _wakeEndEpoch += 24 * 60 * 60;
+            _wakeEndEpoch += 24 * 60 * 60; // Handle case where end time is past midnight (e.g., wakeStart=23:00, wakeEnd=06:00)
         }
 
         _alarmEpoch = _wakeStartEpoch;
@@ -70,6 +70,7 @@ class WakeAlarmManager {
 
         _clearAlarmTimer();
 
+        // Schedule timer to compute and set alarm when wakeStartTime arrives
         _alarmTimer = new Timer.Timer();
         _alarmTimer.start(method(:_onWakeWindowTimer), secondsUntil * 1000, false);
     }
@@ -82,27 +83,28 @@ class WakeAlarmManager {
 
         _clearAlarmTimer();
 
-        getApp().userInfoTimer.stop();
+        getApp().userInfoTimer.stop();  // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
 
+        // Get userId from storage
         var userId = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
         if (userId == null) {
             System.println("WakeAlarmManager: no user ID found, falling back to endWakeTime");
             scheduleAlarmAtEpoch(_wakeEndEpoch);
             return;
         }
-
+        // Build sleep payload to analyze sleep data and get handoff epoch
         var payload = SleepAnalyzer.buildSleepPayload(userId);
         if (payload == null) {
             System.println("WakeAlarmManager: could not build sleep payload, falling back to endWakeTime");
             scheduleAlarmAtEpoch(_wakeEndEpoch);
             return;
         }
-
+        // Extract handoff epoch (recommended or fallback)
         var recommended = payload.get("recommendedHandoffEpochSec");
         var fallback = payload.get("fallbackHandoffEpochSec");
-
+        // If both recommended and fallback are missing, fall back to endWakeTime
         var handoffEpoch = (recommended != null) ? recommended : ((fallback != null) ? fallback : _wakeEndEpoch);
-
+        // Use handoff epoch only if it's before endWakeTime, otherwise use endWakeTime
         if (handoffEpoch < _wakeEndEpoch) {
             _alarmEpoch = handoffEpoch;
         } else {
@@ -111,7 +113,7 @@ class WakeAlarmManager {
 
         scheduleAlarmAtEpoch(_alarmEpoch);
     }
-
+    // TODO: delete once alarm is fully tested
     function scheduleAlarmAtEpoch(wakeEpoch) {
         _clearAlarmTimer();
 
@@ -190,21 +192,22 @@ class WakeAlarmManager {
         _ringOnce();
 
         getApp().getSharedTimerManager().registerRepeatingTask(
-            RING_TASK_ID,
-            2,
+            TimerConstants.RING_TASK_ID,
+            TimerConstants.RING_INTERVAL_SEC,
             method(:_onRingTick)
-        );
+            );
     }
 
     function stopRinging() {
         _isRinging = false;
-        getApp().getSharedTimerManager().unregisterTask(RING_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.RING_TASK_ID);
     }
 
     function isRinging() {
         return _isRinging;
     }
 
+    // Returns the scheduled wake epoch (seconds since epoch), or null if not set.
     function getWakeEpoch() {
         return _alarmEpoch;
     }
@@ -252,8 +255,8 @@ class WakeAlarmManager {
         }
 
         getApp().getSharedTimerManager().registerRepeatingTask(
-            PODCAST_POLL_TASK_ID,
-            15,
+            TimerConstants.PODCAST_POLL_TASK_ID,
+            TimerConstants.PODCAST_POLL_INTERVAL_SEC,
             method(:_pollPodcastStatus)
         );
 
@@ -261,7 +264,7 @@ class WakeAlarmManager {
     }
 
     function stopPodcastPolling() as Void {
-        getApp().getSharedTimerManager().unregisterTask(PODCAST_POLL_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.PODCAST_POLL_TASK_ID);
     }
 
     function _pollPodcastStatus() as Void {
@@ -289,9 +292,11 @@ class WakeAlarmManager {
         data as Dictionary?,
         context as Object
     ) as Void {
+        //handle HTTP/web responses and update the on-screen status.
         var label = context.toString();
         if (responseCode == 200 or responseCode == 201) {
             getApp().setHttpStatus(label + " ok");
+            //response body may come back as Dictionary or null
             if (data instanceof Dictionary) {
                 System.println(label + " success. JSON response: " + data.toString());
                 var preferences = data["preferences"] as Dictionary?;
@@ -312,8 +317,8 @@ class WakeAlarmManager {
                     }
 
                     if ((wakeStart != null && !wakeStart.equals(oldWakeStart)) || (wakeEnd != null && !wakeEnd.equals(oldWakeEnd)) || _resetAlarm) {
-                        scheduleAlarmFromWakeWindow(wakeStart, wakeEnd);
-                        _resetAlarm = false;
+                        scheduleAlarmFromWakeWindow(wakeStart, wakeEnd); 
+                        _resetAlarm = false;  // reset the flag after handling the change
                     }
                 }
 

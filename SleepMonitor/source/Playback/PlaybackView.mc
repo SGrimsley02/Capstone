@@ -29,17 +29,20 @@ class PlaybackView extends WatchUi.View {
     private const POLL_TASK_ID = "playback_poll";
     private const REFRESH_TASK_ID = "playback_refresh";
 
+    // Playback icons
     private var _rewindIcon;
     private var _playIcon;
     private var _skipIcon;
     private var _volumeIcon;
     private var _starIcon;
 
+    // Current track info (populated by status response)
     private var _songUri as Object?;
     private var _songName as Object?;
     private var _artistName as Object?;
     private var _isPlaying as Boolean;
 
+    // Icon hit-test bounds [x, y, w, h] — updated every draw
     private var _rewindBounds as Array;
     private var _playBounds as Array;
     private var _skipBounds as Array;
@@ -48,6 +51,7 @@ class PlaybackView extends WatchUi.View {
 
     private var _provider as PlaybackProvider;
 
+    // ── Lifecycle ──────────────────────────────────────────────────
     function initialize() {
         View.initialize();
 
@@ -75,11 +79,13 @@ class PlaybackView extends WatchUi.View {
     function onLayout(dc as Dc) as Void { setLayout(Rez.Layouts.PlaybackLayout(dc)); }
 
     function onShow() as Void {
+        // Immediate status fetch on entry
         _requestStatus();
 
+        // Start repeating poll to detect when a song finishes
         getApp().getSharedTimerManager().registerRepeatingTask(
-            POLL_TASK_ID,
-            10,
+            TimerConstants.PLAYBACK_POLL_TASK_ID,
+            TimerConstants.PLAYBACK_POLL_INTERVAL_SEC,
             method(:_onPollTick)
         );
 
@@ -95,26 +101,28 @@ class PlaybackView extends WatchUi.View {
         var H = dc.getHeight();
         var cx = W / 2;
 
+        // Background
         var bgColor = ThemeHelpers.getColor("bg");
         dc.setColor(bgColor, bgColor);
         dc.clear();
-
+        // "Now Playing" title
         dc.setColor(ThemeHelpers.getColor("playback_controls"), Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (H * 0.12).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(Rez.Strings.NowPlaying),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-
+        // Song name
         if (_songName != null) {
             dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, (H * 0.27).toNumber(), Graphics.FONT_XTINY, _songName.toString(),
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
-
+        // Artist name
         if (_artistName != null) {
             dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(cx, (H * 0.37).toNumber(), Graphics.FONT_XTINY, _artistName.toString(),
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
+        // ── Main controls row: Rewind | Play | Skip @ 57% ──────────
         var ctrlY = (H * 0.57).toNumber();
         var spacing = (W * 0.28).toNumber();
 
@@ -126,6 +134,7 @@ class PlaybackView extends WatchUi.View {
         _playBounds = _iconBounds(_playIcon, cx, ctrlY);
         _skipBounds = _iconBounds(_skipIcon, cx + spacing, ctrlY);
 
+        // ── Secondary row: Volume | Star @ 80% ─────────────────────
         var secY = (H * 0.80).toNumber();
         var secSpacing = (W * 0.22).toNumber();
 
@@ -136,6 +145,7 @@ class PlaybackView extends WatchUi.View {
         _starBounds = _iconBounds(_starIcon, cx + secSpacing, secY);
     }
 
+    // ── Accessors (called by PlaybackDelegate) ─────────────────────
     function getRewindBounds() as Array { return _rewindBounds; }
     function getPlayBounds() as Array { return _playBounds; }
     function getSkipBounds() as Array { return _skipBounds; }
@@ -148,24 +158,32 @@ class PlaybackView extends WatchUi.View {
     function getSongUri() as String? { return _songUri; }
     function getProvider() as PlaybackProvider { return _provider; }
 
+    // Called by PlaybackDelegate after a skip or rewind.
+    // Waits REFRESH_DELAY_MS before querying status so Spotify has time to advance.
     function refreshStatus() as Void {
+        // Cancel any pending refresh that hasn't fired yet
         getApp().getSharedTimerManager().registerOneShotTask(
-            REFRESH_TASK_ID,
-            2,
+            TimerConstants.PLAYBACK_REFRESH_TASK_ID,
+            TimerConstants.PLAYBACK_REFRESH_DELAY_SEC,
             method(:_onRefreshTick)
         );
     }
+    
+    // ── Timer callbacks ────────────────────────────────────────────
 
+    // Fires every POLL_INTERVAL_MS — detects when a song ends and a new one starts
     function _onPollTick() as Void {
         System.println("PlaybackView._onPollTick: polling status");
         _requestStatus();
     }
 
+    // Fires once REFRESH_DELAY_MS after a skip/rewind
     function _onRefreshTick() as Void {
         System.println("PlaybackView._onRefreshTick: fetching status after skip/rewind");
         _requestStatus();
     }
 
+    // ── Status response callback ───────────────────────────────────
     function _onStatusReceived(data as Lang.Dictionary) as Void {
         if (data != null) {
             _songUri = data["track_uri"] as String?;
@@ -179,13 +197,14 @@ class PlaybackView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+     // ── Private helpers ────────────────────────────────────────────
     private function _requestStatus() as Void {
         _provider.sendPlaybackCommand("status", null, method(:_onStatusReceived));
     }
 
     private function _stopTimers() as Void {
-        getApp().getSharedTimerManager().unregisterTask(POLL_TASK_ID);
-        getApp().getSharedTimerManager().unregisterTask(REFRESH_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_POLL_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_REFRESH_TASK_ID);
     }
 
     private function _drawIconCentered(dc as Dc, icon, cx as Number, cy as Number, tint as Number) as Void {
@@ -197,6 +216,7 @@ class PlaybackView extends WatchUi.View {
         dc.drawBitmap2(cx - iw / 2, cy - ih / 2, icon, { :tintColor => tint });
     }
 
+    // Returns [x, y, w, h] centered on (cx, cy) with the icon's natural size.
     private function _iconBounds(icon, cx as Number, cy as Number) as Array {
         if (icon == null) {
             return [cx - 16, cy - 16, 32, 32] as Array;

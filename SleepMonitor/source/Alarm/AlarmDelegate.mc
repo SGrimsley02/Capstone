@@ -13,11 +13,10 @@ import Toybox.Lang;
 
 class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
-    private const SNOOZE_TASK_ID = "alarm_snooze_countdown";
 
-    var _view;
-    var _manager;
-    var _secondsLeft = 600;
+    var _view; // Reference to UI view for updating text/state
+    var _manager; // Reference to alarm manager controlling ringing + scheduling
+    var _secondsLeft = TimerConstants.SNOOZE_DURATION_SEC; // Remaining snooze time (seconds) - default 10 minutes
     var _snoozeActive = false;
 
     function initialize(view, manager) {
@@ -30,6 +29,8 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
     function onKey(evt) {
         var key = evt.getKey();
         var isDismissed = _view.isDismissed();
+        // If alarm is already dismissed, allow native navigation behavior.
+        // Do not consume hardware buttons so user can exit screen or access menu.
 
         if (key == WatchUi.KEY_UP) {
             _playPodcast();
@@ -57,22 +58,26 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         return false;
     }
+    // Touch Taps
 
     function onTap(evt as WatchUi.ClickEvent) as Boolean {
         var coords = evt.getCoordinates();
         var tapX = coords[0];
         var tapY = coords[1];
 
+        // Podcast
         if (isInHitbox(tapX, tapY, _view._podcastHitbox)) {
             _playPodcast();
             return true;
         }
 
+        // Music
         if (isInHitbox(tapX, tapY, _view._musicHitbox)) {
             _playMusic();
             return true;
         }
 
+        // Dismiss / leave screen
         if (isInHitbox(tapX, tapY, _view._dismissIconHitbox) ||
             isInHitbox(tapX, tapY, _view._dismissPillHitbox)) {
 
@@ -84,6 +89,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
             return true;
         }
 
+        // Snooze only while alarm is actively ringing
         if (!_view.isDismissed()) {
             if (isInHitbox(tapX, tapY, _view._snoozeHitbox)) {
                 _snoozeAlarm();
@@ -94,6 +100,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         return false;
     }
 
+    // Helper for onTap: Check if a point (tx, ty) is inside a square [x, y, size]
     private function isInHitbox(tx as Number, ty as Number, hitbox as Array?) as Boolean {
         if (hitbox == null) { return false; }
         var hX = hitbox[0];
@@ -104,29 +111,33 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         return (tx >= hX && tx <= hX + hW && ty >= hY && ty <= hY + hH);
     }
 
+    // Stops ringing and cancels any active snooze timer
     function _stopAllAlarmActions() as Void {
         _manager.stopRinging();
-        getApp().getSharedTimerManager().unregisterTask(SNOOZE_TASK_ID);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.SNOOZE_TASK_ID);
         _snoozeActive = false;
-
+        // Reset snooze display if supported by view
         if (_view has :setSnoozeTime) { _view.setSnoozeTime(0); }
     }
 
+    // Snoozes alarm and starts countdown timer
     function _snoozeAlarm() as Void {
         _stopAllAlarmActions();
 
         _manager.stopPodcastPolling();
-
-        _secondsLeft = 600;
+        // Reset snooze duration
+        _secondsLeft = TimerConstants.SNOOZE_DURATION_SEC;
         _snoozeActive = true;
 
+        // Update UI state
         if (_view has :setDismissed) { _view.setDismissed(false); }
         if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.Snoozing)); }
         if (_view has :setSnoozeTime) { _view.setSnoozeTime(_secondsLeft); }
 
+        //  1-second repeating timer
         getApp().getSharedTimerManager().registerRepeatingTask(
-            SNOOZE_TASK_ID,
-            1,
+            TimerConstants.SNOOZE_TASK_ID,
+            TimerConstants.SNOOZE_TICK_INTERVAL_SEC,
             method(:onTimerTick)
         );
     }
@@ -139,16 +150,18 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
         if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.AlarmOff)); }
     }
 
+      // Stops alarm and transitions to podcast mode
     function _playPodcast() as Void {
+        // Ask manager if podcast is ready (if method exists)
         var ready = false;
         if (_manager != null && (_manager has :isPodcastReady)) {
             ready = _manager.isPodcastReady();
         }
-
+        // If NOT ready → do NOT stop alarm
         if (!ready) {
-            return;
+            return; // so when the podcast is not ready and the button is clicked, don't do anything
         }
-
+        // If ready → stop alarm and proceed
         _stopAllAlarmActions();
 
         if (_view has :setDismissed) { _view.setDismissed(true); }
@@ -178,7 +191,7 @@ class AlarmDelegate extends WatchUi.BehaviorDelegate {
 
         if (_secondsLeft <= 0) {
             _snoozeActive = false;
-            getApp().getSharedTimerManager().unregisterTask(SNOOZE_TASK_ID);
+            getApp().getSharedTimerManager().unregisterTask(TimerConstants.SNOOZE_TASK_ID);
 
             if (_view has :setDismissed) { _view.setDismissed(false); }
             if (_view has :setStatusText) { _view.setStatusText(WatchUi.loadResource(Rez.Strings.WakeUp)); }
