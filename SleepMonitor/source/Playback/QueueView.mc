@@ -78,6 +78,10 @@ class QueueView extends WatchUi.View {
 
         // Background
         var bgColor = ThemeHelpers.getColor("bg");
+        var selectedBg = ThemeHelpers.getColor("queue_selected_bg");
+        var selectedTitle = ThemeHelpers.getColor("queue_selected_title");
+        var selectedArtist = ThemeHelpers.getColor("queue_selected_artist");
+
         dc.setColor(bgColor, bgColor);
         dc.clear();
 
@@ -152,11 +156,8 @@ class QueueView extends WatchUi.View {
             var textX = (coverX + coverSize + 14).toNumber();
 
             if (isSelected) {
-                dc.setColor(Graphics.COLOR_WHITE, ThemeHelpers.getColor("playback_controls"));
+                dc.setColor(selectedBg, selectedBg);
                 dc.fillRoundedRectangle(4, rowTop - 2, dc.getWidth() - 8, rowHeight, 10);
-                dc.setColor(ThemeHelpers.getColor("bg"), Graphics.COLOR_TRANSPARENT);
-            } else {
-                dc.setColor(ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             }
 
             // Album art
@@ -201,10 +202,16 @@ class QueueView extends WatchUi.View {
 
             var textStartY = (rowTop + ((rowHeight - totalTextHeight) / 2) - 4).toNumber();
 
-            dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
+            dc.setColor(
+                isSelected ? selectedTitle : ThemeHelpers.getColor("playback_song_name"),
+                Graphics.COLOR_TRANSPARENT
+            );
             dc.drawText(textX, textStartY, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
 
-            dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+            dc.setColor(
+                isSelected ? selectedArtist : ThemeHelpers.getColor("playback_artist_name"),
+                Graphics.COLOR_TRANSPARENT
+            );
             dc.drawText(textX, textStartY + lineGap, artistFont, displayArtist, Graphics.TEXT_JUSTIFY_LEFT);
 
             y += 80;

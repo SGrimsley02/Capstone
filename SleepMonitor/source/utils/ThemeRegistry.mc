@@ -31,6 +31,9 @@ module ThemeRegistry {
         "playback_artist_name" => Colors.DARK_CYAN,
         "playback_volume" => Colors.TANGERINE_DREAM,
         "playback_star" => Colors.GOLD,
+        "queue_selected_bg" => Colors.ALMOND_SILK,
+        "queue_selected_title" => Colors.ROSEWOOD,
+        "queue_selected_artist" => Colors.STORMY_TEAL,
 
         //VOLUME VIEW
         "volume" => Colors.STORMY_TEAL,
@@ -88,6 +91,9 @@ module ThemeRegistry {
         "playback_artist_name" => Colors.GRAY_MID,
         "playback_volume" => Colors.PURPLE_MID,
         "playback_star" => Colors.GOLD,
+        "queue_selected_bg" => Colors.GRAY_DARK,
+        "queue_selected_title" => Colors.TEAL_LITE,
+        "queue_selected_artist" => Graphics.COLOR_WHITE,
 
         //VOLUME VIEW
         "volume" => Colors.TEAL_LITE,
