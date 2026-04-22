@@ -5,7 +5,7 @@ Description: Simple queue screen for Spotify playback. Fetches queue data from
              a basic text list of upcoming songs.
 Authors: Ella Nguyen
 Created: April 19, 2026
-Last Modified: April 21, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Communications;
@@ -93,7 +93,7 @@ class QueueView extends WatchUi.View {
             return;
         }
 
-        y += 10;
+        y += 4;
 
         // Empty state
         if (_queue.size() == 0) {
@@ -113,7 +113,7 @@ class QueueView extends WatchUi.View {
             "Up Next (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):",
             Graphics.TEXT_JUSTIFY_LEFT
         );
-        y += 28;
+        y += 36;
 
         // Visible window
         var maxRows = 3;
@@ -186,10 +186,10 @@ class QueueView extends WatchUi.View {
             var displayArtist = _truncateText(dc, rawArtist, artistFont, artistMaxWidth);
 
             // Spacing
-            var lineGap = 22;
+            var lineGap = 26;
             var totalTextHeight = 2 * lineGap;
 
-            var textStartY = rowTop + ((rowHeight - totalTextHeight) / 2) - 2;
+            var textStartY = rowTop + ((rowHeight - totalTextHeight) / 2) - 4;
 
             dc.setColor(isSelected ? ThemeHelpers.getColor("bg") : ThemeHelpers.getColor("playback_song_name"), Graphics.COLOR_TRANSPARENT);
             dc.drawText(textX, textStartY, titleFont, displayTitle, Graphics.TEXT_JUSTIFY_LEFT);
