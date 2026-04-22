@@ -13,6 +13,7 @@ import Toybox.System;
 import Toybox.Lang;
 import Toybox.Timer;
 import Toybox.Math;
+import Toybox.WatchUi;
 import StorageKeys;
 import Defaults;
 
@@ -23,7 +24,7 @@ class SleepMonitorOnboarding {
     var _pollCount as Number = 0;
     var _wakeStart as String? = null;
     var _wakeEnd as String? = null;
-    const MAX_POLLS = 15;  // stop after 5 minutes (15 x 20s)
+    const MAX_POLLS = 0;  // stop after 5 minutes (15 x 20s)
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
@@ -31,7 +32,7 @@ class SleepMonitorOnboarding {
 
         System.println("Onboarding check started...");
 
-        var hasOnboarded = Storage.getValue(key);
+        var hasOnboarded = false;
         System.println("Stored value: " + hasOnboarded);
 
         if (hasOnboarded == true) {
@@ -66,9 +67,9 @@ class SleepMonitorOnboarding {
         if (_pollCount > MAX_POLLS) {
             System.println("Polling timed out.");
             _timer.stop();
-            // TODO: Display error message with instructions to retry onboarding + warning that they should login within 5 mins next time
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             System.println("Onboarding failed: user did not log in within time limit.");
+            WatchUi.pushView(new OnboardingErrorView(), new OnboardingErrorDelegate(), WatchUi.SLIDE_UP);
             return;
         }
         Communications.makeWebRequest(

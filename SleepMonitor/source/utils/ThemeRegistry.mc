@@ -56,7 +56,13 @@ module ThemeRegistry {
         "menu_wave1" => Colors.STORMY_TEAL,
         "menu_wave2" => Colors.TANGERINE_DREAM,
         "menu_exit_resting" => Colors.STORMY_TEAL,
-        "menu_exit_active" => Colors.TANGERINE_DREAM
+        "menu_exit_active" => Colors.TANGERINE_DREAM,
+
+        // ONBOARDING ERROR VIEW
+        "onboarding_error_icon_bg" => Colors.ROSEWOOD,
+        "onboarding_error_icon_fg" => Colors.ALICE_BLUE,
+        "onboarding_error_title" => Colors.STORMY_TEAL,
+        "onboarding_error_body" => Colors.DARK_CYAN
     };
 
     // DARK DEFAULT
@@ -113,7 +119,13 @@ module ThemeRegistry {
         "menu_wave1" => Colors.TEAL_LITE,
         "menu_wave2" => Colors.PURPLE_DARK,
         "menu_exit_resting" => Colors.TEAL_LITE,
-        "menu_exit_active" => Graphics.COLOR_WHITE
+        "menu_exit_active" => Graphics.COLOR_WHITE,
+
+        // ONBOARDING ERROR VIEW
+        "onboarding_error_icon_bg" => Colors.TEAL_DARK,
+        "onboarding_error_icon_fg" => Graphics.COLOR_WHITE,
+        "onboarding_error_title" => Graphics.COLOR_WHITE,
+        "onboarding_error_body" => Colors.GRAY_MID
     };
 
     const THEMES = {
