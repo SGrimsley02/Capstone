@@ -15,7 +15,7 @@ Description: Music playback control screen. Displays five tappable icon buttons:
                   advance before we query.
 Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
-Last Modified: April 19, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Graphics;
@@ -44,6 +44,8 @@ class PlaybackView extends WatchUi.View {
     private var _songName as Object?;
     private var _artistName as Object?;
     private var _isPlaying as Boolean;
+    private var _statusReady as Boolean;
+    private var _queueReadyAtMs as Number;
 
     // Icon hit-test bounds [x, y, w, h] — updated every draw
     private var _rewindBounds as Array;
@@ -68,6 +70,8 @@ class PlaybackView extends WatchUi.View {
         _songUri = null;
         _songName = null;
         _artistName = null;
+        _statusReady = false;
+        _queueReadyAtMs = 0;
 
         _rewindIcon = loadResource(Rez.Drawables.rewindIcon);
         _playIcon = loadResource(Rez.Drawables.playIcon);
@@ -94,6 +98,7 @@ class PlaybackView extends WatchUi.View {
 
     function onShow() as Void {
         // Immediate status fetch on entry
+        _markStatusPending(2500);
         _requestStatus();
 
         // Start repeating poll to detect when a song finishes
@@ -173,17 +178,36 @@ class PlaybackView extends WatchUi.View {
 
     function getSongUri() as String? { return _songUri; }
     function getProvider() as PlaybackProvider { return _provider; }
+    function isStatusReady() as Boolean { return _statusReady; }
+
+    function canOpenQueue() as Boolean {
+        if (!_statusReady) {
+            return false;
+        }
+
+        if (_songUri == null || _songName == null || _artistName == null) {
+            return false;
+        }
+
+        return System.getTimer() >= _queueReadyAtMs;
+    }
 
     // Called by PlaybackDelegate after a skip or rewind.
     // Waits REFRESH_DELAY_MS before querying status so Spotify has time to advance.
     function refreshStatus() as Void {
+        // Immediately treat status as stale while Spotify catches up
+        _markStatusPending(REFRESH_DELAY_MS + 1000);
+
         // Cancel any pending refresh that hasn't fired yet
         if (_refreshTimer != null) {
             _refreshTimer.stop();
             _refreshTimer = null;
         }
+
         _refreshTimer = new Timer.Timer();
         _refreshTimer.start(method(:_onRefreshTick), REFRESH_DELAY_MS, false);
+
+        WatchUi.requestUpdate();
     }
 
     // ── Timer callbacks ────────────────────────────────────────────
@@ -204,6 +228,8 @@ class PlaybackView extends WatchUi.View {
     // ── Status response callback ───────────────────────────────────
 
     function _onStatusReceived(data as Lang.Dictionary) as Void {
+        _statusReady = true;
+
         if (data != null) {
             _songUri = data["track_uri"] as String      ? ;
             _songName = data["track_name"] as String    ? ;
@@ -250,5 +276,10 @@ class PlaybackView extends WatchUi.View {
         var iw = icon.getWidth();
         var ih = icon.getHeight();
         return [cx - iw / 2, cy - ih / 2, iw, ih] as Array;
+    }
+
+    private function _markStatusPending(blockMs as Number) as Void {
+        _statusReady = false;
+        _queueReadyAtMs = System.getTimer() + blockMs;
     }
 }

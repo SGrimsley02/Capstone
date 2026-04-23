@@ -12,7 +12,7 @@ Description: Input delegate for the music playback control screen.
              Uses WatchUi.InputDelegate so that onTap receives raw coordinates.
 Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
-Last Modified: April 19, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Lang;
@@ -64,6 +64,11 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         }
 
         if (_hitTest(tapX, tapY, _view.getQueueBounds())) {
+            if (!_view.canOpenQueue()) {
+                System.println("PlaybackDelegate.onTap: queue blocked until playback is stable");
+                return true;
+            }
+
             _pushQueueView();
             return true;
         }
