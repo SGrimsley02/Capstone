@@ -52,6 +52,7 @@ class QueueView extends WatchUi.View {
     function onShow() as Void {
         _loading = true;
         _loadFailed = false;
+        _queue = [] as Array;
         _selectedIndex = 0;
         _scrollOffset = 0;
         _pendingCoverUrl = null;
@@ -103,12 +104,6 @@ class QueueView extends WatchUi.View {
 
         // Draw "Up Next" Text
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
-
-        if (_queue.size() == 0) {
-            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, "Queue is empty", Graphics.TEXT_JUSTIFY_CENTER);
-            return;
-        }
-        
         var upNextStr = loadResource(Rez.Strings.UpNext) + " (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):";
         dc.drawText(left, y, Graphics.FONT_XTINY, upNextStr, Graphics.TEXT_JUSTIFY_LEFT);
 
@@ -261,6 +256,7 @@ class QueueView extends WatchUi.View {
 
         _loading = false;
         _loadFailed = false;
+        _queue = [] as Array;
 
         if (data == null) {
             _loadFailed = true;
@@ -278,8 +274,6 @@ class QueueView extends WatchUi.View {
         var queueData = data["queue"];
         if (queueData != null && queueData instanceof Array) {
             _queue = queueData;
-        } else {
-            _queue = [] as Array;
         }
 
         _ensureVisibleCovers();

@@ -19,8 +19,7 @@ import StorageKeys;
 class PlaybackProvider {
     private var _userId;
     private var _notifyUrl = "https://kyajhve0ek.execute-api.us-east-2.amazonaws.com/dev/spotify/playback";
-    private var _callbacks as Lang.Dictionary;
-    private var _nextRequestId as Number;
+    private var _statusCallback as Lang.Method?;
 
     private function _refreshUserId() as Void {
         var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
@@ -32,8 +31,7 @@ class PlaybackProvider {
         var stored = Application.Storage.getValue(StorageKeys.USER_ID_KEY);
         _userId = stored != null ? stored.toString() : "unknown"; //Fall back to default username if not yet set
         System.println("PlaybackProvider user_id: " + _userId);
-        _callbacks = {} as Lang.Dictionary;
-        _nextRequestId = 0;
+        _statusCallback = null;
     }
 
 
@@ -52,21 +50,15 @@ class PlaybackProvider {
     //       Use "status" action to check if a song is playing and retrieve its URI for review submission.
 
     function sendPlaybackCommand(action as String, volume as Number?, trackUri as String?, callback as Lang.Method?) as Void {
+        _statusCallback = callback;
+
         _refreshUserId();
-
-        _nextRequestId += 1;
-        var requestId = _nextRequestId.toString();
-
-        if (callback != null) {
-            _callbacks[requestId] = callback;
-        }
+        System.println("PlaybackProvider user_id: " + _userId);
 
         var payload = {
             "userId" => _userId,
-            "action" => action,
-            "requestId" => requestId
+            "action" => action
         };
-
         if (action.equals("volume")) {
             payload["volume"] = volume;
         }
@@ -74,37 +66,6 @@ class PlaybackProvider {
         if (trackUri != null) {
             payload["trackUri"] = trackUri;
         }
-
-        Communications.makeWebRequest(
-            _notifyUrl,
-            payload,
-            {
-                :method => Communications.HTTP_REQUEST_METHOD_POST,
-                :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
-            },
-            method(:_onPlaybackResponse)
-        );
-    }
-
-    function playQueueFrom(trackUri as String, queueUris as String, callback as Lang.Method?) as Void {
-        _refreshUserId();
-
-        _nextRequestId += 1;
-        var requestId = _nextRequestId.toString();
-
-        if (callback != null) {
-            _callbacks[requestId] = callback;
-        }
-
-        System.println("PlaybackProvider.playQueueFrom user_id: " + _userId);
-
-        var payload = {
-            "userId" => _userId,
-            "action" => "play_uri",
-            "trackUri" => trackUri,
-            "queueUris" => queueUris,
-            "requestId" => requestId
-        };
 
         try {
             Communications.makeWebRequest(
@@ -117,26 +78,15 @@ class PlaybackProvider {
                 method(:_onPlaybackResponse)
             );
         } catch (e) {
-            System.println("playQueueFrom FAILED: " + e.toString());
+            System.println("sendPlaybackCommand FAILED: " + e.toString());
         }
     }
 
     function _onPlaybackResponse(responseCode as Lang.Number, data as Lang.Dictionary or Lang.String or Null) as Void {
         System.println("PlaybackProvider._onPlaybackResponse: responseCode=" + responseCode + " data=" + data);
-
-        if (!(data instanceof Lang.Dictionary)) {
-            return;
-        }
-
-        var requestId = data["requestId"];
-        if (requestId == null) {
-            return;
-        }
-
-        var callback = _callbacks[requestId.toString()];
-        if (callback != null) {
-            _callbacks.remove(requestId.toString());
-            callback.invoke(data);
+        if (_statusCallback != null && data instanceof Lang.Dictionary) {
+            _statusCallback.invoke(data);
+            _statusCallback = null;
         }
     }
 }

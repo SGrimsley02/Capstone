@@ -15,13 +15,11 @@ class QueueDelegate extends WatchUi.BehaviorDelegate {
 
     private var _view as QueueView;
     private var _playbackView as PlaybackView;
-    private var _isStartingTrack as Boolean;
 
     function initialize(view as QueueView, playbackView as PlaybackView) {
         WatchUi.BehaviorDelegate.initialize();
         _view = view;
         _playbackView = playbackView;
-        _isStartingTrack = false;
     }
 
     function onKey(evt as WatchUi.KeyEvent) as Boolean {
@@ -65,13 +63,6 @@ class QueueDelegate extends WatchUi.BehaviorDelegate {
     }
 
     private function _playSelectedTrack() as Void {
-        if (_isStartingTrack) {
-            System.println("QueueDelegate._playSelectedTrack: blocked, already starting track");
-            return;
-        }
-
-        _isStartingTrack = true;
-
         var queue = _view.getQueue();
         var selectedIndex = _view.getSelectedIndex();
 
@@ -87,34 +78,17 @@ class QueueDelegate extends WatchUi.BehaviorDelegate {
         var trackUri = item["track_uri"];
 
         if (trackUri != null) {
-            var queueUris = "";
-
-            for (var i = selectedIndex; i < queue.size(); i += 1) {
-                var qItem = queue[i] as Lang.Dictionary;
-                var uri = qItem["track_uri"];
-
-                if (uri != null) {
-                    if (queueUris.length() > 0) {
-                        queueUris += ",";
-                    }
-                    queueUris += uri.toString();
-                }
-            }
-
             System.println("QueueDelegate._playSelectedTrack: " + trackUri);
-            System.println("QueueDelegate queueUris: " + queueUris);
-
-            _view.getProvider().playQueueFrom(
+            _view.getProvider().sendPlaybackCommand(
+                "play_uri",
+                null,
                 trackUri.toString(),
-                queueUris,
                 method(:_onTrackStarted)
             );
         }
     }
 
     function _onTrackStarted(data as Lang.Dictionary) as Void {
-        _isStartingTrack = false;
-
         System.println("QueueDelegate._onTrackStarted: " + data);
 
         if (data == null) {

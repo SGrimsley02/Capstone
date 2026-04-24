@@ -22,12 +22,10 @@ import Toybox.WatchUi;
 class PlaybackDelegate extends WatchUi.InputDelegate {
 
     private var _view as PlaybackView;
-    private var _queueOpening as Boolean;
 
     function initialize(view as PlaybackView) {
         InputDelegate.initialize();
         _view = view;
-        _queueOpening = false;
     }
 
     // ── Touch input ────────────────────────────────────────────────
@@ -66,12 +64,11 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         }
 
         if (_hitTest(tapX, tapY, _view.getQueueBounds())) {
-            if (_queueOpening || !_view.canOpenQueue()) {
-                System.println("PlaybackDelegate.onTap: queue blocked");
+            if (!_view.canOpenQueue()) {
+                System.println("PlaybackDelegate.onTap: queue blocked until playback is stable");
                 return true;
             }
 
-            _queueOpening = true;
             _pushQueueView();
             return true;
         }
@@ -89,7 +86,6 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
     private function _pushQueueView() as Void {
         var queueView = new QueueView(_view.getProvider());
         WatchUi.pushView(queueView, new QueueDelegate(queueView, _view), WatchUi.SLIDE_UP);
-        _queueOpening = false;
     }
 
     // ── Rating flow helpers ────────────────────────────────────────
