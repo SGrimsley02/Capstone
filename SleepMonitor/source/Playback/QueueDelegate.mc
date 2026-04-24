@@ -14,10 +14,12 @@ import Toybox.WatchUi;
 class QueueDelegate extends WatchUi.BehaviorDelegate {
 
     private var _view as QueueView;
+    private var _playbackView as PlaybackView;
 
-    function initialize(view as QueueView) {
+    function initialize(view as QueueView, playbackView as PlaybackView) {
         WatchUi.BehaviorDelegate.initialize();
         _view = view;
+        _playbackView = playbackView;
     }
 
     function onKey(evt as WatchUi.KeyEvent) as Boolean {
@@ -88,6 +90,16 @@ class QueueDelegate extends WatchUi.BehaviorDelegate {
 
     function _onTrackStarted(data as Lang.Dictionary) as Void {
         System.println("QueueDelegate._onTrackStarted: " + data);
-        WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+
+        if (data == null) {
+            return;
+        }
+
+        var success = data["success"];
+
+        if (success != null && (success as Boolean)) {
+            _playbackView.refreshStatus();
+            WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+        }
     }
 }

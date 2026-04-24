@@ -214,6 +214,14 @@ class PlaybackView extends WatchUi.View {
 
         WatchUi.requestUpdate();
     }
+    function blockQueueWhileReloading() as Void {
+        if (!_isActive) {
+            return;
+        }
+
+        _markStatusPending((TimerConstants.PLAYBACK_REFRESH_DELAY_SEC + 1) * 1000);
+        WatchUi.requestUpdate();
+    }
 
     // ── Timer callbacks ────────────────────────────────────────────
 
