@@ -147,13 +147,17 @@ async function handleDeleteAccount() {
   const sessionId = session.sessionId;
 
   if (!sessionId) {
-    alert("You must be logged in with a valid session to delete your account.");
+    alert(t(
+      "account.deleteMissingSession",
+      "You must be logged in with a valid session to delete your account."
+    ));
     return;
   }
 
-  const confirmed = window.confirm(
+  const confirmed = window.confirm(t(
+    "account.deleteConfirm",
     "Are you sure you want to delete your account? This will permanently remove your REMix account and saved data."
-  );
+  ));
 
   if (!confirmed) {
     return;
@@ -163,7 +167,10 @@ async function handleDeleteAccount() {
     const { ok, data } = await deleteAccount(sessionId);
 
     if (!ok) {
-      const message = data?.message || "Failed to delete account.";
+      const message = data?.message || t(
+        "account.deleteFailed",
+        "Failed to delete account."
+      );
       alert(message);
       return;
     }
@@ -172,11 +179,11 @@ async function handleDeleteAccount() {
     state.currentUser = null;
     setView("auth");
     setTab("login");
-    elements.authMsg.textContent = "Account deleted successfully.";
+    elements.authMsg.textContent = t("account.deleteSuccess", "Account deleted successfully.");
     await render();
   } catch (error) {
     console.error("Error deleting account:", error);
-    alert("Error deleting account.");
+    alert(t("account.deleteError", "Error deleting account."));
   }
 }
 
