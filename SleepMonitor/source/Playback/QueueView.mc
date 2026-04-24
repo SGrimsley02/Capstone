@@ -28,7 +28,6 @@ class QueueView extends WatchUi.View {
     // Album art caching
     private var _rowCoverCache as Lang.Dictionary;
     private var _pendingCoverUrl as String?;
-    private var _placeholderIcon;
 
     // Row tap targets
     var rowHitboxes = [];
@@ -47,7 +46,6 @@ class QueueView extends WatchUi.View {
         _scrollOffset = 0;
         _rowCoverCache = {} as Lang.Dictionary;
         _pendingCoverUrl = null;
-        _placeholderIcon = loadResource(Rez.Drawables.musicIcon);
         rowHitboxes = [];
     }
 
