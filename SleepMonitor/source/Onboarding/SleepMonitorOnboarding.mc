@@ -76,7 +76,7 @@ class SleepMonitorOnboarding {
             return;
         }
         if (_pollCount > TimerConstants.ONBOARDING_USERNAME_MAX_POLLS) {
-            if (Storage.getValue(_hasOnboarded) && Storage.getValue(StorageKeys.USER_ID_KEY)) {
+            if (_hasOnboarded && Storage.getValue(StorageKeys.USER_ID_KEY)) {
                 System.println("User has onboarded but poll timed out. Stopping polling.");
                 _usernamePollPending = false;
                 getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
@@ -87,6 +87,7 @@ class SleepMonitorOnboarding {
             _usernamePollPending = false;
             getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            _hasOnboarded = false;
             System.println("Onboarding failed: user did not log in within time limit.");
             WatchUi.pushView(new OnboardingErrorView(), new OnboardingErrorDelegate(), WatchUi.SLIDE_UP);
             return;
@@ -115,6 +116,7 @@ class SleepMonitorOnboarding {
 
             if (newUsername == null) {
                 Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+                _hasOnboarded = false;
                 System.println("Username poll returned success but no username was present.");
                 return;
             }
@@ -137,6 +139,7 @@ class SleepMonitorOnboarding {
 
             Storage.setValue(StorageKeys.USER_ID_KEY, newUsername);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
+            _hasOnboarded = true;
 
 
             if (preferences != null && preferences.size() > 0) {
@@ -179,6 +182,7 @@ class SleepMonitorOnboarding {
             _usernamePollPending = false;
             getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            _hasOnboarded = false;
             System.println("Username poll failed: " + responseCode);
         }
     }
