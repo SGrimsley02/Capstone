@@ -78,14 +78,12 @@ class SleepMonitorOnboarding {
         if (_pollCount > TimerConstants.ONBOARDING_USERNAME_MAX_POLLS) {
             if (_hasOnboarded && Storage.getValue(StorageKeys.USER_ID_KEY)) {
                 System.println("User has onboarded but poll timed out. Stopping polling.");
-                _usernamePollPending = false;
-                getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+                _stopPollingUsername();
                 return;
             }
 
             System.println("Polling timed out.");
-            _usernamePollPending = false;
-            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+            _stopPollingUsername();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             _hasOnboarded = false;
             System.println("Onboarding failed: user did not log in within time limit.");
@@ -106,9 +104,7 @@ class SleepMonitorOnboarding {
     function onPollResponse(responseCode as Number, data as Dictionary?) as Void {
         if (responseCode == 200 && data != null) {
             // Got the result — stop polling
-            _usernamePollPending = false;
-            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
-            _pollCount = 0;
+            _stopPollingUsername();
 
             var oldUsername = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
             var newUsername = data["username"] as String?;
@@ -179,8 +175,7 @@ class SleepMonitorOnboarding {
             System.println("Waiting for user to log in... (" + _pollCount + ")");
         } else {
             // Something went wrong — stop polling
-            _usernamePollPending = false;
-            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+            _stopPollingUsername();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             _hasOnboarded = false;
             System.println("Username poll failed: " + responseCode);
@@ -208,7 +203,6 @@ class SleepMonitorOnboarding {
         System.println("Relink flow started.");
         _usernamePollPending = false;
         _prefPollPending = false;
-        _pollCount = 0;
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
         try {
@@ -220,12 +214,19 @@ class SleepMonitorOnboarding {
             return;
         }
 
-        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+        _stopPollingUsername();
         _usernamePollPending = true;
         getApp().getSharedTimerManager().registerRepeatingTask(
             TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,
             TimerConstants.ONBOARDING_USERNAME_POLL_INTERVAL_SEC,
             method(:pollForUsername)
         );
+    }
+
+    function _stopPollingUsername() as Void {
+        _usernamePollPending = false;
+        _pollCount = 0;
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+        return;
     }
 }
