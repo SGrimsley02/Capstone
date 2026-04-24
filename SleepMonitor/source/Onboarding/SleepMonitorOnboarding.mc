@@ -25,20 +25,19 @@ class SleepMonitorOnboarding {
     var _wakeEnd as String? = null;
     var _usernamePollPending;
     var _prefPollPending;
+    var _hasOnboarded;
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
         _usernamePollPending = false;
         _prefPollPending = false;
 
-        var key = StorageKeys.HAS_ONBOARDED_KEY;
-
         System.println("Onboarding check started...");
 
-        var hasOnboarded = false;
-        System.println("Stored value: " + hasOnboarded);
+        _hasOnboarded = Storage.getValue(StorageKeys.HAS_ONBOARDED_KEY);
+        System.println("Stored value: " + _hasOnboarded);
 
-        if (hasOnboarded == true) {
+        if (_hasOnboarded == true) {
             System.println("User already onboarded. Skipping.");
             return false;
         }
@@ -77,6 +76,13 @@ class SleepMonitorOnboarding {
             return;
         }
         if (_pollCount > TimerConstants.ONBOARDING_USERNAME_MAX_POLLS) {
+            if (Storage.getValue(_hasOnboarded) && Storage.getValue(StorageKeys.USER_ID_KEY)) {
+                System.println("User has onboarded but poll timed out. Stopping polling.");
+                _usernamePollPending = false;
+                getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+                return;
+            }
+
             System.println("Polling timed out.");
             _usernamePollPending = false;
             getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
