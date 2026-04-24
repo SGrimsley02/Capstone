@@ -4,7 +4,7 @@
   * switch views and tabs, and render the connected state of external services.
   * Authors: Kiara Rose
   * Created: March 24, 2026
-  * Last updated: March 25, 2026
+  * Last updated: April 22, 2026
 */
 
 const el = (id) => document.getElementById(id);
@@ -36,6 +36,8 @@ export function getElements() {
     viewPrefs,
     languageSelect: el("languageSelect"),
     pillState: el("pillState"),
+    btnAccountMenu: el("btnAccountMenu"),
+    accountDropdown: el("accountDropdown"),
     tabLogin: el("tabLogin"),
     tabSignup: el("tabSignup"),
     formLogin: el("formLogin"),
@@ -51,6 +53,7 @@ export function getElements() {
     btnToPrefs: el("btnToPrefs"),
     btnLogout: el("btnLogout"),
     btnResetAll: el("btnResetAll"),
+    btnDeleteAccountHeader: el("btnDeleteAccountHeader"),
     prefsForm: el("prefsForm"),
     prefsMsg: el("prefsMsg"),
     btnBackToSetup: el("btnBackToSetup"),
@@ -85,6 +88,36 @@ export function setTab(elements, which) {
   elements.signupMsg.textContent = "";
 }
 
+export function openAccountMenu(elements) {
+  if (!elements?.btnAccountMenu || !elements?.accountDropdown) return;
+
+  elements.btnAccountMenu.setAttribute("aria-expanded", "true");
+  elements.accountDropdown.classList.remove("hide");
+}
+
+export function closeAccountMenu(elements) {
+  if (!elements?.btnAccountMenu || !elements?.accountDropdown) return;
+
+  elements.btnAccountMenu.setAttribute("aria-expanded", "false");
+  elements.accountDropdown.classList.add("hide");
+}
+
+export function resetAccountMenu(elements) {
+  closeAccountMenu(elements);
+}
+
+export function toggleAccountMenu(elements) {
+  if (!elements?.btnAccountMenu || !elements?.accountDropdown) return;
+
+  const isHidden = elements.accountDropdown.classList.contains("hide");
+
+  if (isHidden) {
+    openAccountMenu(elements);
+  } else {
+    closeAccountMenu(elements);
+  }
+}
+
 export function renderConnectedState(elements, currentUser, t) {
   const gOK = (currentUser.googleConnected === true) || (currentUser.googleEmail != null);
   const sOK = (currentUser.spotifyConnected === true) || (currentUser.spotifyName != null);
@@ -94,9 +127,12 @@ export function renderConnectedState(elements, currentUser, t) {
 
   elements.googleStatus.textContent = gOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.googleStatus.className = gOK ? "ok" : "warn";
+
   elements.spotifyStatus.textContent = sOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.spotifyStatus.className = sOK ? "ok" : "warn";
+
   elements.garminStatus.textContent = garminOK ? t("setup.connected", "Connected ✅") : t("setup.notConnected", "Not connected");
   elements.garminStatus.className = garminOK ? "ok" : "warn";
+
   return { gOK, sOK, garminOK };
 }

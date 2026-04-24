@@ -4,12 +4,12 @@
   * interactions between the UI, authentication, and preferences modules.
   * Authors: Kiara Rose
   * Created: March 24, 2026
-  * Last updated: March 25, 2026
+  * Last updated: April 22, 2026
 */
 
 import { API_BASE, FRONTEND_BASE } from "./config.js";
 import { clearSession, loadSession } from "./storage.js";
-import { getCurrentUser, updateLanguage } from "./api.js";
+import { getCurrentUser, updateLanguage, deleteAccount } from "./api.js";
 import { bindAuthHandlers } from "./auth.js";
 import { bindPreferencesHandlers, bindPreferenceToggles } from "./prefs.js";
 import { applyTranslations, getLanguage, initI18n, setLanguage, t } from "./i18n.js";
@@ -17,13 +17,31 @@ import {
   getElements,
   renderConnectedState,
   setTab as setTabUI,
-  setView as setViewUI
+  setView as setViewUI,
+  toggleAccountMenu
 } from "./ui.js";
 
 const elements = getElements();
 const state = {
   currentUser: null
 };
+
+let accountMenuBound = false;
+
+function bindAccountMenuHandlers() {
+  if (accountMenuBound) return;
+  accountMenuBound = true;
+
+  elements.btnAccountMenu?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleAccountMenu(elements);
+  });
+
+  document.addEventListener("click", () => {
+    elements.accountDropdown?.classList.add("hide");
+    elements.btnAccountMenu?.setAttribute("aria-expanded", "false");
+  });
+}
 
 function setView(which) {
   setViewUI(elements, which);
@@ -33,15 +51,23 @@ function setTab(which) {
   setTabUI(elements, which);
 }
 
-async function render() { // Main render function to initialize the app state and UI based on authentication status
+async function render() {
   const session = loadSession();
   const signedIn = !!session.username;
+  
+  // Show/Hide the whole dropdown trigger based on login status
+  elements.btnAccountMenu?.classList.toggle("hide", !signedIn);
+
+  // Ensure dropdown is closed on re-render
+  elements.accountDropdown?.classList.add("hide");
+  elements.btnAccountMenu?.setAttribute("aria-expanded", "false");
 
   elements.pillState.textContent = signedIn
-    ? t("header.signedIn", "Signed in: {{username}}").replace("{{username}}", loadSession().username)
+    ? t("header.signedIn", "Signed in: {{username}}").replace("{{username}}", session.username)
     : t("header.signedOut", "Signed out");
 
   if (!signedIn) {
+    state.currentUser = null;
     setView("auth");
     elements.googleStatus.textContent = t("setup.notConnected", "Not connected");
     elements.spotifyStatus.textContent = t("setup.notConnected", "Not connected");
@@ -63,12 +89,10 @@ async function render() { // Main render function to initialize the app state an
     return;
   }
 
-  // DEBUG: Log the entire user object to see what backend returns
   console.log("User data from backend:", state.currentUser);
   console.log("Language field in user object:", state.currentUser.language);
   console.log("Current UI language:", getLanguage());
 
-  // Load user's saved language preference if available from backend
   if (state.currentUser.language && state.currentUser.language !== getLanguage()) {
     console.log(`Restoring user language from backend: ${state.currentUser.language}`);
     await setLanguage(state.currentUser.language);
@@ -118,6 +142,53 @@ elements.btnResetAll.addEventListener("click", () => {
   setTab("login");
 });
 
+async function handleDeleteAccount() {
+  const session = loadSession();
+  const sessionId = session.sessionId;
+
+  if (!sessionId) {
+    alert(t(
+      "account.deleteMissingSession",
+      "You must be logged in with a valid session to delete your account."
+    ));
+    return;
+  }
+
+  const confirmed = window.confirm(t(
+    "account.deleteConfirm",
+    "Are you sure you want to delete your account? This will permanently remove your REMix account and saved data."
+  ));
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const { ok, data } = await deleteAccount(sessionId);
+
+    if (!ok) {
+      const message = data?.message || t(
+        "account.deleteFailed",
+        "Failed to delete account."
+      );
+      alert(message);
+      return;
+    }
+
+    clearSession();
+    state.currentUser = null;
+    setView("auth");
+    setTab("login");
+    elements.authMsg.textContent = t("account.deleteSuccess", "Account deleted successfully.");
+    await render();
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    alert(t("account.deleteError", "Error deleting account."));
+  }
+}
+
+elements.btnDeleteAccountHeader?.addEventListener("click", handleDeleteAccount);
+
 const params = new URLSearchParams(window.location.search);
 if (
   params.get("spotify") === "connected" ||
@@ -133,15 +204,16 @@ async function bootstrap() {
   document.title = t("meta.title", document.title);
 
   elements.languageSelect.value = getLanguage();
+
+  bindAccountMenuHandlers();
+
   elements.languageSelect.addEventListener("change", async (e) => {
     const newLanguage = e.target.value;
-    
-    // Update language immediately in UI
+
     await setLanguage(newLanguage);
     applyTranslations();
     document.title = t("meta.title", document.title);
-    
-    // Save language preference to backend if user is logged in
+
     const session = loadSession();
     if (session.username) {
       try {
@@ -150,7 +222,6 @@ async function bootstrap() {
           console.error("Failed to save language preference to backend:", response.data);
         } else {
           console.log(`Language preference saved to backend: ${newLanguage}`);
-          // Update local state to reflect what's on the backend
           if (state.currentUser) {
             state.currentUser.language = newLanguage;
           }
