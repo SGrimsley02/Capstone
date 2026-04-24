@@ -13,7 +13,7 @@ Description: Music playback control screen. Displays five tappable icon buttons:
                3. refreshStatus() — called by PlaybackDelegate after a skip or
                   rewind; uses a 1.5 s one-shot timer so Spotify has time to
                   advance before we query.
-Authors: Kiara Rose
+Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
 Last Modified: April 22, 2026
 */
@@ -30,6 +30,7 @@ class PlaybackView extends WatchUi.View {
     private var _playIcon;
     private var _skipIcon;
     private var _volumeIcon;
+    private var _queueIcon;
     private var _starIcon;
 
     // Current track info (populated by status response)
@@ -37,12 +38,15 @@ class PlaybackView extends WatchUi.View {
     private var _songName as Object?;
     private var _artistName as Object?;
     private var _isPlaying as Boolean;
+    private var _statusReady as Boolean;
+    private var _queueReadyAtMs as Number;
 
     // Icon hit-test bounds [x, y, w, h] — updated every draw
     private var _rewindBounds as Array;
     private var _playBounds as Array;
     private var _skipBounds as Array;
     private var _volumeBounds as Array;
+    private var _queueBounds as Array;
     private var _starBounds as Array;
 
     private var _provider as PlaybackProvider;
@@ -60,11 +64,14 @@ class PlaybackView extends WatchUi.View {
         _songUri = null;
         _songName = null;
         _artistName = null;
+        _statusReady = false;
+        _queueReadyAtMs = 0;
 
         _rewindIcon = loadResource(Rez.Drawables.rewindIcon);
         _playIcon = loadResource(Rez.Drawables.playIcon);
         _skipIcon = loadResource(Rez.Drawables.skipIcon);
         _volumeIcon = loadResource(Rez.Drawables.volumeIcon);
+        _queueIcon = loadResource(Rez.Drawables.queueIcon);
         _starIcon = loadResource(Rez.Drawables.starIcon);
 
         _provider = new PlaybackProvider();
@@ -77,6 +84,7 @@ class PlaybackView extends WatchUi.View {
         _playBounds = zero;
         _skipBounds = zero;
         _volumeBounds = zero;
+        _queueBounds = zero;
         _starBounds = zero;
     }
 
@@ -87,6 +95,7 @@ class PlaybackView extends WatchUi.View {
         _refreshPending = false;
 
         // Immediate status fetch on entry
+        _markStatusPending(2500);
         _requestStatus();
 
         // Start repeating poll to detect when a song finishes
@@ -142,14 +151,16 @@ class PlaybackView extends WatchUi.View {
         _playBounds = _iconBounds(_playIcon, cx, ctrlY);
         _skipBounds = _iconBounds(_skipIcon, cx + spacing, ctrlY);
 
-        // ── Secondary row: Volume | Star @ 80% ─────────────────────
+        // ── Secondary row: Volume | Queue | Star @ 80% ─────────────────
         var secY = (H * 0.80).toNumber();
         var secSpacing = (W * 0.22).toNumber();
 
         _drawIconCentered(dc, _volumeIcon, cx - secSpacing, secY, ThemeHelpers.getColor("playback_volume"));
+        _drawIconCentered(dc, _queueIcon, cx, secY, ThemeHelpers.getColor("playback_controls"));
         _drawIconCentered(dc, _starIcon, cx + secSpacing, secY, ThemeHelpers.getColor("playback_star"));
 
         _volumeBounds = _iconBounds(_volumeIcon, cx - secSpacing, secY);
+        _queueBounds = _iconBounds(_queueIcon, cx, secY);
         _starBounds = _iconBounds(_starIcon, cx + secSpacing, secY);
     }
 
@@ -159,6 +170,7 @@ class PlaybackView extends WatchUi.View {
     function getPlayBounds() as Array { return _playBounds; }
     function getSkipBounds() as Array { return _skipBounds; }
     function getVolumeBounds() as Array { return _volumeBounds; }
+    function getQueueBounds() as Array { return _queueBounds; }
     function getStarBounds() as Array { return _starBounds; }
 
     function isPlaying() as Boolean { return _isPlaying; }
@@ -166,6 +178,19 @@ class PlaybackView extends WatchUi.View {
 
     function getSongUri() as String? { return _songUri; }
     function getProvider() as PlaybackProvider { return _provider; }
+    function isStatusReady() as Boolean { return _statusReady; }
+
+    function canOpenQueue() as Boolean {
+        if (!_statusReady) {
+            return false;
+        }
+
+        if (_songUri == null || _songName == null || _artistName == null) {
+            return false;
+        }
+
+        return System.getTimer() >= _queueReadyAtMs;
+    }
 
     // Called by PlaybackDelegate after a skip or rewind.
     // Waits REFRESH_DELAY_MS before querying status so Spotify has time to advance.
@@ -173,6 +198,9 @@ class PlaybackView extends WatchUi.View {
         if (!_isActive) {
             return;
         }
+
+        // Immediately treat status as stale while Spotify catches up
+        _markStatusPending((TimerConstants.PLAYBACK_REFRESH_DELAY_SEC + 1) * 1000);
 
         // Cancel any pending refresh that hasn't fired yet
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.PLAYBACK_REFRESH_TASK_ID);
@@ -183,6 +211,16 @@ class PlaybackView extends WatchUi.View {
             TimerConstants.PLAYBACK_REFRESH_DELAY_SEC,
             method(:_onRefreshTick)
         );
+
+        WatchUi.requestUpdate();
+    }
+    function blockQueueWhileReloading() as Void {
+        if (!_isActive) {
+            return;
+        }
+
+        _markStatusPending((TimerConstants.PLAYBACK_REFRESH_DELAY_SEC + 1) * 1000);
+        WatchUi.requestUpdate();
     }
 
     // ── Timer callbacks ────────────────────────────────────────────
@@ -213,21 +251,24 @@ class PlaybackView extends WatchUi.View {
     // ── Status response callback ───────────────────────────────────
 
     function _onStatusReceived(data as Lang.Dictionary) as Void {
-        if (!_isActive) {
-            return;
-        }
+      if (!_isActive) {
+          return;
+      }
 
-        if (data != null) {
-            _songUri = data["track_uri"] as String?;
-            _songName = data["track_name"] as String?;
-            _artistName = data["artist_name"] as String?;
-            var playing = data["is_playing"];
-            if (playing != null) {
-                _isPlaying = playing as Boolean;
-            }
-        }
-        WatchUi.requestUpdate();
-    }
+      _statusReady = true;
+
+      if (data != null) {
+          _songUri = data["track_uri"] as String?;
+          _songName = data["track_name"] as String?;
+          _artistName = data["artist_name"] as String?;
+          var playing = data["is_playing"];
+          if (playing != null) {
+              _isPlaying = playing as Boolean;
+          }
+      }
+
+      WatchUi.requestUpdate();
+  }
 
     // ── Private helpers ────────────────────────────────────────────
 
@@ -235,7 +276,7 @@ class PlaybackView extends WatchUi.View {
         if (!_isActive) {
             return;
         }
-        _provider.sendPlaybackCommand("status", null, method(:_onStatusReceived));
+        _provider.sendPlaybackCommand("status", null, null, method(:_onStatusReceived));
     }
 
     private function _stopTimers() as Void {
@@ -262,5 +303,10 @@ class PlaybackView extends WatchUi.View {
         var iw = icon.getWidth();
         var ih = icon.getHeight();
         return [cx - iw / 2, cy - ih / 2, iw, ih] as Array;
+    }
+
+    private function _markStatusPending(blockMs as Number) as Void {
+        _statusReady = false;
+        _queueReadyAtMs = System.getTimer() + blockMs;
     }
 }

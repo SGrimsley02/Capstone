@@ -47,4 +47,12 @@ Last Modified: February 14, 2026
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Volume</string>
+    <string id="Queue">Queue</string>
+    <string id="LoadingQueue">Loading queue...</string>
+    <string id="QueueNotLoaded">Could not load queue.</string>
+    <string id="QueueEmpty">Queue is empty.</string>
+    <string id="OpenSpotify">Open Spotify on a device first.</string>
+    <string id="UpNext">Up Next</string>
+    <string id="UnknownTrack">Unknown track</string>
+    <string id="UnknownArtist">Unknown artist</string>
 </strings>

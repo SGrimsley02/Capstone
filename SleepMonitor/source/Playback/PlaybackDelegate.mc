@@ -10,9 +10,9 @@ Description: Input delegate for the music playback control screen.
                - Star icon    → fetches current track URI via "status", then
                                 pushes RatingView / RatingDelegate
              Uses WatchUi.InputDelegate so that onTap receives raw coordinates.
-Authors: Kiara Rose
+Authors: Kiara Rose, Ella Nguyen
 Created: March 15, 2026
-Last Modified: March 15, 2026
+Last Modified: April 22, 2026
 */
 
 import Toybox.Lang;
@@ -38,21 +38,21 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         System.println("PlaybackDelegate.onTap: x=" + tapX + " y=" + tapY);
 
         if (_hitTest(tapX, tapY, _view.getRewindBounds())) {
-            _view.getProvider().sendPlaybackCommand("previous", null, null);
+            _view.getProvider().sendPlaybackCommand("previous", null, null, null);
             _view.refreshStatus();
             return true;
         }
 
         if (_hitTest(tapX, tapY, _view.getPlayBounds())) {
             var action = _view.isPlaying() ? "pause" : "resume";
-            _view.getProvider().sendPlaybackCommand(action, null, null);
+            _view.getProvider().sendPlaybackCommand(action, null, null, null);
             _view.togglePlayState();
             WatchUi.requestUpdate();
             return true;
         }
 
         if (_hitTest(tapX, tapY, _view.getSkipBounds())) {
-            _view.getProvider().sendPlaybackCommand("next", null, null);
+            _view.getProvider().sendPlaybackCommand("next", null, null, null);
             _view.refreshStatus();
             return true;
         }
@@ -60,6 +60,16 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         if (_hitTest(tapX, tapY, _view.getVolumeBounds())) {
             var volView = new VolumeView(_view.getProvider());
             WatchUi.pushView(volView, new VolumeDelegate(volView), WatchUi.SLIDE_UP);
+            return true;
+        }
+
+        if (_hitTest(tapX, tapY, _view.getQueueBounds())) {
+            if (!_view.canOpenQueue()) {
+                System.println("PlaybackDelegate.onTap: queue blocked until playback is stable");
+                return true;
+            }
+
+            _pushQueueView();
             return true;
         }
 
@@ -71,7 +81,13 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         return false;
     }
 
-
+    // ── Queue flow helpers ────────────────────────────────────────
+    // Navigate to queue view
+    private function _pushQueueView() as Void {
+        var queueProvider = new PlaybackProvider();
+        var queueView = new QueueView(queueProvider);
+        WatchUi.pushView(queueView, new QueueDelegate(queueView, _view), WatchUi.SLIDE_UP);
+    }
 
     // ── Rating flow helpers ────────────────────────────────────────
 
@@ -80,7 +96,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
     private function _pushRatingView() as Void {
         var songUri = _view.getSongUri();
         if (songUri == null) {
-            _view.getProvider().sendPlaybackCommand("status", null, method(:_onStatusForRating));
+            _view.getProvider().sendPlaybackCommand("status", null, null, method(:_onStatusForRating));
         } else {
             _navigateToRating(songUri);
         }
