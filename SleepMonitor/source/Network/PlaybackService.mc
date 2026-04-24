@@ -82,6 +82,28 @@ class PlaybackProvider {
         }
     }
 
+    function playQueueIndex(trackUri as String, selectedIndex as Number, callback as Lang.Method?) as Void {
+        _statusCallback = callback;
+        _refreshUserId();
+
+        var payload = {
+            "userId" => _userId,
+            "action" => "play_uri",
+            "trackUri" => trackUri,
+            "selectedIndex" => selectedIndex
+        };
+
+        Communications.makeWebRequest(
+            _notifyUrl,
+            payload,
+            {
+                :method => Communications.HTTP_REQUEST_METHOD_POST,
+                :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
+            },
+            method(:_onPlaybackResponse)
+        );
+    }
+
     function _onPlaybackResponse(responseCode as Lang.Number, data as Lang.Dictionary or Lang.String or Null) as Void {
         System.println("PlaybackProvider._onPlaybackResponse: responseCode=" + responseCode + " data=" + data);
         if (_statusCallback != null && data instanceof Lang.Dictionary) {

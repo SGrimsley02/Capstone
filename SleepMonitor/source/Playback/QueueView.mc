@@ -104,7 +104,15 @@ class QueueView extends WatchUi.View {
 
         // Draw "Up Next" Text
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
+
+        if (_queue.size() == 0) {
+            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, "Queue is empty", Graphics.TEXT_JUSTIFY_CENTER);
+            return;
+        }
+
         var upNextStr = loadResource(Rez.Strings.UpNext) + " (" + (_selectedIndex + 1).toString() + "/" + _queue.size().toString() + "):";
+
+
         dc.drawText(left, y, Graphics.FONT_XTINY, upNextStr, Graphics.TEXT_JUSTIFY_LEFT);
 
         // Calculate List Area
