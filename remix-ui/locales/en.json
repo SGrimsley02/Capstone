@@ -118,5 +118,13 @@
     "capricorn": "Capricorn",
     "aquarius": "Aquarius",
     "pisces": "Pisces"
+  },
+
+  "account": {
+    "deleteMissingSession": "You must be logged in with a valid session to delete your account.",
+    "deleteConfirm": "Are you sure you want to delete your account? This will permanently remove your REMix account and saved data.",
+    "deleteFailed": "Failed to delete account.",
+    "deleteSuccess": "Account deleted successfully.",
+    "deleteError": "Error deleting account."
   }
 }
