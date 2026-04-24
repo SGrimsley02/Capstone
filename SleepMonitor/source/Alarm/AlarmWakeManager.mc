@@ -32,12 +32,14 @@ class WakeAlarmManager {
     var _wakeEndEpoch = null;
     var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
     var _prefPollPending = true;
+    var _podcastPollPending = false;
 
     // Instance of the network provider
     private var _podcastProvider;
 
     function initialize() {
         _podcastProvider = new PodcastProvider();
+        _podcastPollPending = false;
     }
 
      // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
@@ -261,6 +263,8 @@ class WakeAlarmManager {
             _alarmView.setPodcastReady(false);
         }
 
+        _podcastPollPending = true;
+
         getApp().getSharedTimerManager().registerRepeatingTask(
             TimerConstants.PODCAST_POLL_TASK_ID,
             TimerConstants.PODCAST_POLL_INTERVAL_SEC,
@@ -272,10 +276,11 @@ class WakeAlarmManager {
 
     function stopPodcastPolling() as Void {
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.PODCAST_POLL_TASK_ID);
+        _podcastPollPending = false;
     }
 
     function _pollPodcastStatus() as Void {
-        if (!_alarmShowing) { return; }
+        if (!_alarmShowing || !_podcastPollPending) { return; }
         _podcastProvider.checkStatus(method(:_onPodcastUpdate));
     }
 
