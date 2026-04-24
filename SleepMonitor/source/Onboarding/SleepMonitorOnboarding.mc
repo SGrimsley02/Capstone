@@ -11,22 +11,25 @@ import Toybox.Application.Storage;
 import Toybox.Communications;
 import Toybox.System;
 import Toybox.Lang;
-import Toybox.Timer;
 import Toybox.Math;
 import Toybox.WatchUi;
 import StorageKeys;
 import Defaults;
+import TimerConstants;
 
 class SleepMonitorOnboarding {
 
     var _sessionId as String = "";
-    var _timer = getApp().userInfoTimer; // Use the main app timer for onboarding polling tasks
     var _pollCount as Number = 0;
     var _wakeStart as String? = null;
     var _wakeEnd as String? = null;
-    const MAX_POLLS = 0;  // stop after 5 minutes (15 x 20s)
+    var _usernamePollPending;
+    var _prefPollPending;
 
     function runIfFirstTime(targetUrl as String) as Boolean {
+
+        _usernamePollPending = false;
+        _prefPollPending = false;
 
         var key = StorageKeys.HAS_ONBOARDED_KEY;
 
@@ -55,8 +58,14 @@ class SleepMonitorOnboarding {
             System.println("openWebPage FAILED: " + ex.toString());
         }
 
+        _usernamePollPending = true;
+
         // Start polling every 20 seconds
-        _timer.start(method(:pollForUsername), 20000, true);
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,
+            TimerConstants.ONBOARDING_USERNAME_POLL_INTERVAL_SEC,
+            method(:pollForUsername)
+        );
 
         return true;
     }
@@ -64,9 +73,13 @@ class SleepMonitorOnboarding {
     function pollForUsername() as Void {
         _pollCount++;
 
-        if (_pollCount > MAX_POLLS) {
+        if (_usernamePollPending == false) {
+            return;
+        }
+        if (_pollCount > TimerConstants.ONBOARDING_USERNAME_MAX_POLLS) {
             System.println("Polling timed out.");
-            _timer.stop();
+            _usernamePollPending = false;
+            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             System.println("Onboarding failed: user did not log in within time limit.");
             WatchUi.pushView(new OnboardingErrorView(), new OnboardingErrorDelegate(), WatchUi.SLIDE_UP);
@@ -86,7 +99,8 @@ class SleepMonitorOnboarding {
     function onPollResponse(responseCode as Number, data as Dictionary?) as Void {
         if (responseCode == 200 && data != null) {
             // Got the result — stop polling
-            _timer.stop();
+            _usernamePollPending = false;
+            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
             _pollCount = 0;
 
             var oldUsername = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
@@ -145,28 +159,45 @@ class SleepMonitorOnboarding {
 
             System.println("Onboarding complete for: " + newUsername);
 
-            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false);
+            _prefPollPending = true;
+            getApp().getSharedTimerManager().registerOneShotTask(
+                TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID,
+                TimerConstants.ONBOARDING_INITIAL_PREF_POLL_INTERVAL,
+                method(:pollOnceForPreferences)
+            );
         } else if (responseCode == 404) {
             // Not ready yet — keep polling
             System.println("Waiting for user to log in... (" + _pollCount + ")");
         } else {
             // Something went wrong — stop polling
-            _timer.stop();
+            _usernamePollPending = false;
+            getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
             System.println("Username poll failed: " + responseCode);
         }
     }
 
-    function pollForPreferences() as Void {
+    function pollOnceForPreferences() as Void {
+        if (_prefPollPending == false) {
+            return;
+        }
         getApp().getWakeAlarmManager().pollPreferences();
-        _timer.stop();
+        
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID);
+        _prefPollPending = false;
+
         var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
-        _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_ID,
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_INTERVAL,
+            callback
+        ); // regular preference polling every 2 hours after initial 5-minute check
     }
     
     function runRelink(targetUrl as String) as Void {
         System.println("Relink flow started.");
-
+        _usernamePollPending = false;
+        _prefPollPending = false;
         _pollCount = 0;
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
@@ -179,7 +210,12 @@ class SleepMonitorOnboarding {
             return;
         }
 
-        _timer.stop();
-        _timer.start(method(:pollForUsername), 20000, true);
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+        _usernamePollPending = true;
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,
+            TimerConstants.ONBOARDING_USERNAME_POLL_INTERVAL_SEC,
+            method(:pollForUsername)
+        );
     }
 }

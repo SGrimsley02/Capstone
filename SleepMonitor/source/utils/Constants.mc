@@ -18,8 +18,6 @@ module StorageKeys {
 module Defaults {
     const DEFAULT_WAKE_START = "07:00";
     const DEFAULT_WAKE_END = "09:00";
-    const SHORT_PREF_INT = 5 * 60 * 1000; // 5 minutes in milliseconds
-    const LONG_PREF_INT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 }
 
 module TimerConstants {
@@ -41,4 +39,13 @@ module TimerConstants {
 
     const PLAYBACK_REFRESH_TASK_ID = "playback_refresh";
     const PLAYBACK_REFRESH_DELAY_SEC = 2;
+
+    const ONBOARDING_USERNAME_POLL_TASK_ID = "onboarding_username_poll";
+    const ONBOARDING_USERNAME_POLL_INTERVAL_SEC = 30;
+    const ONBOARDING_USERNAME_MAX_POLLS = 20;
+
+    const ONBOARDING_INITIAL_PREF_POLL_ID = "onboarding_initial_pref_poll";
+    const ONBOARDING_INITIAL_PREF_POLL_INTERVAL = 10 * 60; // 10 minutes
+    const ONBOARDING_LONG_PREF_POLL_ID = "onboarding_long_pref_poll";
+    const ONBOARDING_LONG_PREF_POLL_INTERVAL = 2 * 60 * 60; // 2 hours
 }
