@@ -24,13 +24,13 @@ class SleepMonitorOnboarding {
     var _wakeStart as String? = null;
     var _wakeEnd as String? = null;
     var _usernamePollPending;
-    var _prefPollPending;
+    var _shortPrefPollPending;
     var _hasOnboarded;
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
         _usernamePollPending = false;
-        _prefPollPending = false;
+        _shortPrefPollPending = false;
 
         System.println("Onboarding check started...");
 
@@ -164,7 +164,7 @@ class SleepMonitorOnboarding {
 
             System.println("Onboarding complete for: " + newUsername);
 
-            _prefPollPending = true;
+            _shortPrefPollPending = true;
             getApp().getSharedTimerManager().registerOneShotTask(
                 TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID,
                 TimerConstants.ONBOARDING_INITIAL_PREF_POLL_INTERVAL,
@@ -183,13 +183,14 @@ class SleepMonitorOnboarding {
     }
 
     function pollOnceForPreferences() as Void {
-        if (_prefPollPending == false) {
+        if (_shortPrefPollPending == false) {
             return;
         }
         getApp().getWakeAlarmManager().pollPreferences();
         
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID);
-        _prefPollPending = false;
+        _shortPrefPollPending = false;
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_LONG_PREF_POLL_ID);
 
         var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
         getApp().getSharedTimerManager().registerRepeatingTask(
@@ -202,7 +203,7 @@ class SleepMonitorOnboarding {
     function runRelink(targetUrl as String) as Void {
         System.println("Relink flow started.");
         _usernamePollPending = false;
-        _prefPollPending = false;
+        _shortPrefPollPending = false;
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
         try {
@@ -215,6 +216,7 @@ class SleepMonitorOnboarding {
         }
 
         _stopPollingUsername();
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID);
         _usernamePollPending = true;
         getApp().getSharedTimerManager().registerRepeatingTask(
             TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,

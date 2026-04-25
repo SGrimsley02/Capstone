@@ -31,7 +31,7 @@ class WakeAlarmManager {
     var _wakeStartEpoch = null;
     var _wakeEndEpoch = null;
     var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
-    var _prefPollPending = true;
+    var _longPrefPollPending = true;
     var _podcastPollPending = false;
 
     // Instance of the network provider
@@ -86,7 +86,7 @@ class WakeAlarmManager {
 
         _clearAlarmTimer();
 
-        _prefPollPending = false;  // Stop any pending preference polls to avoid conflicts during alarm scheduling
+        _longPrefPollPending = false;  // Stop any pending preference polls to avoid conflicts during alarm scheduling
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_LONG_PREF_POLL_ID);
         
         // Get userId from storage
@@ -240,7 +240,7 @@ class WakeAlarmManager {
         _resetAlarm = true;
 
         getApp().updateUserInfo(method(:onReceive));
-        _prefPollPending = true; 
+        _longPrefPollPending = true; 
         getApp().getSharedTimerManager().registerRepeatingTask(
             TimerConstants.ONBOARDING_LONG_PREF_POLL_ID,
             TimerConstants.ONBOARDING_LONG_PREF_POLL_INTERVAL,
@@ -296,7 +296,7 @@ class WakeAlarmManager {
     }
 
     function pollPreferences() as Void {
-        if (_prefPollPending == false) {
+        if (_longPrefPollPending == false) {
             return;
         }
         getApp().updateUserInfo(method(:onReceive));
