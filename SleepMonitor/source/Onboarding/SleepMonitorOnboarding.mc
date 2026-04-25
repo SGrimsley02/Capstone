@@ -11,30 +11,33 @@ import Toybox.Application.Storage;
 import Toybox.Communications;
 import Toybox.System;
 import Toybox.Lang;
-import Toybox.Timer;
 import Toybox.Math;
+import Toybox.WatchUi;
 import StorageKeys;
 import Defaults;
+import TimerConstants;
 
 class SleepMonitorOnboarding {
 
     var _sessionId as String = "";
-    var _timer = getApp().userInfoTimer; // Use the main app timer for onboarding polling tasks
     var _pollCount as Number = 0;
     var _wakeStart as String? = null;
     var _wakeEnd as String? = null;
-    const MAX_POLLS = 15;  // stop after 5 minutes (15 x 20s)
+    var _usernamePollPending;
+    var _shortPrefPollPending;
+    var _hasOnboarded;
 
     function runIfFirstTime(targetUrl as String) as Boolean {
 
-        var key = StorageKeys.HAS_ONBOARDED_KEY;
+        _usernamePollPending = false;
+        _shortPrefPollPending = false;
 
         System.println("Onboarding check started...");
 
-        var hasOnboarded = Storage.getValue(key);
-        System.println("Stored value: " + hasOnboarded);
+        _hasOnboarded = Storage.getValue(StorageKeys.HAS_ONBOARDED_KEY);
+        System.println("Stored value: " + _hasOnboarded);
 
-        if (hasOnboarded == true) {
+        if (_hasOnboarded == true) {
             System.println("User already onboarded. Skipping.");
             return false;
         }
@@ -54,8 +57,14 @@ class SleepMonitorOnboarding {
             System.println("openWebPage FAILED: " + ex.toString());
         }
 
+        _usernamePollPending = true;
+
         // Start polling every 20 seconds
-        _timer.start(method(:pollForUsername), 20000, true);
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,
+            TimerConstants.ONBOARDING_USERNAME_POLL_INTERVAL_SEC,
+            method(:pollForUsername)
+        );
 
         return true;
     }
@@ -63,12 +72,22 @@ class SleepMonitorOnboarding {
     function pollForUsername() as Void {
         _pollCount++;
 
-        if (_pollCount > MAX_POLLS) {
+        if (_usernamePollPending == false) {
+            return;
+        }
+        if (_pollCount > TimerConstants.ONBOARDING_USERNAME_MAX_POLLS) {
+            if (_hasOnboarded && Storage.getValue(StorageKeys.USER_ID_KEY)) {
+                System.println("User has onboarded but poll timed out. Stopping polling.");
+                _stopPollingUsername();
+                return;
+            }
+
             System.println("Polling timed out.");
-            _timer.stop();
-            // TODO: Display error message with instructions to retry onboarding + warning that they should login within 5 mins next time
+            _stopPollingUsername();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            _hasOnboarded = false;
             System.println("Onboarding failed: user did not log in within time limit.");
+            WatchUi.pushView(new OnboardingErrorView(), new OnboardingErrorDelegate(), WatchUi.SLIDE_UP);
             return;
         }
         Communications.makeWebRequest(
@@ -85,8 +104,7 @@ class SleepMonitorOnboarding {
     function onPollResponse(responseCode as Number, data as Dictionary?) as Void {
         if (responseCode == 200 && data != null) {
             // Got the result — stop polling
-            _timer.stop();
-            _pollCount = 0;
+            _stopPollingUsername();
 
             var oldUsername = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
             var newUsername = data["username"] as String?;
@@ -94,6 +112,7 @@ class SleepMonitorOnboarding {
 
             if (newUsername == null) {
                 Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+                _hasOnboarded = false;
                 System.println("Username poll returned success but no username was present.");
                 return;
             }
@@ -116,6 +135,7 @@ class SleepMonitorOnboarding {
 
             Storage.setValue(StorageKeys.USER_ID_KEY, newUsername);
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, true);
+            _hasOnboarded = true;
 
 
             if (preferences != null && preferences.size() > 0) {
@@ -144,29 +164,46 @@ class SleepMonitorOnboarding {
 
             System.println("Onboarding complete for: " + newUsername);
 
-            _timer.start(method(:pollForPreferences), Defaults.SHORT_PREF_INT, false);
+            _shortPrefPollPending = true;
+            getApp().getSharedTimerManager().registerOneShotTask(
+                TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID,
+                TimerConstants.ONBOARDING_INITIAL_PREF_POLL_INTERVAL,
+                method(:pollOnceForPreferences)
+            );
         } else if (responseCode == 404) {
             // Not ready yet — keep polling
             System.println("Waiting for user to log in... (" + _pollCount + ")");
         } else {
             // Something went wrong — stop polling
-            _timer.stop();
+            _stopPollingUsername();
             Storage.setValue(StorageKeys.HAS_ONBOARDED_KEY, false);
+            _hasOnboarded = false;
             System.println("Username poll failed: " + responseCode);
         }
     }
 
-    function pollForPreferences() as Void {
+    function pollOnceForPreferences() as Void {
+        if (_shortPrefPollPending == false) {
+            return;
+        }
         getApp().getWakeAlarmManager().pollPreferences();
-        _timer.stop();
+        
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID);
+        _shortPrefPollPending = false;
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_LONG_PREF_POLL_ID);
+
         var callback = new Method(getApp().getWakeAlarmManager(), :pollPreferences);
-        _timer.start(callback, Defaults.LONG_PREF_INT, true); // regular preference polling every 2 hours after initial 5-minute check
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_ID,
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_INTERVAL,
+            callback
+        ); // regular preference polling every 2 hours after initial 5-minute check
     }
     
     function runRelink(targetUrl as String) as Void {
         System.println("Relink flow started.");
-
-        _pollCount = 0;
+        _usernamePollPending = false;
+        _shortPrefPollPending = false;
         _sessionId = Lang.format("$1$-$2$", [System.getTimer(), Math.rand()]);
 
         try {
@@ -178,7 +215,20 @@ class SleepMonitorOnboarding {
             return;
         }
 
-        _timer.stop();
-        _timer.start(method(:pollForUsername), 20000, true);
+        _stopPollingUsername();
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_INITIAL_PREF_POLL_ID);
+        _usernamePollPending = true;
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID,
+            TimerConstants.ONBOARDING_USERNAME_POLL_INTERVAL_SEC,
+            method(:pollForUsername)
+        );
+    }
+
+    function _stopPollingUsername() as Void {
+        _usernamePollPending = false;
+        _pollCount = 0;
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_USERNAME_POLL_TASK_ID);
+        return;
     }
 }

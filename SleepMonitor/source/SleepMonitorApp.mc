@@ -22,13 +22,10 @@ class SleepMonitorApp extends Application.AppBase {
     private var _onboardingManager as SleepMonitorOnboarding;
     private var _sharedTimerManager as SharedTimerManager;
 
-    var userInfoTimer as Timer.Timer;
-
     function initialize() {
         AppBase.initialize();
         _wakeAlarmManager = new WakeAlarmManager();
         _httpClient = new SleepMonitorHttpClient();
-        userInfoTimer = new Timer.Timer();
         _onboardingManager = new SleepMonitorOnboarding();
         _sharedTimerManager = new SharedTimerManager();
     }
