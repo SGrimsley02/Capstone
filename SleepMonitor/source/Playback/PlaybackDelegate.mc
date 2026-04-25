@@ -10,9 +10,9 @@ Description: Input delegate for the music playback control screen.
                - Star icon    → fetches current track URI via "status", then
                                 pushes RatingView / RatingDelegate
              Uses WatchUi.InputDelegate so that onTap receives raw coordinates.
-Authors: Kiara Rose, Ella Nguyen
+Authors: Kiara Rose, Ella Nguyen, Lauren D'Souza
 Created: March 15, 2026
-Last Modified: April 22, 2026
+Last Modified: April 24, 2026
 */
 
 import Toybox.Lang;
@@ -78,6 +78,25 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
             return true;
         }
 
+        if (_hitTest(tapX, tapY, _view.getShuffleBounds())) {
+            _view.getProvider().sendPlaybackCommand(
+                "shuffle",
+                null,
+                method(:onShuffleResponse),
+                {"shuffle_state" => !_view.getShuffleState()});
+            return true;
+        }
+
+        if (_hitTest(tapX, tapY, _view.getRepeatBounds())) {
+            _view.getProvider().sendPlaybackCommand(
+                "repeat",
+                null,
+                method(:onRepeatResponse),
+                {"repeat_mode" => advanceRepeatMode(_view.getRepeatMode())}
+            );
+            return true;
+        }
+
         return false;
     }
 
@@ -96,7 +115,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
     private function _pushRatingView() as Void {
         var songUri = _view.getSongUri();
         if (songUri == null) {
-            _view.getProvider().sendPlaybackCommand("status", null, null, method(:_onStatusForRating));
+            _view.getProvider().sendPlaybackCommand("status", null, method(:_onStatusForRating), null);
         } else {
             _navigateToRating(songUri);
         }
@@ -115,6 +134,32 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
         WatchUi.pushView(ratingView, new RatingDelegate(ratingView), WatchUi.SLIDE_UP);
     }
 
+    // Shuffle helpers
+
+    function onShuffleResponse(data as Lang.Dictionary) as Void {
+        if (data != null && data["shuffle_enabled"] != null) {
+            var shuffleState = data["shuffle_enabled"];
+            _view.setShuffleState(shuffleState);
+            WatchUi.requestUpdate();
+        }
+    }
+
+    // Repeat helpers
+
+    // Cycles off → context (forever) → track (once) → off. Returns new mode (0|1|2).
+    function advanceRepeatMode(curMode as Number) as Number {
+        var newMode = (curMode + 1) % 3;
+        return newMode;
+    }
+
+
+    function onRepeatResponse(data as Lang.Dictionary) as Void {
+        if (data != null && data["repeatMode"] != null) {
+            var repeatState = data["repeatMode"].toNumber();
+            _view.setRepeatMode(repeatState);
+            WatchUi.requestUpdate();
+        }
+    }
     // ── Private helpers ────────────────────────────────────────────
 
     // Returns true when (tapX, tapY) falls within bounds [x, y, w, h] + PAD.

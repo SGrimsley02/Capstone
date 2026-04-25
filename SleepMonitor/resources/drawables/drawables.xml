@@ -28,5 +28,8 @@ Last Modified: February 7, 2026
     <bitmap id="sunIcon" filename="sunIcon.svg" dithering="none" packingFormat="png" />
     <bitmap id="moonIcon" filename="moonIcon.svg" dithering="none" packingFormat="png" />
     <bitmap id="downArrow" filename="downArrow.png" dithering="none" packingFormat="png" />
+    <bitmap id="repeatIcon" filename="repeat.svg" dithering="none" packingFormat="png" />
+    <bitmap id="repeatOnceIcon" filename="repeatOnce.svg" dithering="none" packingFormat="png"/>
+    <bitmap id="shuffleIcon" filename="shuffle.svg" dithering="none" packingFormat="png"/>
     
 </drawables>
