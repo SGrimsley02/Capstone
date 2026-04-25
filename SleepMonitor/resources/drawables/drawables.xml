@@ -20,6 +20,7 @@ Last Modified: February 7, 2026
     <bitmap id="rewindIcon" filename="rewindIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="skipIcon" filename="skipIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="playIcon" filename="playIcon.png" dithering="none" packingFormat="png" />
+    <bitmap id="queueIcon" filename="queueIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="volumeIcon" filename="volumeIcon.png" dithering="none" packingFormat="png" />
     <bitmap id="upArrow" filename="upArrow.png" dithering="none" packingFormat="png" />
     <bitmap id="linkIcon" filename="linkIcon.svg" dithering="none" packingFormat="png" />
