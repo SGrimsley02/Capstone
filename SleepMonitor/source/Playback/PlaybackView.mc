@@ -13,9 +13,9 @@ Description: Music playback control screen. Displays five tappable icon buttons:
                3. refreshStatus() — called by PlaybackDelegate after a skip or
                   rewind; uses a 1.5 s one-shot timer so Spotify has time to
                   advance before we query.
-Authors: Kiara Rose, Ella Nguyen
+Authors: Kiara Rose, Ella Nguyen, Lauren D'Souza
 Created: March 15, 2026
-Last Modified: April 22, 2026
+Last Modified: April 25, 2026
 */
 
 import Toybox.Graphics;
@@ -32,6 +32,9 @@ class PlaybackView extends WatchUi.View {
     private var _volumeIcon;
     private var _queueIcon;
     private var _starIcon;
+    private var _shuffleIcon;
+    private var _repeatIcon;
+    private var _repeatOnceIcon;
 
     // Current track info (populated by status response)
     private var _songUri as Object?;
@@ -40,6 +43,8 @@ class PlaybackView extends WatchUi.View {
     private var _isPlaying as Boolean;
     private var _statusReady as Boolean;
     private var _queueReadyAtMs as Number;
+    private var _isShuffleEnabled as Boolean = false;
+    private var _repeatMode as Number = 0; // Repeat: 0 = off, 1 = repeat context, 2 = repeat track
 
     // Icon hit-test bounds [x, y, w, h] — updated every draw
     private var _rewindBounds as Array;
@@ -48,6 +53,8 @@ class PlaybackView extends WatchUi.View {
     private var _volumeBounds as Array;
     private var _queueBounds as Array;
     private var _starBounds as Array;
+    private var _shuffleBounds as Array;
+    private var _repeatBounds as Array;
 
     private var _provider as PlaybackProvider;
 
@@ -73,11 +80,16 @@ class PlaybackView extends WatchUi.View {
         _volumeIcon = loadResource(Rez.Drawables.volumeIcon);
         _queueIcon = loadResource(Rez.Drawables.queueIcon);
         _starIcon = loadResource(Rez.Drawables.starIcon);
+        _shuffleIcon = loadResource(Rez.Drawables.shuffleIcon);
+        _repeatIcon = loadResource(Rez.Drawables.repeatIcon);
+        _repeatOnceIcon = loadResource(Rez.Drawables.repeatOnceIcon);
 
         _provider = new PlaybackProvider();
 
         _refreshPending = false;
         _isActive = false;
+        _isShuffleEnabled = false;
+        _repeatMode = 0;
 
         var zero = [0, 0, 0, 0] as Array;
         _rewindBounds = zero;
@@ -86,6 +98,8 @@ class PlaybackView extends WatchUi.View {
         _volumeBounds = zero;
         _queueBounds = zero;
         _starBounds = zero;
+        _shuffleBounds = zero;
+        _repeatBounds = zero;
     }
 
     function onLayout(dc as Dc) as Void { setLayout(Rez.Layouts.PlaybackLayout(dc)); }
@@ -139,17 +153,38 @@ class PlaybackView extends WatchUi.View {
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        // ── Main controls row: Rewind | Play | Skip @ 57% ──────────
-        var ctrlY = (H * 0.57).toNumber();
-        var spacing = (W * 0.28).toNumber();
+        // ── Main controls row: Shuffle | Rewind | Play | Skip | Repeat @ 55% ──
+        // Shuffle/repeat icon sizes
+        var iconSize = 24;
+        var ctrlY = (H * 0.55).toNumber();
+        var spacing = (W * 0.17).toNumber();
+        var shuffleX = cx - (2 * spacing);
+        var rewindX = cx - spacing;
+        var playX = cx;
+        var skipX = cx + spacing;
+        var repeatX = cx + (2 * spacing);
 
-        _drawIconCentered(dc, _rewindIcon, cx - spacing, ctrlY, ThemeHelpers.getColor("playback_controls"));
-        _drawIconCentered(dc, _playIcon, cx, ctrlY, ThemeHelpers.getColor("playback_controls"));
-        _drawIconCentered(dc, _skipIcon, cx + spacing, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        var shuffleTint = _isShuffleEnabled
+            ? ThemeHelpers.getColor("playback_controls")
+            : ThemeHelpers.getColor("playback_controls_off");
+        var repeatBmp = _repeatIcon;
+        var repeatTint = ThemeHelpers.getColor("playback_controls_off");
+        if (_repeatMode == 1) {
+            repeatTint = ThemeHelpers.getColor("playback_controls");
+        } else if (_repeatMode == 2) {
+            repeatBmp = _repeatOnceIcon;
+            repeatTint = ThemeHelpers.getColor("playback_repeat_once");
+        }
 
-        _rewindBounds = _iconBounds(_rewindIcon, cx - spacing, ctrlY);
-        _playBounds = _iconBounds(_playIcon, cx, ctrlY);
-        _skipBounds = _iconBounds(_skipIcon, cx + spacing, ctrlY);
+        _shuffleBounds = _drawScaledIconCentered(dc, _shuffleIcon, shuffleX, ctrlY, iconSize, iconSize, shuffleTint);
+        _drawIconCentered(dc, _rewindIcon, rewindX, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        _drawIconCentered(dc, _playIcon, playX, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        _drawIconCentered(dc, _skipIcon, skipX, ctrlY, ThemeHelpers.getColor("playback_controls"));
+        _repeatBounds = _drawScaledIconCentered(dc, repeatBmp, repeatX, ctrlY, iconSize, iconSize, repeatTint);
+
+        _rewindBounds = _iconBounds(_rewindIcon, rewindX, ctrlY);
+        _playBounds = _iconBounds(_playIcon, playX, ctrlY);
+        _skipBounds = _iconBounds(_skipIcon, skipX, ctrlY);
 
         // ── Secondary row: Volume | Queue | Star @ 80% ─────────────────
         var secY = (H * 0.80).toNumber();
@@ -172,9 +207,15 @@ class PlaybackView extends WatchUi.View {
     function getVolumeBounds() as Array { return _volumeBounds; }
     function getQueueBounds() as Array { return _queueBounds; }
     function getStarBounds() as Array { return _starBounds; }
+    function getShuffleBounds() as Array { return _shuffleBounds; }
+    function getRepeatBounds() as Array { return _repeatBounds; }
 
     function isPlaying() as Boolean { return _isPlaying; }
     function togglePlayState() as Void { _isPlaying = !_isPlaying; }
+    function setShuffleState(enabled as Boolean) as Void { _isShuffleEnabled = enabled; }
+    function getShuffleState() as Boolean { return _isShuffleEnabled; }
+    function setRepeatMode(mode as Number) as Void { _repeatMode = mode; }
+    function getRepeatMode() as Number { return _repeatMode; }
 
     function getSongUri() as String? { return _songUri; }
     function getProvider() as PlaybackProvider { return _provider; }
@@ -255,20 +296,23 @@ class PlaybackView extends WatchUi.View {
           return;
       }
 
-      _statusReady = true;
-
-      if (data != null) {
-          _songUri = data["track_uri"] as String?;
-          _songName = data["track_name"] as String?;
-          _artistName = data["artist_name"] as String?;
-          var playing = data["is_playing"];
-          if (playing != null) {
-              _isPlaying = playing as Boolean;
-          }
-      }
-
-      WatchUi.requestUpdate();
-  }
+        if (data != null) {
+            _songUri = data["track_uri"] as String?;
+            _songName = data["track_name"] as String?;
+            _artistName = data["artist_name"] as String?;
+            var playing = data["is_playing"];
+            if (playing != null) {
+                _isPlaying = playing as Boolean;
+            }
+            if (data["shuffle_enabled"] != null) {
+                _isShuffleEnabled = data["shuffle_enabled"] as Boolean;
+            }
+            if (data["repeat_mode"] != null) {
+                _repeatMode = data["repeat_mode"].toNumber();
+            }
+        }
+        WatchUi.requestUpdate();
+    }
 
     // ── Private helpers ────────────────────────────────────────────
 
@@ -276,7 +320,7 @@ class PlaybackView extends WatchUi.View {
         if (!_isActive) {
             return;
         }
-        _provider.sendPlaybackCommand("status", null, null, method(:_onStatusReceived));
+        _provider.sendPlaybackCommand("status", null, method(:_onStatusReceived), null);
     }
 
     private function _stopTimers() as Void {
@@ -308,5 +352,45 @@ class PlaybackView extends WatchUi.View {
     private function _markStatusPending(blockMs as Number) as Void {
         _statusReady = false;
         _queueReadyAtMs = System.getTimer() + blockMs;
+    }
+
+    // Draw a bitmap scaled to fit inside a square box (preserving aspect), centered at (cx, cy). Returns hit bounds [x,y,w,h].
+    private function _drawScaledIconCentered(
+        dc as Dc,
+        icon,
+        cx as Number,
+        cy as Number,
+        width as Number,
+        height as Number,
+        tint as Number
+    ) as Array {
+        if (icon == null) {
+            return [cx - width / 2, cy - height / 2, width, height] as Array;
+        }
+        var iw = icon.getWidth();
+        var ih = icon.getHeight();
+        if (iw <= 0 || ih <= 0) {
+            return [cx - width / 2, cy - height / 2, width, height] as Array;
+        }
+
+        var maxDim = iw > ih ? iw : ih;
+        var dw = (iw * width) / maxDim;
+        var dh = (ih * height) / maxDim;
+        if (dw < 1) {
+            dw = 1;
+        }
+        if (dh < 1) {
+            dh = 1;
+        }
+
+        var left = cx - dw / 2;
+        var top = cy - dh / 2;
+        var sx = dw.toFloat() / iw.toFloat();
+        var sy = dh.toFloat() / ih.toFloat();
+        var xform = new Graphics.AffineTransform();
+        xform.initialize();
+        xform.scale(sx, sy);
+        dc.drawBitmap2(left, top, icon, { :tintColor => tint, :transform => xform });
+        return [left, top, dw, dh] as Array;
     }
 }

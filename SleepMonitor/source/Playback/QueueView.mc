@@ -59,7 +59,7 @@ class QueueView extends WatchUi.View {
         _rowCoverCache = {} as Lang.Dictionary;
         rowHitboxes = [];
 
-        _provider.sendPlaybackCommand("queue", null, null, method(:_onQueueLoaded));
+        _provider.sendPlaybackCommand("queue", null, method(:_onQueueLoaded), null);
         WatchUi.requestUpdate();
     }
 
