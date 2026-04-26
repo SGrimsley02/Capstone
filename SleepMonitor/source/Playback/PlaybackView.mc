@@ -299,9 +299,17 @@ class PlaybackView extends WatchUi.View {
         if (data != null) {
             _statusReady = true;
 
-            _songUri = data["track_uri"] as String?;
-            _songName = data["track_name"] as String?;
-            _artistName = data["artist_name"] as String?;
+            if (data["track_uri"] != null) {
+                _songUri = data["track_uri"] as String?;
+            }
+
+            if (data["track_name"] != null) {
+                _songName = data["track_name"] as String?;
+            }
+
+            if (data["artist_name"] != null) {
+                _artistName = data["artist_name"] as String?;
+            }
             var playing = data["is_playing"];
             if (playing != null) {
                 _isPlaying = playing as Boolean;
