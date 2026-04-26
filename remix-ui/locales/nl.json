@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Intelligente Wekker"
+    "title": "REMix — Intelligente Wekker",
+    "garminConnectTitle": "Garmin verbinden — REMix"
   },
   "header": {
     "title": "REMix • Intelligente Wekker",
@@ -35,8 +36,8 @@
     "registrationFailed": "Registratie mislukt",
     "loggedIn": "Aangemeld ✓",
     "loginFailed": "Aanmelding mislukt",
-    "profileLoadFailed": "Aangemeld, maar kon profiel niet van API laden. Ververs de pagina in een moment.",
-    "sessionExpired": "Sessie verlopen. Meld u alstublieft opnieuw aan.",
+    "profileLoadFailed": "Aangemeld, maar het profiel kon niet via de API worden geladen. Ververs de pagina over een moment.",
+    "sessionExpired": "Sessie verlopen. Meld u opnieuw aan.",
     "errorPrefix": "Fout: ",
     "tooShort": "Wachtwoord moet minimaal 6 tekens lang zijn",
     "alreadyExists": "Gebruikersnaam bestaat al"
@@ -52,7 +53,12 @@
     "connectSpotify": "Spotify verbinden",
     "continue": "Doorgaan naar voorkeuren",
     "logout": "Afmelden",
-    "reset": "Sessie herstellen"
+    "reset": "Sessie herstellen",
+    "requirementsNote": "Google en Spotify zijn vereist voor volledige functionaliteit. Garmin Connect is bedoeld voor verbeterde slaapanalyse.",
+    "garminAccount": "Garmin-account",
+    "requiredTag": "(Vereist)",
+    "optionalTag": "(Optioneel)",
+    "connectGarmin": "Garmin Connect koppelen"
   },
   "prefs": {
     "title": "Wek- en muziekvoorkeuren",
@@ -92,5 +98,31 @@
     "capricorn": "Steenbok",
     "aquarius": "Waterman",
     "pisces": "Vissen"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix vraagt toegang tot uw Garmin Connect-account.",
+    "permissionRead": "Sta REMix toe uw Garmin Connect-gegevens te lezen.",
+    "permissionCredential": "Deze koppeling wordt alleen aan uw REMix-account gekoppeld; uw Garmin-wachtwoord wordt niet door REMix opgeslagen.",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "mfaPrompt": "Voer de 6-cijferige code uit uw authenticator-app in.",
+    "mfaCode": "MFA-code",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Annuleren",
+    "allowAndConnect": "Toestaan en koppelen",
+    "verifyAndConnect": "Verifiëren en koppelen",
+    "errorWithReason": "Koppelen mislukt: {{reason}}",
+    "errorGeneric": "Kan geen verbinding maken met Garmin Connect.",
+    "mfaRequired": "MFA-verificatie vereist.",
+    "checkCredentials": "Controleer uw e-mail en wachtwoord en probeer opnieuw.",
+    "garminAuthFailed": "Garmin Connect-authenticatie mislukt."
+  },
+  "account": {
+    "deleteMissingSession": "Je moet ingelogd zijn met een geldige sessie om je account te verwijderen.",
+    "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen? Je REMix-account en opgeslagen gegevens worden permanent verwijderd.",
+    "deleteFailed": "Account verwijderen mislukt.",
+    "deleteSuccess": "Account succesvol verwijderd.",
+    "deleteError": "Fout bij het verwijderen van account."
   }
 }

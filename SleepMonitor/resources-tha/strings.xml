@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">ระดับเสียง</string>
+    <string id="Queue">คิว</string>
+    <string id="LoadingQueue">กำลังโหลดคิว</string>
+    <string id="QueueNotLoaded">ยังไม่โหลดคิว</string>
+    <string id="QueueEmpty">คิวว่าง</string>
+    <string id="OpenSpotify">เปิด Spotify บนอุปกรณ์ก่อน</string>
+    <string id="UpNext">ถัดไป</string>
+    <string id="UnknownTrack">เพลงไม่ทราบชื่อ</string>
+    <string id="UnknownArtist">ศิลปินไม่ทราบชื่อ</string>
 </strings>

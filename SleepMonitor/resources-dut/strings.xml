@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Volume</string>
+    <string id="Queue">Wachtrij</string>
+    <string id="LoadingQueue">Wachtrij laden...</string>
+    <string id="QueueNotLoaded">Wachtrij niet geladen.</string>
+    <string id="QueueEmpty">Wachtrij leeg.</string>
+    <string id="OpenSpotify">Open Spotify op een apparaat.</string>
+    <string id="UpNext">Volgende</string>
+    <string id="UnknownTrack">Onbekend nummer</string>
+    <string id="UnknownArtist">Onbekende artiest</string>
 </strings>

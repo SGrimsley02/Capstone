@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — นาฬิกาปลุกอัจฉริยะ"
+    "title": "REMix — นาฬิกาปลุกอัจฉริยะ",
+    "garminConnectTitle": "เชื่อมต่อ Garmin — REMix"
   },
   "header": {
     "title": "REMix • นาฬิกาปลุกอัจฉริยะ",
@@ -52,7 +53,12 @@
     "connectSpotify": "เชื่อมต่อ Spotify",
     "continue": "ดำเนินการต่อไปยังการตั้งค่า",
     "logout": "ออกจากระบบ",
-    "reset": "รีเซ็ตเซสชัน"
+    "reset": "รีเซ็ตเซสชัน",
+    "requirementsNote": "ต้องใช้ Google และ Spotify เพื่อใช้งานฟีเจอร์ได้ครบถ้วน Garmin Connect ใช้เพื่อปรับปรุงการวิเคราะห์การนอนหลับ",
+    "garminAccount": "บัญชี Garmin",
+    "requiredTag": "(จำเป็น)",
+    "optionalTag": "(ไม่บังคับ)",
+    "connectGarmin": "เชื่อมต่อ Garmin Connect"
   },
   "prefs": {
     "title": "การตั้งค่าการตื่นนอนและเพลง",
@@ -92,5 +98,31 @@
     "capricorn": "ราศีมกราคม",
     "aquarius": "ราศีกุมภ",
     "pisces": "ราศีมีน"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix กำลังขอเข้าถึงบัญชี Garmin Connect ของคุณ",
+    "permissionRead": "อนุญาตให้ REMix อ่านข้อมูลจาก Garmin Connect ของคุณ",
+    "permissionCredential": "การเชื่อมโยงนี้จะผูกกับบัญชี REMix ของคุณเท่านั้น และ REMix จะไม่จัดเก็บรหัสผ่าน Garmin ของคุณ",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "mfaPrompt": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตน",
+    "mfaCode": "รหัส MFA",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "ยกเลิก",
+    "allowAndConnect": "อนุญาตและเชื่อมต่อ",
+    "verifyAndConnect": "ยืนยันและเชื่อมต่อ",
+    "errorWithReason": "เชื่อมต่อไม่สำเร็จ: {{reason}}",
+    "errorGeneric": "ไม่สามารถเชื่อมต่อกับ Garmin Connect ได้",
+    "mfaRequired": "ต้องยืนยัน MFA",
+    "checkCredentials": "ตรวจสอบอีเมลและรหัสผ่านแล้วลองอีกครั้ง",
+    "garminAuthFailed": "ยืนยันตัวตน Garmin Connect ไม่สำเร็จ"
+  },
+  "account": {
+    "deleteMissingSession": "คุณต้องเข้าสู่ระบบด้วยเซสชันที่ถูกต้องก่อนจึงจะลบบัญชีได้",
+    "deleteConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี? การดำเนินการนี้จะลบบัญชี REMix และข้อมูลที่บันทึกไว้ถาวร",
+    "deleteFailed": "ลบบัญชีไม่สำเร็จ",
+    "deleteSuccess": "ลบบัญชีสำเร็จ",
+    "deleteError": "เกิดข้อผิดพลาดในการลบบัญชี"
   }
 }

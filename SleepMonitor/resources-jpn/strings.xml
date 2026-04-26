@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">音量</string>
+    <string id="Queue">キュー</string>
+    <string id="LoadingQueue">キューを読み込み中</string>
+    <string id="QueueNotLoaded">キューを読み込めませんでした</string>
+    <string id="QueueEmpty">キューは空です</string>
+    <string id="OpenSpotify">まずデバイスでSpotifyを開いてください</string>
+    <string id="UpNext">次に再生</string>
+    <string id="UnknownTrack">不明な曲</string>
+    <string id="UnknownArtist">不明なアーティスト</string>
 </strings>

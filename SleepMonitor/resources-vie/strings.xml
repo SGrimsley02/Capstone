@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Âm lượng</string>
+    <string id="Queue">Hàng đợi</string>
+    <string id="LoadingQueue">Đang tải hàng đợi</string>
+    <string id="QueueNotLoaded">Chưa tải hàng đợi</string>
+    <string id="QueueEmpty">Hàng đợi trống</string>
+    <string id="OpenSpotify">Hãy mở Spotify trên một thiết bị trước</string>
+    <string id="UpNext">Tiếp theo</string>
+    <string id="UnknownTrack">Bài hát không rõ</string>
+    <string id="UnknownArtist">Nghệ sĩ không rõ</string>
 </strings>

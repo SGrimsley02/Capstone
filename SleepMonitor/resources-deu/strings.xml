@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Lautstärke</string>
+    <string id="Queue">Warteschlange</string>
+    <string id="LoadingQueue">Warteschlange lädt...</string>
+    <string id="QueueNotLoaded">Queue nicht geladen.</string>
+    <string id="QueueEmpty">Queue leer.</string>
+    <string id="OpenSpotify">Öffne Spotify auf einem Gerät.</string>
+    <string id="UpNext">Als Nächstes</string>
+    <string id="UnknownTrack">Unbekannter Titel</string>
+    <string id="UnknownArtist">Unbekannter Künstler</string>
 </strings>

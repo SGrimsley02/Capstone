@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Умный будильник"
+    "title": "REMix — Умный будильник",
+    "garminConnectTitle": "Подключить Garmin — REMix"
   },
   "header": {
     "title": "REMix • Умный будильник",
@@ -52,7 +53,12 @@
     "connectSpotify": "Подключить Spotify",
     "continue": "Перейти к предпочтениям",
     "logout": "Выход",
-    "reset": "Сбросить сеанс"
+    "reset": "Сбросить сеанс",
+    "requirementsNote": "Для полной функциональности требуются Google и Spotify. Garmin Connect используется для улучшенного анализа сна.",
+    "garminAccount": "Аккаунт Garmin",
+    "requiredTag": "(Обязательно)",
+    "optionalTag": "(Необязательно)",
+    "connectGarmin": "Подключить Garmin Connect"
   },
   "prefs": {
     "title": "Предпочтения пробуждения и музыки",
@@ -92,5 +98,31 @@
     "capricorn": "Козерог",
     "aquarius": "Водолей",
     "pisces": "Рыбы"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix запрашивает доступ к вашей учетной записи Garmin Connect.",
+    "permissionRead": "Разрешите REMix читать ваши данные Garmin Connect.",
+    "permissionCredential": "Эта связь будет привязана только к вашей учетной записи REMix; REMix не хранит ваш пароль Garmin.",
+    "email": "Эл. почта",
+    "password": "Пароль",
+    "mfaPrompt": "Введите 6-значный код из приложения-аутентификатора.",
+    "mfaCode": "Код MFA",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Отмена",
+    "allowAndConnect": "Разрешить и подключить",
+    "verifyAndConnect": "Проверить и подключить",
+    "errorWithReason": "Не удалось подключиться: {{reason}}",
+    "errorGeneric": "Не удалось подключиться к Garmin Connect.",
+    "mfaRequired": "Требуется проверка MFA.",
+    "checkCredentials": "Проверьте эл. почту и пароль и попробуйте снова.",
+    "garminAuthFailed": "Сбой аутентификации Garmin Connect."
+  },
+  "account": {
+    "deleteMissingSession": "Чтобы удалить аккаунт, необходимо войти в систему с действующей сессией.",
+    "deleteConfirm": "Вы уверены, что хотите удалить аккаунт? Это навсегда удалит ваш аккаунт REMix и сохраненные данные.",
+    "deleteFailed": "Не удалось удалить аккаунт.",
+    "deleteSuccess": "Аккаунт успешно удален.",
+    "deleteError": "Ошибка при удалении аккаунта."
   }
 }

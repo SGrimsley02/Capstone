@@ -16,4 +16,12 @@
     <string id="AM">ص</string>
     <string id="PM">م</string>
     <string id="Volume">مستوى الصوت</string>
+    <string id="Queue">قائمة الانتظار</string>
+    <string id="LoadingQueue">جارٍ تحميل القائمة</string>
+    <string id="QueueNotLoaded">لم تُحمَّل القائمة</string>
+    <string id="QueueEmpty">القائمة فارغة</string>
+    <string id="OpenSpotify">افتح Spotify على جهاز أولاً</string>
+    <string id="UpNext">التالي</string>
+    <string id="UnknownTrack">مقطع غير معروف</string>
+    <string id="UnknownArtist">فنان غير معروف</string>
 </strings>

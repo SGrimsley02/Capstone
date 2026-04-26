@@ -106,7 +106,7 @@ class QueueView extends WatchUi.View {
         dc.setColor(ThemeHelpers.getColor("playback_artist_name"), Graphics.COLOR_TRANSPARENT);
 
         if (_queue.size() == 0) {
-            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, "Queue is empty", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(W / 2, y + 20, Graphics.FONT_XTINY, loadResource(Rez.Strings.QueueEmpty), Graphics.TEXT_JUSTIFY_CENTER);
             return;
         }
 

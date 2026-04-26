@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Despertador Inteligente"
+    "title": "REMix — Despertador Inteligente",
+    "garminConnectTitle": "Conectar Garmin — REMix"
   },
   "header": {
     "title": "REMix • Despertador Inteligente",
@@ -52,7 +53,12 @@
     "connectSpotify": "Conectar Spotify",
     "continue": "Continuar para preferências",
     "logout": "Desconectar",
-    "reset": "Redefinir sessão"
+    "reset": "Redefinir sessão",
+    "requirementsNote": "Google e Spotify são obrigatórios para funcionalidade completa. Garmin Connect melhora a análise do sono.",
+    "garminAccount": "Conta Garmin",
+    "requiredTag": "(Obrigatório)",
+    "optionalTag": "(Opcional)",
+    "connectGarmin": "Conectar Garmin Connect"
   },
   "prefs": {
     "title": "Preferências de despertar e música",
@@ -92,5 +98,31 @@
     "capricorn": "Capricórnio",
     "aquarius": "Aquário",
     "pisces": "Peixes"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "O REMix está solicitando acesso à sua conta do Garmin Connect.",
+    "permissionRead": "Permita que o REMix leia seus dados do Garmin Connect.",
+    "permissionCredential": "Este vínculo será associado apenas à sua conta REMix; o REMix não armazena sua senha do Garmin.",
+    "email": "E-mail",
+    "password": "Senha",
+    "mfaPrompt": "Digite o código de 6 dígitos do seu app autenticador.",
+    "mfaCode": "Código MFA",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Cancelar",
+    "allowAndConnect": "Permitir e conectar",
+    "verifyAndConnect": "Verificar e conectar",
+    "errorWithReason": "Falha na conexão: {{reason}}",
+    "errorGeneric": "Não foi possível conectar ao Garmin Connect.",
+    "mfaRequired": "Verificação MFA obrigatória.",
+    "checkCredentials": "Verifique seu e-mail e senha e tente novamente.",
+    "garminAuthFailed": "Falha na autenticação do Garmin Connect."
+  },
+  "account": {
+    "deleteMissingSession": "Você precisa estar conectado com uma sessão válida para excluir sua conta.",
+    "deleteConfirm": "Tem certeza de que deseja excluir sua conta? Isso removerá permanentemente sua conta REMix e os dados salvos.",
+    "deleteFailed": "Falha ao excluir a conta.",
+    "deleteSuccess": "Conta excluída com sucesso.",
+    "deleteError": "Erro ao excluir a conta."
   }
 }

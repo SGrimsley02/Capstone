@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — منبه ذكي"
+    "title": "REMix — منبه ذكي",
+    "garminConnectTitle": "ربط Garmin — REMix"
   },
   "header": {
     "title": "REMix • منبه ذكي",
@@ -52,7 +53,12 @@
     "connectSpotify": "اربط Spotify",
     "continue": "متابعة إلى التفضيلات",
     "logout": "تسجيل الخروج",
-    "reset": "إعادة تعيين الجلسة"
+    "reset": "إعادة تعيين الجلسة",
+    "requirementsNote": "Google وSpotify مطلوبان للحصول على الوظائف الكاملة. Garmin Connect مخصص لتحسين تحليل النوم.",
+    "garminAccount": "حساب Garmin",
+    "requiredTag": "(مطلوب)",
+    "optionalTag": "(اختياري)",
+    "connectGarmin": "ربط Garmin Connect"
   },
   "prefs": {
     "title": "تفضيلات الاستيقاظ والموسيقى",
@@ -92,5 +98,31 @@
     "capricorn": "الجدي",
     "aquarius": "الدلو",
     "pisces": "الحوت"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "يطلب REMix الوصول إلى حسابك في Garmin Connect.",
+    "permissionRead": "اسمح لـ REMix بقراءة بياناتك من Garmin Connect.",
+    "permissionCredential": "سيتم ربط هذا الاتصال بحساب REMix الخاص بك فقط؛ ولا يخزّن REMix كلمة مرور Garmin.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "mfaPrompt": "أدخل رمز التحقق المكوّن من 6 أرقام.",
+    "mfaCode": "رمز التحقق",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "إلغاء",
+    "allowAndConnect": "سماح وربط",
+    "verifyAndConnect": "تحقق وربط",
+    "errorWithReason": "فشل الاتصال: {{reason}}",
+    "errorGeneric": "تعذر الاتصال بـ Garmin Connect.",
+    "mfaRequired": "مطلوب التحقق بخطوتين.",
+    "checkCredentials": "تحقق من البريد الإلكتروني وكلمة المرور ثم حاول مجددًا.",
+    "garminAuthFailed": "فشلت مصادقة Garmin Connect."
+  },
+  "account": {
+    "deleteMissingSession": "يجب تسجيل الدخول بجلسة صالحة لحذف حسابك.",
+    "deleteConfirm": "هل أنت متأكد أنك تريد حذف حسابك؟ سيؤدي ذلك إلى إزالة حساب REMix وبياناتك المحفوظة نهائيًا.",
+    "deleteFailed": "فشل حذف الحساب.",
+    "deleteSuccess": "تم حذف الحساب بنجاح.",
+    "deleteError": "حدث خطأ أثناء حذف الحساب."
   }
 }
