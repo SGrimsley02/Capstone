@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Intelligenter Wecker"
+    "title": "REMix — Intelligenter Wecker",
+    "garminConnectTitle": "Garmin verbinden — REMix"
   },
   "header": {
     "title": "REMix • Intelligenter Wecker",
@@ -52,7 +53,12 @@
     "connectSpotify": "Spotify verbinden",
     "continue": "Zu Einstellungen fortfahren",
     "logout": "Abmelden",
-    "reset": "Sitzung zurücksetzen"
+    "reset": "Sitzung zurücksetzen",
+    "requirementsNote": "Google und Spotify sind für den vollen Funktionsumfang erforderlich. Garmin Connect dient der verbesserten Schlafanalyse.",
+    "garminAccount": "Garmin-Konto",
+    "requiredTag": "(Erforderlich)",
+    "optionalTag": "(Optional)",
+    "connectGarmin": "Garmin Connect verbinden"
   },
   "prefs": {
     "title": "Aufwach- und Musikeinstellungen",
@@ -92,5 +98,31 @@
     "capricorn": "Steinbock",
     "aquarius": "Wassermann",
     "pisces": "Fische"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix bittet um Zugriff auf Ihr Garmin Connect-Konto.",
+    "permissionRead": "Erlauben Sie REMix, Ihre Garmin Connect-Daten zu lesen.",
+    "permissionCredential": "Diese Verknüpfung wird nur Ihrem REMix-Konto zugeordnet; Ihr Garmin-Passwort wird von REMix nicht gespeichert.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "mfaPrompt": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
+    "mfaCode": "MFA-Code",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Abbrechen",
+    "allowAndConnect": "Erlauben und verbinden",
+    "verifyAndConnect": "Bestätigen und verbinden",
+    "errorWithReason": "Verbindung fehlgeschlagen: {{reason}}",
+    "errorGeneric": "Verbindung zu Garmin Connect nicht möglich.",
+    "mfaRequired": "MFA-Bestätigung erforderlich.",
+    "checkCredentials": "Prüfen Sie E-Mail und Passwort und versuchen Sie es erneut.",
+    "garminAuthFailed": "Garmin Connect-Anmeldung fehlgeschlagen."
+  },
+  "account": {
+    "deleteMissingSession": "Sie müssen mit einer gültigen Sitzung angemeldet sein, um Ihr Konto zu löschen.",
+    "deleteConfirm": "Möchten Sie Ihr Konto wirklich löschen? Dadurch werden Ihr REMix-Konto und Ihre gespeicherten Daten dauerhaft entfernt.",
+    "deleteFailed": "Konto konnte nicht gelöscht werden.",
+    "deleteSuccess": "Konto erfolgreich gelöscht.",
+    "deleteError": "Fehler beim Löschen des Kontos."
   }
 }

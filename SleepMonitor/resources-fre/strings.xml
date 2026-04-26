@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Volume</string>
+    <string id="Queue">File d'attente</string>
+    <string id="LoadingQueue">Chargement de la file d'attente...</string>
+    <string id="QueueNotLoaded">File indisponible.</string>
+    <string id="QueueEmpty">File vide.</string>
+    <string id="OpenSpotify">Ouvrez Spotify sur un appareil.</string>
+    <string id="UpNext">À suivre</string>
+    <string id="UnknownTrack">Titre inconnu</string>
+    <string id="UnknownArtist">Artiste inconnu</string>
 </strings>

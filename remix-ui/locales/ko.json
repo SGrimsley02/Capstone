@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — 스마트 알람"
+    "title": "REMix — 스마트 알람",
+    "garminConnectTitle": "Garmin 연결 — REMix"
   },
   "header": {
     "title": "REMix • 스마트 알람",
@@ -52,7 +53,12 @@
     "connectSpotify": "Spotify 연결",
     "continue": "선호도로 계속",
     "logout": "로그아웃",
-    "reset": "세션 재설정"
+    "reset": "세션 재설정",
+    "requirementsNote": "전체 기능을 사용하려면 Google 및 Spotify가 필요합니다. Garmin Connect는 수면 분석 개선에 사용됩니다.",
+    "garminAccount": "Garmin 계정",
+    "requiredTag": "(필수)",
+    "optionalTag": "(선택)",
+    "connectGarmin": "Garmin Connect 연결"
   },
   "prefs": {
     "title": "기상 및 음악 선호도",
@@ -92,5 +98,31 @@
     "capricorn": "염소자리",
     "aquarius": "물병자리",
     "pisces": "물고기자리"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix에서 Garmin Connect 계정에 대한 액세스를 요청하고 있습니다.",
+    "permissionRead": "REMix가 Garmin Connect 데이터를 읽도록 허용하세요.",
+    "permissionCredential": "이 연결은 회원님의 REMix 계정에만 연결되며, REMix는 Garmin 비밀번호를 저장하지 않습니다.",
+    "email": "이메일",
+    "password": "비밀번호",
+    "mfaPrompt": "인증 앱의 6자리 코드를 입력하세요.",
+    "mfaCode": "MFA 코드",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "취소",
+    "allowAndConnect": "허용 후 연결",
+    "verifyAndConnect": "확인 후 연결",
+    "errorWithReason": "연결 실패: {{reason}}",
+    "errorGeneric": "Garmin Connect에 연결할 수 없습니다.",
+    "mfaRequired": "MFA 인증이 필요합니다.",
+    "checkCredentials": "이메일과 비밀번호를 확인한 뒤 다시 시도하세요.",
+    "garminAuthFailed": "Garmin Connect 인증에 실패했습니다."
+  },
+  "account": {
+    "deleteMissingSession": "계정을 삭제하려면 유효한 세션으로 로그인되어 있어야 합니다.",
+    "deleteConfirm": "정말 계정을 삭제하시겠습니까? REMix 계정과 저장된 데이터가 영구적으로 삭제됩니다.",
+    "deleteFailed": "계정을 삭제하지 못했습니다.",
+    "deleteSuccess": "계정이 성공적으로 삭제되었습니다.",
+    "deleteError": "계정 삭제 중 오류가 발생했습니다."
   }
 }

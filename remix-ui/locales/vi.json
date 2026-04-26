@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Báo Thức Thông Minh"
+    "title": "REMix — Báo Thức Thông Minh",
+    "garminConnectTitle": "Kết nối Garmin — REMix"
   },
   "header": {
     "title": "REMix • Báo Thức Thông Minh",
@@ -52,7 +53,12 @@
     "connectSpotify": "Kết nối Spotify",
     "continue": "Tiếp tục đến tùy chọn",
     "logout": "Đăng xuất",
-    "reset": "Đặt lại phiên"
+    "reset": "Đặt lại phiên",
+    "requirementsNote": "Google và Spotify là bắt buộc để dùng đầy đủ tính năng. Garmin Connect giúp cải thiện phân tích giấc ngủ.",
+    "garminAccount": "Tài khoản Garmin",
+    "requiredTag": "(Bắt buộc)",
+    "optionalTag": "(Tùy chọn)",
+    "connectGarmin": "Kết nối Garmin Connect"
   },
   "prefs": {
     "title": "Tùy chọn thức dậy và âm nhạc",
@@ -92,5 +98,31 @@
     "capricorn": "Ma Kết",
     "aquarius": "Bảo Bình",
     "pisces": "Song Ngư"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix đang yêu cầu quyền truy cập vào tài khoản Garmin Connect của bạn.",
+    "permissionRead": "Cho phép REMix đọc dữ liệu Garmin Connect của bạn.",
+    "permissionCredential": "Liên kết này chỉ được gắn với tài khoản REMix của bạn; REMix không lưu mật khẩu Garmin của bạn.",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "mfaPrompt": "Nhập mã 6 chữ số từ ứng dụng xác thực.",
+    "mfaCode": "Mã MFA",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Hủy",
+    "allowAndConnect": "Cho phép và kết nối",
+    "verifyAndConnect": "Xác minh và kết nối",
+    "errorWithReason": "Kết nối thất bại: {{reason}}",
+    "errorGeneric": "Không thể kết nối với Garmin Connect.",
+    "mfaRequired": "Yêu cầu xác minh MFA.",
+    "checkCredentials": "Kiểm tra email và mật khẩu rồi thử lại.",
+    "garminAuthFailed": "Xác thực Garmin Connect thất bại."
+  },
+  "account": {
+    "deleteMissingSession": "Bạn phải đăng nhập bằng phiên hợp lệ để xóa tài khoản.",
+    "deleteConfirm": "Bạn có chắc muốn xóa tài khoản không? Thao tác này sẽ xóa vĩnh viễn tài khoản REMix và dữ liệu đã lưu của bạn.",
+    "deleteFailed": "Không thể xóa tài khoản.",
+    "deleteSuccess": "Đã xóa tài khoản thành công.",
+    "deleteError": "Lỗi khi xóa tài khoản."
   }
 }

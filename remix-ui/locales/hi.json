@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — स्मार्ट अलार्म"
+    "title": "REMix — स्मार्ट अलार्म",
+    "garminConnectTitle": "Garmin कनेक्ट करें — REMix"
   },
   "header": {
     "title": "REMix • स्मार्ट अलार्म",
@@ -52,7 +53,12 @@
     "connectSpotify": "Spotify कनेक्ट करें",
     "continue": "प्राथमिकताओं के लिए जारी रखें",
     "logout": "लॉगआउट करें",
-    "reset": "सत्र रीसेट करें"
+    "reset": "सत्र रीसेट करें",
+    "requirementsNote": "पूरी सुविधा के लिए Google और Spotify आवश्यक हैं। बेहतर नींद विश्लेषण के लिए Garmin Connect उपयोग किया जाता है।",
+    "garminAccount": "Garmin खाता",
+    "requiredTag": "(आवश्यक)",
+    "optionalTag": "(वैकल्पिक)",
+    "connectGarmin": "Garmin Connect कनेक्ट करें"
   },
   "prefs": {
     "title": "जागने और संगीत की प्राथमिकताएं",
@@ -92,5 +98,31 @@
     "capricorn": "मकर",
     "aquarius": "कुम्भ",
     "pisces": "मीन"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix आपके Garmin Connect खाते तक पहुंच का अनुरोध कर रहा है।",
+    "permissionRead": "REMix को आपका Garmin Connect डेटा पढ़ने दें।",
+    "permissionCredential": "यह लिंक केवल आपके REMix खाते से जोड़ा जाएगा; REMix आपका Garmin पासवर्ड संग्रहीत नहीं करता।",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "mfaPrompt": "अपनी ऑथेंटिकेटर ऐप से 6 अंकों का कोड दर्ज करें।",
+    "mfaCode": "MFA कोड",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "रद्द करें",
+    "allowAndConnect": "अनुमति दें और कनेक्ट करें",
+    "verifyAndConnect": "सत्यापित करें और कनेक्ट करें",
+    "errorWithReason": "कनेक्शन विफल: {{reason}}",
+    "errorGeneric": "Garmin Connect से कनेक्ट नहीं हो सका।",
+    "mfaRequired": "MFA सत्यापन आवश्यक है।",
+    "checkCredentials": "अपना ईमेल और पासवर्ड जांचें और फिर से प्रयास करें।",
+    "garminAuthFailed": "Garmin Connect प्रमाणीकरण विफल हुआ।"
+  },
+  "account": {
+    "deleteMissingSession": "खाता हटाने के लिए आपको वैध सत्र के साथ लॉग इन होना चाहिए।",
+    "deleteConfirm": "क्या आप वाकई अपना खाता हटाना चाहते हैं? इससे आपका REMix खाता और सहेजा गया डेटा स्थायी रूप से हट जाएगा।",
+    "deleteFailed": "खाता हटाया नहीं जा सका।",
+    "deleteSuccess": "खाता सफलतापूर्वक हटाया गया।",
+    "deleteError": "खाता हटाते समय त्रुटि हुई।"
   }
 }

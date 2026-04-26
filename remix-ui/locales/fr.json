@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — Alarme Intelligente"
+    "title": "REMix — Alarme Intelligente",
+    "garminConnectTitle": "Connecter Garmin — REMix"
   },
   "header": {
     "title": "REMix • Alarme Intelligente",
@@ -52,7 +53,12 @@
     "connectSpotify": "Connecter Spotify",
     "continue": "Continuer vers les préférences",
     "logout": "Se déconnecter",
-    "reset": "Réinitialiser la session"
+    "reset": "Réinitialiser la session",
+    "requirementsNote": "Google et Spotify sont requis pour profiter de toutes les fonctionnalités. Garmin Connect améliore l'analyse du sommeil.",
+    "garminAccount": "Compte Garmin",
+    "requiredTag": "(Requis)",
+    "optionalTag": "(Optionnel)",
+    "connectGarmin": "Connecter Garmin Connect"
   },
   "prefs": {
     "title": "Préférences de réveil et musique",
@@ -92,5 +98,31 @@
     "capricorn": "Capricorne",
     "aquarius": "Verseau",
     "pisces": "Poissons"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix demande l'accès à votre compte Garmin Connect.",
+    "permissionRead": "Autorisez REMix à lire vos données Garmin Connect.",
+    "permissionCredential": "Ce lien sera associé uniquement à votre compte REMix ; votre mot de passe Garmin n'est pas stocké par REMix.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "mfaPrompt": "Saisissez le code à 6 chiffres de votre application d'authentification.",
+    "mfaCode": "Code MFA",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "Annuler",
+    "allowAndConnect": "Autoriser et connecter",
+    "verifyAndConnect": "Vérifier et connecter",
+    "errorWithReason": "Échec de connexion : {{reason}}",
+    "errorGeneric": "Connexion à Garmin Connect impossible.",
+    "mfaRequired": "Vérification MFA requise.",
+    "checkCredentials": "Vérifiez votre e-mail et mot de passe puis réessayez.",
+    "garminAuthFailed": "Échec de l'authentification Garmin Connect."
+  },
+  "account": {
+    "deleteMissingSession": "Vous devez être connecté avec une session valide pour supprimer votre compte.",
+    "deleteConfirm": "Voulez-vous vraiment supprimer votre compte ? Cela supprimera définitivement votre compte REMix et vos données enregistrées.",
+    "deleteFailed": "Échec de la suppression du compte.",
+    "deleteSuccess": "Compte supprimé avec succès.",
+    "deleteError": "Erreur lors de la suppression du compte."
   }
 }

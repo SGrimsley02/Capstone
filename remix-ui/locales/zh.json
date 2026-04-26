@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — 智能闹钟"
+    "title": "REMix — 智能闹钟",
+    "garminConnectTitle": "连接 Garmin — REMix"
   },
   "header": {
     "title": "REMix • 智能闹钟",
@@ -52,7 +53,12 @@
     "connectSpotify": "连接 Spotify",
     "continue": "继续设置偏好",
     "logout": "登出",
-    "reset": "重置会话"
+    "reset": "重置会话",
+    "requirementsNote": "要获得完整功能，必须连接 Google 和 Spotify。Garmin Connect 可提升睡眠分析效果。",
+    "garminAccount": "Garmin 账户",
+    "requiredTag": "（必需）",
+    "optionalTag": "（可选）",
+    "connectGarmin": "连接 Garmin Connect"
   },
   "prefs": {
     "title": "起床和音乐偏好",
@@ -92,5 +98,31 @@
     "capricorn": "摩羯座",
     "aquarius": "水瓶座",
     "pisces": "双鱼座"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix 正在请求访问你的 Garmin Connect 账户。",
+    "permissionRead": "允许 REMix 读取你的 Garmin Connect 数据。",
+    "permissionCredential": "此关联仅绑定到你的 REMix 账户；REMix 不会存储你的 Garmin 密码。",
+    "email": "邮箱",
+    "password": "密码",
+    "mfaPrompt": "请输入认证应用中的 6 位验证码。",
+    "mfaCode": "MFA 验证码",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "取消",
+    "allowAndConnect": "允许并连接",
+    "verifyAndConnect": "验证并连接",
+    "errorWithReason": "连接失败：{{reason}}",
+    "errorGeneric": "无法连接 Garmin Connect。",
+    "mfaRequired": "需要进行 MFA 验证。",
+    "checkCredentials": "请检查邮箱和密码后重试。",
+    "garminAuthFailed": "Garmin Connect 身份验证失败。"
+  },
+  "account": {
+    "deleteMissingSession": "删除账户前，您必须使用有效会话登录。",
+    "deleteConfirm": "确定要删除账户吗？这将永久删除您的 REMix 账户和已保存数据。",
+    "deleteFailed": "删除账户失败。",
+    "deleteSuccess": "账户已成功删除。",
+    "deleteError": "删除账户时出错。"
   }
 }

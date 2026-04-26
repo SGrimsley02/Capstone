@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">音量</string>
+    <string id="Queue">队列</string>
+    <string id="LoadingQueue">正在加载队列</string>
+    <string id="QueueNotLoaded">队列未加载</string>
+    <string id="QueueEmpty">队列为空</string>
+    <string id="OpenSpotify">请先在设备上打开 Spotify</string>
+    <string id="UpNext">下一首</string>
+    <string id="UnknownTrack">未知曲目</string>
+    <string id="UnknownArtist">未知艺人</string>
 </strings>

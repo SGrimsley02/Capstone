@@ -16,4 +16,12 @@
     <string id="AM">AM</string>
     <string id="PM">PM</string>
     <string id="Volume">Громкость</string>
+    <string id="Queue">Очередь</string>
+    <string id="LoadingQueue">Загрузка очереди</string>
+    <string id="QueueNotLoaded">Очередь не загружена</string>
+    <string id="QueueEmpty">Очередь пуста</string>
+    <string id="OpenSpotify">Сначала откройте Spotify на устройстве</string>
+    <string id="UpNext">Далее</string>
+    <string id="UnknownTrack">Неизвестный трек</string>
+    <string id="UnknownArtist">Неизвестный артист</string>
 </strings>

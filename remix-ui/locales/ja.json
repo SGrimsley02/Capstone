@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "REMix — スマートアラーム"
+    "title": "REMix — スマートアラーム",
+    "garminConnectTitle": "Garmin を接続 — REMix"
   },
   "header": {
     "title": "REMix • スマートアラーム",
@@ -52,7 +53,12 @@
     "connectSpotify": "Spotifyを接続",
     "continue": "好みに進む",
     "logout": "ログアウト",
-    "reset": "セッションをリセット"
+    "reset": "セッションをリセット",
+    "requirementsNote": "全機能を利用するには Google と Spotify が必要です。Garmin Connect は睡眠分析の向上に役立ちます。",
+    "garminAccount": "Garminアカウント",
+    "requiredTag": "(必須)",
+    "optionalTag": "(任意)",
+    "connectGarmin": "Garmin Connectを接続"
   },
   "prefs": {
     "title": "起床と音楽の好み",
@@ -92,5 +98,31 @@
     "capricorn": "山羊座",
     "aquarius": "水瓶座",
     "pisces": "魚座"
+  },
+  "connect": {
+    "title": "REMix",
+    "lead": "REMix があなたの Garmin Connect アカウントへのアクセスを求めています。",
+    "permissionRead": "REMixにGarmin Connectデータの読み取りを許可してください。",
+    "permissionCredential": "この連携はあなたの REMix アカウントにのみ関連付けられ、REMix が Garmin のパスワードを保存することはありません。",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "mfaPrompt": "認証アプリの6桁コードを入力してください。",
+    "mfaCode": "MFAコード",
+    "mfaCodePlaceholder": "123456",
+    "cancel": "キャンセル",
+    "allowAndConnect": "許可して接続",
+    "verifyAndConnect": "確認して接続",
+    "errorWithReason": "接続に失敗しました: {{reason}}",
+    "errorGeneric": "Garmin Connectに接続できませんでした。",
+    "mfaRequired": "MFA認証が必要です。",
+    "checkCredentials": "メールアドレスとパスワードを確認して再試行してください。",
+    "garminAuthFailed": "Garmin Connectの認証に失敗しました。"
+  },
+  "account": {
+    "deleteMissingSession": "アカウントを削除するには、有効なセッションでログインしている必要があります。",
+    "deleteConfirm": "本当にアカウントを削除しますか？REMix アカウントと保存データは完全に削除されます。",
+    "deleteFailed": "アカウントの削除に失敗しました。",
+    "deleteSuccess": "アカウントを削除しました。",
+    "deleteError": "アカウント削除中にエラーが発生しました。"
   }
 }
