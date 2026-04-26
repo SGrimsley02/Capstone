@@ -83,7 +83,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
                 "shuffle",
                 null,
                 method(:onShuffleResponse),
-                {"shuffle_state" => !_view.getShuffleState()});
+                {"shuffleEnabled" => !_view.getShuffleEnabled()});
             return true;
         }
 
@@ -92,7 +92,7 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
                 "repeat",
                 null,
                 method(:onRepeatResponse),
-                {"repeat_mode" => advanceRepeatMode(_view.getRepeatMode())}
+                {"repeatMode" => advanceRepeatMode(_view.getRepeatMode())}
             );
             return true;
         }
@@ -137,9 +137,9 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
     // Shuffle helpers
 
     function onShuffleResponse(data as Lang.Dictionary) as Void {
-        if (data != null && data["shuffle_enabled"] != null) {
-            var shuffleState = data["shuffle_enabled"];
-            _view.setShuffleState(shuffleState);
+        if (data != null && data["shuffleEnabled"] != null) {
+            var shuffleEnabled = data["shuffleEnabled"];
+            _view.setShuffleEnabled(shuffleEnabled);
             WatchUi.requestUpdate();
         }
     }
@@ -155,8 +155,8 @@ class PlaybackDelegate extends WatchUi.InputDelegate {
 
     function onRepeatResponse(data as Lang.Dictionary) as Void {
         if (data != null && data["repeatMode"] != null) {
-            var repeatState = data["repeatMode"].toNumber();
-            _view.setRepeatMode(repeatState);
+            var repeatMode = data["repeatMode"].toNumber();
+            _view.setRepeatMode(repeatMode);
             WatchUi.requestUpdate();
         }
     }

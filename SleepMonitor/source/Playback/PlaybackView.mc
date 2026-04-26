@@ -212,8 +212,8 @@ class PlaybackView extends WatchUi.View {
 
     function isPlaying() as Boolean { return _isPlaying; }
     function togglePlayState() as Void { _isPlaying = !_isPlaying; }
-    function setShuffleState(enabled as Boolean) as Void { _isShuffleEnabled = enabled; }
-    function getShuffleState() as Boolean { return _isShuffleEnabled; }
+    function setShuffleEnabled(enabled as Boolean) as Void { _isShuffleEnabled = enabled; }
+    function getShuffleEnabled() as Boolean { return _isShuffleEnabled; }
     function setRepeatMode(mode as Number) as Void { _repeatMode = mode; }
     function getRepeatMode() as Number { return _repeatMode; }
 
@@ -304,11 +304,11 @@ class PlaybackView extends WatchUi.View {
             if (playing != null) {
                 _isPlaying = playing as Boolean;
             }
-            if (data["shuffle_enabled"] != null) {
-                _isShuffleEnabled = data["shuffle_enabled"] as Boolean;
+            if (data["shuffleEnabled"] != null) {
+                _isShuffleEnabled = data["shuffleEnabled"] as Boolean;
             }
-            if (data["repeat_mode"] != null) {
-                _repeatMode = data["repeat_mode"].toNumber();
+            if (data["repeatMode"] as Number != null) {
+                _repeatMode = data["repeatMode"];
             }
         }
         WatchUi.requestUpdate();
