@@ -31,12 +31,15 @@ class WakeAlarmManager {
     var _wakeStartEpoch = null;
     var _wakeEndEpoch = null;
     var _resetAlarm = false; // Flag to indicate whether we need to reset the alarm after dismissing the current one
-    
+    var _longPrefPollPending = true;
+    var _podcastPollPending = false;
+
     // Instance of the network provider
     private var _podcastProvider;
 
     function initialize() {
         _podcastProvider = new PodcastProvider();
+        _podcastPollPending = false;
     }
 
      // Schedule alarm based on wake window: generates a sleep payload at wakeStartTime
@@ -83,8 +86,9 @@ class WakeAlarmManager {
 
         _clearAlarmTimer();
 
-        getApp().userInfoTimer.stop();  // Stop any existing onboarding/polling timers to avoid conflicts during alarm scheduling
-
+        _longPrefPollPending = false;  // Stop any pending preference polls to avoid conflicts during alarm scheduling
+        getApp().getSharedTimerManager().unregisterTask(TimerConstants.ONBOARDING_LONG_PREF_POLL_ID);
+        
         // Get userId from storage
         var userId = Storage.getValue(StorageKeys.USER_ID_KEY) as String?;
         if (userId == null) {
@@ -236,7 +240,12 @@ class WakeAlarmManager {
         _resetAlarm = true;
 
         getApp().updateUserInfo(method(:onReceive));
-        getApp().userInfoTimer.start(method(:pollPreferences), Defaults.LONG_PREF_INT, true);
+        _longPrefPollPending = true; 
+        getApp().getSharedTimerManager().registerRepeatingTask(
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_ID,
+            TimerConstants.ONBOARDING_LONG_PREF_POLL_INTERVAL,
+            method(:pollPreferences)
+        );
     }
 
     function sendPodcastLinkToPhone() as Void {
@@ -254,6 +263,8 @@ class WakeAlarmManager {
             _alarmView.setPodcastReady(false);
         }
 
+        _podcastPollPending = true;
+
         getApp().getSharedTimerManager().registerRepeatingTask(
             TimerConstants.PODCAST_POLL_TASK_ID,
             TimerConstants.PODCAST_POLL_INTERVAL_SEC,
@@ -265,10 +276,11 @@ class WakeAlarmManager {
 
     function stopPodcastPolling() as Void {
         getApp().getSharedTimerManager().unregisterTask(TimerConstants.PODCAST_POLL_TASK_ID);
+        _podcastPollPending = false;
     }
 
     function _pollPodcastStatus() as Void {
-        if (!_alarmShowing) { return; }
+        if (!_alarmShowing || !_podcastPollPending) { return; }
         _podcastProvider.checkStatus(method(:_onPodcastUpdate));
     }
 
@@ -284,6 +296,9 @@ class WakeAlarmManager {
     }
 
     function pollPreferences() as Void {
+        if (_longPrefPollPending == false) {
+            return;
+        }
         getApp().updateUserInfo(method(:onReceive));
     }
 

@@ -19,6 +19,9 @@ Last Modified: February 14, 2026
     <string id="menu_test_sleep_summary">Send sleep summary</string>
     <string id="menu_test_alarm">Alarm at (now + 5 sec)</string>
     <string id="menu_test_review">Test Review Screen</string>
+    
+    <string id="onboarding_error_title">Login Required</string>
+    <string id="onboarding_error_body">Open the menu, press "Relink Website" and login within 10 minutes to link REMix account.</string>
 
     <!-- User Menu Strings -->
     <string id="menu_relink_website">Relink Website</string>
